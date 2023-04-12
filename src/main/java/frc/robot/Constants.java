@@ -32,6 +32,8 @@ public final class Constants {
   public static class IntakeConstants {
     public static final int kRedlinePort = 1;
     public static final int kCanNeoPort = 5;
+    public static final double kUpSpeed = 0.6;
+    public static final double kDownSpeed = -0.4;
     public static class IntakePIDConstants {
       public static final double kP = 0.4;
       public static final double kI = 0.0;
