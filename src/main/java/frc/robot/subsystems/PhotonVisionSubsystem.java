@@ -14,14 +14,19 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PhotonVisionSubsystem extends SubsystemBase{
     private PhotonCamera camera;
     private PhotonPoseEstimator photonPoseEstimator;
+    private final Field2d field = new Field2d();
     public PhotonVisionSubsystem() {
         camera = new PhotonCamera(PhotonVisionConstants.kCameraName);
+        SmartDashboard.putData("Field", field);
+        System.out.println("Loaded PhotonCamera, Added Field to SmartDashboard");
+
 
         try {
             // Attempt to load the AprilTagFieldLayout that will tell us where the tags are on the field.
@@ -31,6 +36,7 @@ public class PhotonVisionSubsystem extends SubsystemBase{
                     new PhotonPoseEstimator(
                             fieldLayout, PoseStrategy.MULTI_TAG_PNP, camera, PhotonVisionConstants.robotToCam);
             photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+            System.out.println("Loaded PhotonPoseEstimator");
         } catch (IOException e) {
             // The AprilTagFieldLayout failed to load. We won't be able to estimate poses if we don't know
             // where the tags are.
@@ -42,20 +48,43 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("Target Detected", camera.getLatestResult().hasTargets());
+        if (camera.getLatestResult().hasTargets()) {
+            SmartDashboard.putNumber("Target X", camera.getLatestResult().getBestTarget().getYaw());
+            SmartDashboard.putNumber("Target Y", camera.getLatestResult().getBestTarget().getPitch());
+            SmartDashboard.putNumber("Target Area", camera.getLatestResult().getBestTarget().getArea());
+            SmartDashboard.putNumber("Target Skew", camera.getLatestResult().getBestTarget().getSkew());
+            field.setRobotPose(getEstimatedGlobalPose(new Pose2d()).get().estimatedPose.toPose2d());
+        }
     }
     
+    /**
+     * Sets the LED mode of the PhotonVision camera.
+     * @param state The LED mode to set.
+     */
     public void setLED(VisionLEDMode state) {
         camera.setLED(state);
     }
 
+    /**
+     * Sets the pipeline of the PhotonVision camera.
+     * @param pipeline The pipeline to set.
+     */
     public void setPipeline(int pipeline) {
         camera.setPipelineIndex(pipeline);
     }
 
+    /**
+     * Gets the X position of the target.
+     * @return The X position of the target.
+     */
     public double getYaw() {
         return camera.getLatestResult().getBestTarget().getYaw();
     }
 
+    /**
+     * Gets the Area of the target, acording to the area of the camera's FOV.
+     * @return The Area of the target.
+     */
     public double getArea() {
         return camera.getLatestResult().getBestTarget().getArea();
     }
@@ -67,6 +96,7 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     public double getSkew() {
         return camera.getLatestResult().getBestTarget().getSkew();
     }
+
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         if (photonPoseEstimator == null) {

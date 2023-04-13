@@ -32,6 +32,7 @@ import frc.robot.commands.TimedIntakeRedlineCmd;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.HorizontalElevatorSubsytem;
 import frc.robot.subsystems.Neo_IntakeSubsystem;
+import frc.robot.subsystems.PhotonVisionSubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.Redline_IntakeSubsystem;
 import frc.robot.subsystems.VerticalElevatorSubsystem;
@@ -44,6 +45,7 @@ public class RobotContainer {
   private final HorizontalElevatorSubsytem horizontal_ElevatorSubsystem = new HorizontalElevatorSubsytem();
   private final Neo_IntakeSubsystem Neo_IntakeSubsystem = new Neo_IntakeSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
+  private final PhotonVisionSubsystem photonVisionSubsystem = new PhotonVisionSubsystem();
   private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
