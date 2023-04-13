@@ -42,10 +42,7 @@
   },
   "NetworkTables": {
     "transitory": {
-      "photonvision": {
-        "IMX219": {
-          "open": true
-        },
+      "CameraPublisher": {
         "open": true
       }
     }
