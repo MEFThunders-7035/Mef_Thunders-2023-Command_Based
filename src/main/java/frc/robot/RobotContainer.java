@@ -13,10 +13,12 @@ import frc.robot.Constants.VerticalElevatorConstants;
 import frc.robot.commands.ArcadeDriveCmd;
 import frc.robot.commands.HoldIntakeCmd;
 import frc.robot.commands.IntakeNeoJoystickCmd;
+import frc.robot.commands.IntakeRedlineJoystickCmd;
 import frc.robot.commands.VerticalElevatorJoystickCmd;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.HorizontalElevatorSubsytem;
 import frc.robot.subsystems.Neo_IntakeSubsystem;
+import frc.robot.subsystems.Redline_IntakeSubsystem;
 import frc.robot.subsystems.VerticalElevatorSubsystem;
 
 
@@ -39,7 +41,9 @@ public class RobotContainer {
   private void configureBindings() {
     new JoystickButton(stick, 1).whileTrue(new VerticalElevatorJoystickCmd(verticalElvElevatorSubsytem, VerticalElevatorConstants.kSpeed));
     new JoystickButton(stick, 2).whileTrue(new VerticalElevatorJoystickCmd(verticalElvElevatorSubsytem, -VerticalElevatorConstants.kSpeed));
-    new JoystickButton(stick, 3).whileTrue(new IntakeJoystickCmd(intakeSubsystem, IntakeConstants.kUpSpeed));
-    new JoystickButton(stick, 4).whileTrue(new IntakeJoystickCmd(intakeSubsystem, IntakeConstants.kDownSpeed));
+    new JoystickButton(stick, 3).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kUpSpeed));
+    new JoystickButton(stick, 4).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kDownSpeed));
+    new JoystickButton(stick, 5).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, IntakeConstants.kRedlineSpeed));
+    new JoystickButton(stick, 6).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, -IntakeConstants.kRedlineSpeed));
   }
 }
