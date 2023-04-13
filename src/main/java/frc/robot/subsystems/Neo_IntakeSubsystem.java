@@ -7,19 +7,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
-public class IntakeSubsystem extends SubsystemBase{
+public class Neo_IntakeSubsystem extends SubsystemBase{
 
-    public static final Spark Redline = new Spark(IntakeConstants.kRedlinePort);
     public static final CANSparkMax Neo = new CANSparkMax(IntakeConstants.kCanNeoPort, CANSparkMax.MotorType.kBrushless);
-    public IntakeSubsystem() {
+    public Neo_IntakeSubsystem() {
         
     }
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Neo Temp", Neo.getMotorTemperature());
-    }
-    public void setRedline(double speed) {
-        Redline.set(speed);
     }
     public void setNeo(double speed) {
         Neo.set(speed);
@@ -29,6 +25,9 @@ public class IntakeSubsystem extends SubsystemBase{
     }
     public Double getNeoVel() {
         return Neo.getEncoder().getVelocity();
+    }
+    public void setNeoPos(double pos) {
+        Neo.getEncoder().setPosition(pos);
     }
     
 
