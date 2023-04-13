@@ -28,6 +28,7 @@ public final class Constants {
   }
   public static class HorizontalElevatorConstants {
     public static final int kHorizontalElevatorPort = 0;
+    public static final double kSpeed = 0.8;
   }
   public static class IntakeConstants {
     public static final int kRedlinePort = 1;

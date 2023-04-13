@@ -10,7 +10,7 @@ public class HorizontalElevatorSubsytem extends SubsystemBase{
     private final Spark Vertical_Elevator = new Spark(VerticalElevatorConstants.kVerticalElevatorPort);
     
     public HorizontalElevatorSubsytem() {
-        
+        Vertical_Elevator.setInverted(true);
     }
     public void setMotor(double speed) {
         Vertical_Elevator.set(speed);

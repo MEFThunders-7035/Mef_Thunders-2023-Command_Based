@@ -13,7 +13,7 @@ public class VerticalElevatorSubsystem extends SubsystemBase{
 
 
     public VerticalElevatorSubsystem() {
-        
+        Elevator.setInverted(true);
     }
     public void setMotor(double speed) {
         Elevator.set(speed);

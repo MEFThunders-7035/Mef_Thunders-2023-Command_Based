@@ -25,23 +25,25 @@ import frc.robot.subsystems.VerticalElevatorSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-  private final VerticalElevatorSubsystem verticalElvElevatorSubsytem = new VerticalElevatorSubsystem();
-  private final HorizontalElevatorSubsytem horizontalElevatorSubsystem = new HorizontalElevatorSubsytem();
+  private final VerticalElevatorSubsystem vertical_ElevatorSubsytem = new VerticalElevatorSubsystem();
+  private final HorizontalElevatorSubsytem horizontal_ElevatorSubsystem = new HorizontalElevatorSubsytem();
   private final Neo_IntakeSubsystem Neo_IntakeSubsystem = new Neo_IntakeSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
 
   private final Joystick stick = new Joystick(OperatorConstants.kJoystickPort);
   public RobotContainer() {
     configureBindings();
-    verticalElvElevatorSubsytem.setDefaultCommand(new VerticalElevatorJoystickCmd(verticalElvElevatorSubsytem, 0));
-    horizontalElevatorSubsystem.setDefaultCommand(null);
-    driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, () -> stick.getRawAxis(1), () -> stick.getRawAxis(3)));
+    vertical_ElevatorSubsytem.setDefaultCommand(new VerticalElevatorJoystickCmd(vertical_ElevatorSubsytem, 0));
+    horizontal_ElevatorSubsystem.setDefaultCommand(new HorizontalElevatorJoystickCmd(horizontal_ElevatorSubsystem, 0));
     Neo_IntakeSubsystem.setDefaultCommand(new HoldIntakeCmd(Neo_IntakeSubsystem));
+    driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, () -> stick.getRawAxis(IoConstants.Y_AXIS), () -> stick.getRawAxis(IoConstants.Z_AXIS)));
   }
 
   private void configureBindings() {
-    new JoystickButton(stick, 1).whileTrue(new VerticalElevatorJoystickCmd(verticalElvElevatorSubsytem, VerticalElevatorConstants.kSpeed));
-    new JoystickButton(stick, 2).whileTrue(new VerticalElevatorJoystickCmd(verticalElvElevatorSubsytem, -VerticalElevatorConstants.kSpeed));
+    new POVButton(stick, 0).whileTrue(new HorizontalElevatorJoystickCmd(horizontal_ElevatorSubsystem, HorizontalElevatorConstants.kSpeed));
+    new POVButton(stick, 180).whileTrue(new HorizontalElevatorJoystickCmd(horizontal_ElevatorSubsystem, -HorizontalElevatorConstants.kSpeed));
+    new JoystickButton(stick, 1).whileTrue(new VerticalElevatorJoystickCmd(vertical_ElevatorSubsytem, VerticalElevatorConstants.kSpeed));
+    new JoystickButton(stick, 2).whileTrue(new VerticalElevatorJoystickCmd(vertical_ElevatorSubsytem, -VerticalElevatorConstants.kSpeed));
     new JoystickButton(stick, 3).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kUpSpeed));
     new JoystickButton(stick, 4).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kDownSpeed));
     new JoystickButton(stick, 5).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, IntakeConstants.kRedlineSpeed));
