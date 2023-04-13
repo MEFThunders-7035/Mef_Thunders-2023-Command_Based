@@ -32,7 +32,7 @@ public class DriveSubsystem extends SubsystemBase {
     rightMotorsGroup.set(rightSpeed);
   }
   public void drive(double speed, double rotation) {
-    driveTrain.arcadeDrive(speed, rotation);
+    driveTrain.arcadeDrive(-speed, -rotation);
   }
 
   @Override
