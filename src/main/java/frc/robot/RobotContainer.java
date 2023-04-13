@@ -28,6 +28,7 @@ public class RobotContainer {
   private final VerticalElevatorSubsystem verticalElvElevatorSubsytem = new VerticalElevatorSubsystem();
   private final HorizontalElevatorSubsytem horizontalElevatorSubsystem = new HorizontalElevatorSubsytem();
   private final Neo_IntakeSubsystem Neo_IntakeSubsystem = new Neo_IntakeSubsystem();
+  private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
 
   private final Joystick stick = new Joystick(OperatorConstants.kJoystickPort);
   public RobotContainer() {

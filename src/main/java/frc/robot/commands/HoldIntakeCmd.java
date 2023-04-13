@@ -3,14 +3,14 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Neo_IntakeSubsystem;
 
 
 public class HoldIntakeCmd extends CommandBase{
-    private final IntakeSubsystem Intakesubsystem;
+    private final Neo_IntakeSubsystem Intakesubsystem;
     private final PIDController pos_pid = new PIDController(IntakeConstants.IntakePIDConstants.kP, IntakeConstants.IntakePIDConstants.kI, IntakeConstants.IntakePIDConstants.kD);
 
-    public HoldIntakeCmd(IntakeSubsystem Intakesubsystem) {
+    public HoldIntakeCmd(Neo_IntakeSubsystem Intakesubsystem) {
         this.Intakesubsystem = Intakesubsystem;
         addRequirements(Intakesubsystem);
     }
