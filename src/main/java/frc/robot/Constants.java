@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -42,6 +46,24 @@ public final class Constants {
       public static final double kD = 0.0;
     }
   }
+  public static class IoConstants {
+    public static final int kJoystickPort = 0;
+    public static final int X_AXIS = 0;
+    public static final int Y_AXIS = 1;
+    public static final int Z_AXIS = 2;
+  }
+  public static class AutonomousConstants {
+    public static final double kDriveSpeed = 0;
+    public static final double kDriveTime = 0;
+    public static final double kRedlineSpeed = 0;
+    public static final double kRedlineTime = 0;
+
+    public static final String kTimedAuto = "Timer Auto";
+    public static final String kGyroAuto = "Gyro Auto";
+    public static final String kCameraAuto = "Camera Auto";
+    public static final String kStabilize = "Stabilize Auto";
+  }
+
   public static class PhotonVisionConstants {
     public static final String kCameraName = "IMX219";
     public static final Transform3d robotToCam =
