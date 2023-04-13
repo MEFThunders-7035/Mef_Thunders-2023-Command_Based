@@ -34,6 +34,13 @@ public final class Constants {
     public static final int kHorizontalElevatorPort = 0;
     public static final double kSpeed = 0.8;
   }
+
+  public static class PneumaticsConstants {
+    public static final int kCompressorPort = 0;
+    public static final int kSolenoidFowardPort = 1;
+    public static final int kSolenoidReversePort = 2;
+  }
+
   public static class IntakeConstants {
     public static final int kRedlinePort = 1;
     public static final int kCanNeoPort = 5;

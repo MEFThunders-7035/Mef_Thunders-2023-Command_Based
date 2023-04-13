@@ -25,12 +25,14 @@ import frc.robot.commands.HoldIntakeCmd;
 import frc.robot.commands.HorizontalElevatorJoystickCmd;
 import frc.robot.commands.IntakeNeoJoystickCmd;
 import frc.robot.commands.IntakeRedlineJoystickCmd;
+import frc.robot.commands.SetCompressorCmd;
 import frc.robot.commands.VerticalElevatorJoystickCmd;
 import frc.robot.commands.TimedDriveCmd;
 import frc.robot.commands.TimedIntakeRedlineCmd;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.HorizontalElevatorSubsytem;
 import frc.robot.subsystems.Neo_IntakeSubsystem;
+import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.Redline_IntakeSubsystem;
 import frc.robot.subsystems.VerticalElevatorSubsystem;
 
@@ -42,6 +44,7 @@ public class RobotContainer {
   private final HorizontalElevatorSubsytem horizontal_ElevatorSubsystem = new HorizontalElevatorSubsytem();
   private final Neo_IntakeSubsystem Neo_IntakeSubsystem = new Neo_IntakeSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
+  private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private final Joystick stick = new Joystick(OperatorConstants.kJoystickPort);
@@ -65,6 +68,8 @@ public class RobotContainer {
     new JoystickButton(stick, 4).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kDownSpeed));
     new JoystickButton(stick, 5).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, IntakeConstants.kRedlineSpeed));
     new JoystickButton(stick, 6).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, -IntakeConstants.kRedlineSpeed));
+    new JoystickButton(stick, 11).whileTrue(new SetCompressorCmd(pneumaticsSubsystem, true));
+    new JoystickButton(stick, 12).whileTrue(new SetCompressorCmd(pneumaticsSubsystem, false));
   }
   private void RobotInit() {
     CameraServer.startAutomaticCapture();
