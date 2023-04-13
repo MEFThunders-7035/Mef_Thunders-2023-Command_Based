@@ -27,6 +27,7 @@ import frc.robot.commands.IntakeNeoJoystickCmd;
 import frc.robot.commands.IntakeRedlineJoystickCmd;
 import frc.robot.commands.SetCompressorCmd;
 import frc.robot.commands.VerticalElevatorJoystickCmd;
+import frc.robot.commands.VisionTargettingCmd;
 import frc.robot.commands.TimedDriveCmd;
 import frc.robot.commands.TimedIntakeRedlineCmd;
 import frc.robot.subsystems.DriveSubsystem;
@@ -111,7 +112,7 @@ public class RobotContainer {
     return null;
   }
   private Command cameraAuto() {
-    return null;
+    return new VisionTargettingCmd(photonVisionSubsystem, driveSubsystem);
   }
   private Command stabilizeAuto() {
     return null;

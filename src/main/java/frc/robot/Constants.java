@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -73,8 +74,23 @@ public final class Constants {
 
   public static class PhotonVisionConstants {
     public static final String kCameraName = "IMX219";
+    public static final int kCameraFOV = 66;
+    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(1.);
+    public static final double TARGET_HEIGHT_METERS = Units.inchesToMeters(15.13);
+    public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);  
     public static final Transform3d robotToCam = new Transform3d(
         new Translation3d(0.5, 0.0, 0),
         new Rotation3d(0, 0,0));
+    
+    public static class TurnPIDConstants{
+      public static final double kP = 0.5;
+      public static final double kI = 0.0;
+      public static final double kD = 0.3;
+    }
+    public static class FowardPIDConstants {
+      public static final double kP = 0.3;
+      public static final double kI = 0.0;
+      public static final double kD = 0.1;
+    }
   }
 }

@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonUtils;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.common.hardware.VisionLEDMode;
 
@@ -13,6 +14,7 @@ import frc.robot.Constants.PhotonVisionConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,6 +24,7 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     private PhotonCamera camera;
     private PhotonPoseEstimator photonPoseEstimator;
     private final Field2d field = new Field2d();
+
     public PhotonVisionSubsystem() {
         camera = new PhotonCamera(PhotonVisionConstants.kCameraName);
         SmartDashboard.putData("Field", field);
@@ -96,8 +99,16 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     public double getSkew() {
         return camera.getLatestResult().getBestTarget().getSkew();
     }
+    
+    public PhotonCamera getCamera() {
+        return camera;
+    }
 
-
+    /**
+     * Gets the estimated global pose of the robot.
+     * @param prevEstimatedRobotPose
+     * @return The estimated global pose of the robot.
+     */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         if (photonPoseEstimator == null) {
             // The field layout failed to load, so we cannot estimate poses.
@@ -106,4 +117,9 @@ public class PhotonVisionSubsystem extends SubsystemBase{
         photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
         return photonPoseEstimator.update();
     }
+    
+    public double getDistance() {
+        return PhotonUtils.calculateDistanceToTargetMeters(PhotonVisionConstants.CAMERA_HEIGHT_METERS, PhotonVisionConstants.TARGET_HEIGHT_METERS, 0, getPitch());
+    }
+        
 }
