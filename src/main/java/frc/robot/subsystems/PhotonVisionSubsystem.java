@@ -81,6 +81,10 @@ public class PhotonVisionSubsystem extends SubsystemBase{
      * @return The X position of the target.
      */
     public double getYaw() {
+        if (!camera.getLatestResult().hasTargets()) {
+            DriverStation.reportError("No Target Found", false);
+            return 0;
+        }
         return camera.getLatestResult().getBestTarget().getYaw();
     }
 
@@ -89,14 +93,26 @@ public class PhotonVisionSubsystem extends SubsystemBase{
      * @return The Area of the target.
      */
     public double getArea() {
+        if (!camera.getLatestResult().hasTargets()) {
+            DriverStation.reportError("No Target Found", false);
+            return 0;
+        }
         return camera.getLatestResult().getBestTarget().getArea();
     }
     
     public double getPitch() {
+        if (!camera.getLatestResult().hasTargets()) {
+            DriverStation.reportError("No Target Found", false);
+            return 0;
+        }
         return camera.getLatestResult().getBestTarget().getPitch();
     }
     
     public double getSkew() {
+        if (!camera.getLatestResult().hasTargets()) {
+            DriverStation.reportError("No Target Found", false);
+            return 0;
+        }
         return camera.getLatestResult().getBestTarget().getSkew();
     }
     

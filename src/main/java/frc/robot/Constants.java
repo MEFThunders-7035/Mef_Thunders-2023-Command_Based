@@ -74,8 +74,7 @@ public final class Constants {
 
   public static class PhotonVisionConstants {
     public static final String kCameraName = "IMX219";
-    public static final int kCameraFOV = 66;
-    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(1.);
+    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(1);
     public static final double TARGET_HEIGHT_METERS = Units.inchesToMeters(15.13);
     public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);  
     public static final Transform3d robotToCam = new Transform3d(
