@@ -16,7 +16,7 @@ public class ArcadeDriveCmd extends CommandBase{
     }
     @Override
     public void execute() {
-        Drivesubsystem.drive(speedfunc.get(), turnfunc.get());
+        Drivesubsystem.drive(-speedfunc.get(), -turnfunc.get());
     }
     @Override
     public void end(boolean interrupted) {

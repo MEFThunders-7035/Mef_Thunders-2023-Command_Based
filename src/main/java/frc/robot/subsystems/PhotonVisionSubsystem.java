@@ -23,11 +23,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class PhotonVisionSubsystem extends SubsystemBase{
     private PhotonCamera camera;
     private PhotonPoseEstimator photonPoseEstimator;
+    private boolean temp_target_detected;
+    private boolean hasTargets;
     private final Field2d field = new Field2d();
 
     public PhotonVisionSubsystem() {
         camera = new PhotonCamera(PhotonVisionConstants.kCameraName);
         SmartDashboard.putData("Field", field);
+        SmartDashboard.putBoolean("Target Detected", camera.getLatestResult().hasTargets());
+        temp_target_detected = camera.getLatestResult().hasTargets();
         System.out.println("Loaded PhotonCamera, Added Field to SmartDashboard");
 
 
@@ -50,13 +54,24 @@ public class PhotonVisionSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Target Detected", camera.getLatestResult().hasTargets());
-        if (camera.getLatestResult().hasTargets()) {
-            SmartDashboard.putNumber("Target X", camera.getLatestResult().getBestTarget().getYaw());
-            SmartDashboard.putNumber("Target Y", camera.getLatestResult().getBestTarget().getPitch());
-            SmartDashboard.putNumber("Target Area", camera.getLatestResult().getBestTarget().getArea());
-            SmartDashboard.putNumber("Target Skew", camera.getLatestResult().getBestTarget().getSkew());
-            field.setRobotPose(getEstimatedGlobalPose(new Pose2d()).get().estimatedPose.toPose2d());
+        hasTargets = camera.getLatestResult().hasTargets();
+        if (temp_target_detected != hasTargets) {
+            System.out.println("New Target Change");
+            System.out.print(hasTargets);
+            SmartDashboard.putBoolean("Target Detected", hasTargets);
+            temp_target_detected = hasTargets;
+        }
+        if (hasTargets) {
+            // SmartDashboard.putNumber("Target X", camera.getLatestResult().getBestTarget().getYaw());
+            // SmartDashboard.putNumber("Target Y", camera.getLatestResult().getBestTarget().getPitch());
+            // SmartDashboard.putNumber("Target Area", camera.getLatestResult().getBestTarget().getArea());
+            // SmartDashboard.putNumber("Target Skew", camera.getLatestResult().getBestTarget().getSkew());
+            try {
+                field.setRobotPose(getEstimatedGlobalPose(field.getRobotPose()).get().estimatedPose.toPose2d());
+            }
+            catch (Exception e) {
+                DriverStation.reportError(e.toString(), e.getStackTrace());
+            }
         }
     }
     

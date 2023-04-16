@@ -14,6 +14,8 @@ public class Neo_IntakeSubsystem extends SubsystemBase{
     }
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Neo Encoder", Neo.getEncoder().getPosition());
+        SmartDashboard.putNumber("Neo Velocity", Neo.getEncoder().getVelocity());
         SmartDashboard.putNumber("Neo Temp", Neo.getMotorTemperature());
     }
     public void setNeo(double speed) {

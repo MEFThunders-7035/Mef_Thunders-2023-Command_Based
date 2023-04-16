@@ -30,6 +30,7 @@ import frc.robot.commands.VerticalElevatorJoystickCmd;
 import frc.robot.commands.VisionTargettingCmd;
 import frc.robot.commands.TimedDriveCmd;
 import frc.robot.commands.TimedIntakeRedlineCmd;
+import frc.robot.commands.SetSelenoidsCmd;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.HorizontalElevatorSubsytem;
 import frc.robot.subsystems.Neo_IntakeSubsystem;
@@ -63,16 +64,19 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    new POVButton(stick, 0).whileTrue(new HorizontalElevatorJoystickCmd(horizontal_ElevatorSubsystem, HorizontalElevatorConstants.kSpeed));
-    new POVButton(stick, 180).whileTrue(new HorizontalElevatorJoystickCmd(horizontal_ElevatorSubsystem, -HorizontalElevatorConstants.kSpeed));
-    new JoystickButton(stick, 1).whileTrue(new VerticalElevatorJoystickCmd(vertical_ElevatorSubsytem, VerticalElevatorConstants.kSpeed));
-    new JoystickButton(stick, 2).whileTrue(new VerticalElevatorJoystickCmd(vertical_ElevatorSubsytem, -VerticalElevatorConstants.kSpeed));
+    new POVButton(stick, 0).whileTrue(new VerticalElevatorJoystickCmd(vertical_ElevatorSubsytem, VerticalElevatorConstants.kSpeed));
+    new POVButton(stick, 180).whileTrue(new VerticalElevatorJoystickCmd(vertical_ElevatorSubsytem, -VerticalElevatorConstants.kSpeed));
+    new JoystickButton(stick, 1).whileTrue(new HorizontalElevatorJoystickCmd(horizontal_ElevatorSubsystem, HorizontalElevatorConstants.kSpeed));
+    new JoystickButton(stick, 2).whileTrue(new HorizontalElevatorJoystickCmd(horizontal_ElevatorSubsystem, -HorizontalElevatorConstants.kSpeed));
     new JoystickButton(stick, 3).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kUpSpeed));
     new JoystickButton(stick, 4).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kDownSpeed));
     new JoystickButton(stick, 5).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, IntakeConstants.kRedlineSpeed));
     new JoystickButton(stick, 6).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, -IntakeConstants.kRedlineSpeed));
+    new JoystickButton(stick, 7).whileTrue(new SetSelenoidsCmd(pneumaticsSubsystem,true));
+    new JoystickButton(stick, 8).whileTrue(new SetSelenoidsCmd(pneumaticsSubsystem,false));
     new JoystickButton(stick, 11).whileTrue(new SetCompressorCmd(pneumaticsSubsystem, true));
     new JoystickButton(stick, 12).whileTrue(new SetCompressorCmd(pneumaticsSubsystem, false));
+    
   }
   private void RobotInit() {
     CameraServer.startAutomaticCapture();
