@@ -43,7 +43,9 @@
   "NetworkTables": {
     "transitory": {
       "CameraPublisher": {
-        "open": true
+        "USB Camera 0": {
+          "open": true
+        }
       }
     }
   }
