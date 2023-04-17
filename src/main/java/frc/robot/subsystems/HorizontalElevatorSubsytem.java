@@ -12,6 +12,14 @@ public class HorizontalElevatorSubsytem extends SubsystemBase{
     public HorizontalElevatorSubsytem() {
         Vertical_Elevator.setInverted(true);
     }
+
+    public void periodic() {
+        if (!Vertical_Elevator.isAlive()) {
+            DriverStation.reportError("Vertical Elevator motor is not alive", false);
+            throw new RuntimeException("Vertical Elevator motor is not alive");
+        }
+    }
+    
     public void setMotor(double speed) {
         Vertical_Elevator.set(speed);
     }

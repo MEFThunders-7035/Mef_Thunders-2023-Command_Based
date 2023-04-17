@@ -10,6 +10,13 @@ public class Redline_IntakeSubsystem extends SubsystemBase{
     public Redline_IntakeSubsystem() {
         
     }
+
+    public void periodic() {
+        if (!Redline.isAlive()) {
+            DriverStation.reportError("Redline Motor is not alive", false);
+            throw new RuntimeException("Redline motor is not alive");
+        }
+    }
     public void setRedline(double speed) {
         Redline.set(speed);
     }

@@ -17,6 +17,13 @@ public class VerticalElevatorSubsystem extends SubsystemBase{
     }
     
     
+
+        if (!Elevator.isAlive()) {
+            DriverStation.reportError("Elevator motor is not alive", false);
+            throw new RuntimeException("Elevator motor is not alive");
+        }
+    }
+
     public void setMotor(double speed) {
         Elevator.set(speed);
     }
