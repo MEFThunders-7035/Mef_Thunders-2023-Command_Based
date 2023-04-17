@@ -122,9 +122,9 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     }
 
     /**
-     * Gets the estimated global pose of the robot.
-     * @param prevEstimatedRobotPose
-     * @return The estimated global pose of the robot.
+     * Finds the {@link Pose2d} using aprilTags.
+     * @param prevEstimatedRobotPose The previous estimated global pose of the robot in {@link Pose2d}.
+     * @return The new {@link Pose2d}.
      */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         if (photonPoseEstimator == null) {
