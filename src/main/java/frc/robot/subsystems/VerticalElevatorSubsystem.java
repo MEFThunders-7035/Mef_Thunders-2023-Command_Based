@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -28,12 +30,23 @@ public class VerticalElevatorSubsystem extends SubsystemBase{
     public void setMotor(double speed) {
         Elevator.set(speed);
     }
+    
     public boolean getTopLimitSwitch() {
         return !toplimitSwitch.get();
     }
+
+    public BooleanSupplier getTopLimitSwitchSupplier() {
+        return () -> getTopLimitSwitch();
+    }
+    
     public boolean getBottomLimitSwitch() {
         return !bottomlimitSwitch.get();
     }
+    
+    public BooleanSupplier getBottomLimitSwitchSupplier() {
+        return () -> getBottomLimitSwitch();
+    }
+    
     public void MoveUp() {
         if (!toplimitSwitch.get()) {
             Elevator.set(0);
