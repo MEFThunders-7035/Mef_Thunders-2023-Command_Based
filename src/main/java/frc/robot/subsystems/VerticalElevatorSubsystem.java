@@ -64,15 +64,18 @@ public class VerticalElevatorSubsystem extends SubsystemBase{
     }
     
     public void MoveUp() {
-        if (!toplimitSwitch.get()) {
+        if (getTopLimitSwitch()) {
             Elevator.set(0);
+            throw new RuntimeException("Top limit switch triggered");
         } else {
             Elevator.set(0.8);
         }
     }
+    
     public void MoveDown() {
-        if (!bottomlimitSwitch.get()) {
+        if (getBottomLimitSwitch()) {
             Elevator.set(0);
+            throw new RuntimeException("Bottom limit switch triggered");
         } else {
             Elevator.set(-0.8);
         }
