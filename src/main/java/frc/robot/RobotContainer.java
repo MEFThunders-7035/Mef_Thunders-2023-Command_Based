@@ -109,18 +109,22 @@ public class RobotContainer {
         return timedAuto();
     }
   }
+  
   private Command timedAuto() {
     return new SequentialCommandGroup(
       new TimedIntakeRedlineCmd(Redline_IntakeSubsystem, AutonomousConstants.kRedlineSpeed, AutonomousConstants.kRedlineTime),
       new TimedDriveCmd(driveSubsystem, AutonomousConstants.kDriveSpeed, AutonomousConstants.kDriveTime)
     );
   }
+  
   private Command gyroAuto() {
     return null;
   }
+  
   private Command cameraAuto() {
     return new VisionTargettingCmd(photonVisionSubsystem, driveSubsystem);
   }
+  
   private Command stabilizeAuto() {
     return null;
   }

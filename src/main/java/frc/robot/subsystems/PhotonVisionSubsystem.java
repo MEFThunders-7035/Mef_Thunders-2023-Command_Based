@@ -152,5 +152,7 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     public double getDistance() {
         return PhotonUtils.calculateDistanceToTargetMeters(PhotonVisionConstants.CAMERA_HEIGHT_METERS, PhotonVisionConstants.TARGET_HEIGHT_METERS, 0, getPitch());
     }
+
+
         
 }
