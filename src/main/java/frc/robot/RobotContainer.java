@@ -67,8 +67,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    new POVButton(stick, 0).whileTrue(new VerticalElevatorJoystickCmd(vertical_ElevatorSubsytem, VerticalElevatorConstants.kSpeed));
-    new POVButton(stick, 180).whileTrue(new VerticalElevatorJoystickCmd(vertical_ElevatorSubsytem, -VerticalElevatorConstants.kSpeed));
+    new POVButton(stick, 0).whileTrue(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, VerticalElevatorConstants.kSpeed).until(Vertical_Elevator_Subsytem.getTopLimitSwitchSupplier()));
+    new POVButton(stick, 180).whileTrue(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, -VerticalElevatorConstants.kSpeed).until(Vertical_Elevator_Subsytem.getBottomLimitSwitchSupplier()));
     new JoystickButton(stick, 1).whileTrue(new HorizontalElevatorJoystickCmd(Horizontal_Elevator_Subsystem, HorizontalElevatorConstants.kSpeed));
     new JoystickButton(stick, 2).whileTrue(new HorizontalElevatorJoystickCmd(Horizontal_Elevator_Subsystem, -HorizontalElevatorConstants.kSpeed));
     new JoystickButton(stick, 3).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kUpSpeed));
