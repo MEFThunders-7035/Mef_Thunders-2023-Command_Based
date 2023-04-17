@@ -16,6 +16,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,6 +29,9 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     private final Field2d field = new Field2d();
 
     public PhotonVisionSubsystem() {
+        if (RobotBase.isSimulation()) {
+            return;
+        }
         camera = new PhotonCamera(PhotonVisionConstants.kCameraName);
         SmartDashboard.putData("Field", field);
         SmartDashboard.putBoolean("Target Detected", camera.getLatestResult().hasTargets());
@@ -36,11 +40,15 @@ public class PhotonVisionSubsystem extends SubsystemBase{
         photonPoseEstimator = getPhotonPoseEstimator();
     }
 
+    
+    @Override
+    public void simulationPeriodic() {
+        
     }
 
     @Override
     public void periodic() {
-        hasTargets = camera.getLatestResult().hasTargets();
+        hasTargets = hasTargets();
         if (temp_target_detected != hasTargets) {
             System.out.println("New Target Change");
             System.out.print(hasTargets);
@@ -82,7 +90,7 @@ public class PhotonVisionSubsystem extends SubsystemBase{
      * @return The X position of the target.
      */
     public double getYaw() {
-        if (!camera.getLatestResult().hasTargets()) {
+        if (!hasTargets()) {
             DriverStation.reportError("No Target Found", false);
             return 0;
         }
@@ -94,7 +102,7 @@ public class PhotonVisionSubsystem extends SubsystemBase{
      * @return The Area of the target.
      */
     public double getArea() {
-        if (!camera.getLatestResult().hasTargets()) {
+        if (!hasTargets()) {
             DriverStation.reportError("No Target Found", false);
             return 0;
         }
@@ -102,7 +110,7 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     }
     
     public double getPitch() {
-        if (!camera.getLatestResult().hasTargets()) {
+        if (!hasTargets()) {
             DriverStation.reportError("No Target Found", false);
             return 0;
         }
@@ -110,7 +118,7 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     }
     
     public double getSkew() {
-        if (!camera.getLatestResult().hasTargets()) {
+        if (!hasTargets()) {
             DriverStation.reportError("No Target Found", false);
             return 0;
         }
@@ -119,6 +127,15 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     
     public PhotonCamera getCamera() {
         return camera;
+    }
+    
+    public Boolean hasTargets() {
+        if (RobotBase.isReal()) {
+            return camera.getLatestResult().hasTargets();
+        }
+        else {
+            return false;
+        }
     }
 
     /**
