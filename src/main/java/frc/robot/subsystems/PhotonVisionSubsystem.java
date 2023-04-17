@@ -33,23 +33,9 @@ public class PhotonVisionSubsystem extends SubsystemBase{
         SmartDashboard.putBoolean("Target Detected", camera.getLatestResult().hasTargets());
         temp_target_detected = camera.getLatestResult().hasTargets();
         System.out.println("Loaded PhotonCamera, Added Field to SmartDashboard");
+        photonPoseEstimator = getPhotonPoseEstimator();
+    }
 
-
-        try {
-            // Attempt to load the AprilTagFieldLayout that will tell us where the tags are on the field.
-            AprilTagFieldLayout fieldLayout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
-            // Create pose estimator
-            photonPoseEstimator =
-                    new PhotonPoseEstimator(
-                            fieldLayout, PoseStrategy.MULTI_TAG_PNP, camera, PhotonVisionConstants.robotToCam);
-            photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-            System.out.println("Loaded PhotonPoseEstimator");
-        } catch (IOException e) {
-            // The AprilTagFieldLayout failed to load. We won't be able to estimate poses if we don't know
-            // where the tags are.
-            DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
-            photonPoseEstimator = null;
-        }
     }
 
     @Override
@@ -154,5 +140,23 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     }
 
 
+    private PhotonPoseEstimator getPhotonPoseEstimator() {
+        try {
+            // Attempt to load the AprilTagFieldLayout that will tell us where the tags are on the field.
+            AprilTagFieldLayout fieldLayout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
+            // Create pose estimator
+            photonPoseEstimator =
+                    new PhotonPoseEstimator(
+                            fieldLayout, PoseStrategy.MULTI_TAG_PNP, camera, PhotonVisionConstants.robotToCam);
+            photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+            System.out.println("Loaded PhotonPoseEstimator");
+        } catch (IOException e) {
+            // The AprilTagFieldLayout failed to load. We won't be able to estimate poses if we don't know
+            // where the tags are.
+            DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
+            photonPoseEstimator = null;
+        }
+        return photonPoseEstimator;
+    }
         
 }
