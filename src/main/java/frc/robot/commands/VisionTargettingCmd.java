@@ -20,6 +20,11 @@ public class VisionTargettingCmd extends CommandBase{
     }
 
     @Override
+    public void initialize() {
+
+    }
+    
+    @Override
     public void execute() {
         fowardSpeed = FowardController.calculate(photonVisionSubsystem.getDistance(),0);
         turnSpeed = TurnController.calculate(photonVisionSubsystem.getYaw(),0);
