@@ -8,6 +8,7 @@ package frc.robot;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,7 +34,7 @@ import frc.robot.commands.TimedDriveCmd;
 import frc.robot.commands.TimedIntakeRedlineCmd;
 import frc.robot.commands.VerticalElevatorJoystickCmd;
 import frc.robot.commands.VisionTargettingCmd;
-
+import frc.robot.subsystems.AcceleratorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.HorizontalElevatorSubsytem;
 import frc.robot.subsystems.Neo_IntakeSubsystem;
@@ -44,14 +45,16 @@ import frc.robot.subsystems.VerticalElevatorSubsystem;
 
 
 public class RobotContainer {
+  private final Field2d field2d = new Field2d();
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
   private final VerticalElevatorSubsystem Vertical_Elevator_Subsytem = new VerticalElevatorSubsystem();
   private final HorizontalElevatorSubsytem Horizontal_Elevator_Subsystem = new HorizontalElevatorSubsytem();
   private final Neo_IntakeSubsystem Neo_IntakeSubsystem = new Neo_IntakeSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
-  private final PhotonVisionSubsystem photonVisionSubsystem = new PhotonVisionSubsystem();
   private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
+  private final AcceleratorSubsystem acceleratorSubsystem = new AcceleratorSubsystem(field2d);
+  private final PhotonVisionSubsystem photonVisionSubsystem = new PhotonVisionSubsystem(field2d, acceleratorSubsystem);
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private final Joystick stick = new Joystick(OperatorConstants.kJoystickPort);

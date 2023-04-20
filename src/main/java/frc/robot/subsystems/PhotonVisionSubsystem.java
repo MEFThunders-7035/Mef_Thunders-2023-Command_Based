@@ -22,18 +22,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PhotonVisionSubsystem extends SubsystemBase{
+    private final AcceleratorSubsystem acceleratorsSubsystem;
     private PhotonCamera camera;
     private PhotonPoseEstimator photonPoseEstimator;
     private boolean temp_target_detected;
-    private boolean hasTargets;
-    private final Field2d field = new Field2d();
+    private Field2d field;
 
-    public PhotonVisionSubsystem() {
+    public PhotonVisionSubsystem(Field2d field2d, AcceleratorSubsystem acceleratorsSubsystem) {
+        this.field = field2d;
+        this.acceleratorsSubsystem = acceleratorsSubsystem;
+        SmartDashboard.putData("Field", field);
         if (RobotBase.isSimulation()) {
             return;
         }
         camera = new PhotonCamera(PhotonVisionConstants.kCameraName);
-        SmartDashboard.putData("Field", field);
         SmartDashboard.putBoolean("Target Detected", camera.getLatestResult().hasTargets());
         temp_target_detected = camera.getLatestResult().hasTargets();
         System.out.println("Loaded PhotonCamera, Added Field to SmartDashboard");
@@ -48,20 +50,20 @@ public class PhotonVisionSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        hasTargets = hasTargets();
-        if (temp_target_detected != hasTargets) {
+        if (temp_target_detected != hasTargets()) {
             System.out.println("New Target Change");
-            System.out.print(hasTargets);
-            SmartDashboard.putBoolean("Target Detected", hasTargets);
-            temp_target_detected = hasTargets;
+            System.out.print(hasTargets());
+            SmartDashboard.putBoolean("Target Detected", hasTargets());
+            temp_target_detected = hasTargets();
         }
-        if (hasTargets) {
+        if (hasTargets()) {
             // SmartDashboard.putNumber("Target X", camera.getLatestResult().getBestTarget().getYaw());
             // SmartDashboard.putNumber("Target Y", camera.getLatestResult().getBestTarget().getPitch());
             // SmartDashboard.putNumber("Target Area", camera.getLatestResult().getBestTarget().getArea());
             // SmartDashboard.putNumber("Target Skew", camera.getLatestResult().getBestTarget().getSkew());
             try {
                 field.setRobotPose(getEstimatedGlobalPose(field.getRobotPose()).get().estimatedPose.toPose2d());
+                acceleratorsSubsystem.setInitialPosition(field.getRobotPose().getTranslation().getX(), field.getRobotPose().getTranslation().getY(), 0);
             }
             catch (Exception e) {
                 DriverStation.reportError(e.toString(), e.getStackTrace());
@@ -130,12 +132,10 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     }
     
     public Boolean hasTargets() {
-        if (RobotBase.isReal()) {
-            return camera.getLatestResult().hasTargets();
-        }
-        else {
+        if (RobotBase.isSimulation()) {
             return false;
         }
+        return camera.getLatestResult().hasTargets();
     }
 
     /**
