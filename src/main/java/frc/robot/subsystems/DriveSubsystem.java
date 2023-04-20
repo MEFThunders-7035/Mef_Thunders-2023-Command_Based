@@ -28,16 +28,17 @@ public class DriveSubsystem extends SubsystemBase {
     rightMotorsGroup.setInverted(true);
     leftMotorsGroup.setInverted(false);
   }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
+
   public void setMotors(double leftSpeed, double rightSpeed) {
     leftMotorsGroup.set(leftSpeed);
     rightMotorsGroup.set(rightSpeed);
   }
   public void drive(double speed, double rotation) {
     driveTrain.arcadeDrive(-speed, -rotation);
-  }
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
   }
 }
