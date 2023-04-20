@@ -1,6 +1,11 @@
 {
   "HALProvider": {
     "Other Devices": {
+      "BuiltInAccel": {
+        "header": {
+          "open": true
+        }
+      },
       "Compressor[0]": {
         "header": {
           "open": true
