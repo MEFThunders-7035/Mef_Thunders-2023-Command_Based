@@ -22,15 +22,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PhotonVisionSubsystem extends SubsystemBase{
-    private final AcceleratorSubsystem acceleratorsSubsystem;
     private PhotonCamera camera;
     private PhotonPoseEstimator photonPoseEstimator;
     private boolean temp_target_detected;
     private Field2d field;
 
-    public PhotonVisionSubsystem(Field2d field2d, AcceleratorSubsystem acceleratorsSubsystem) {
+    public PhotonVisionSubsystem(Field2d field2d) {
         this.field = field2d;
-        this.acceleratorsSubsystem = acceleratorsSubsystem;
         SmartDashboard.putData("Field", field);
         if (RobotBase.isSimulation()) {
             return;
@@ -63,7 +61,6 @@ public class PhotonVisionSubsystem extends SubsystemBase{
             // SmartDashboard.putNumber("Target Skew", camera.getLatestResult().getBestTarget().getSkew());
             try {
                 field.setRobotPose(getEstimatedGlobalPose(field.getRobotPose()).get().estimatedPose.toPose2d());
-                acceleratorsSubsystem.setInitialPosition(field.getRobotPose().getTranslation().getX(), field.getRobotPose().getTranslation().getY(), 0);
             }
             catch (Exception e) {
                 DriverStation.reportError(e.toString(), e.getStackTrace());
@@ -141,7 +138,7 @@ public class PhotonVisionSubsystem extends SubsystemBase{
     /**
      * Finds the {@link Pose2d} using aprilTags.
      * @param prevEstimatedRobotPose The previous estimated global pose of the robot in {@link Pose2d}.
-     * @return The new {@link Pose2d}.
+     * @return The new {@link EstimatedRobotPose} To get {@link Pose2d} use {@code EstimatedRobotPose.get().estimatedPose.toPose2d()}.
      */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         if (photonPoseEstimator == null) {

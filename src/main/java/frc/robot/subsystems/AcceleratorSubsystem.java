@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
@@ -35,11 +34,14 @@ public class AcceleratorSubsystem extends SubsystemBase{
         velocityY += getAccelerationY() * dt;
         velocityZ += getAccelerationZ() * dt;
 
+        positionX = field.getRobotPose().getTranslation().getX();
+        positionY = field.getRobotPose().getTranslation().getY();
+        
         positionX += velocityX * dt;
         positionY += velocityY * dt;
         positionZ += velocityZ * dt;
 
-        field.setRobotPose(positionX, positionY, new Rotation2d());
+        field.setRobotPose(positionX, positionY, field.getRobotPose().getRotation());
         SmartDashboard.putData(field);
         SmartDashboard.putNumber("PositionX", positionX);
         SmartDashboard.putNumber("PositionY", positionY);

@@ -54,7 +54,7 @@ public class RobotContainer {
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
   private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
   private final AcceleratorSubsystem acceleratorSubsystem = new AcceleratorSubsystem(field2d);
-  private final PhotonVisionSubsystem photonVisionSubsystem = new PhotonVisionSubsystem(field2d, acceleratorSubsystem);
+  private final PhotonVisionSubsystem photonVisionSubsystem = new PhotonVisionSubsystem(field2d);
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private final Joystick stick = new Joystick(OperatorConstants.kJoystickPort);
