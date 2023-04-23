@@ -44,6 +44,7 @@ import frc.robot.subsystems.Redline_IntakeSubsystem;
 import frc.robot.subsystems.VerticalElevatorSubsystem;
 
 
+@SuppressWarnings("unused")
 public class RobotContainer {
   private final Field2d field2d = new Field2d();
   // The robot's subsystems and commands are defined here...
@@ -53,7 +54,7 @@ public class RobotContainer {
   private final Neo_IntakeSubsystem Neo_IntakeSubsystem = new Neo_IntakeSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
   private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
-  private final AcceleratorSubsystem acceleratorSubsystem = new AcceleratorSubsystem(field2d);
+  private final AcceleratorSubsystem acceleratorSubsystem = new AcceleratorSubsystem(field2d); //updates field data don't delete
   private final PhotonVisionSubsystem photonVisionSubsystem = new PhotonVisionSubsystem(field2d);
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -78,14 +79,15 @@ public class RobotContainer {
     new JoystickButton(stick, 4).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kDownSpeed));
     new JoystickButton(stick, 5).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, IntakeConstants.kRedlineSpeed));
     new JoystickButton(stick, 6).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, -IntakeConstants.kRedlineSpeed));
-    new JoystickButton(stick, 7).whileTrue(new SetSelenoidsCmd(pneumaticsSubsystem,true));
-    new JoystickButton(stick, 8).whileTrue(new SetSelenoidsCmd(pneumaticsSubsystem,false));
+    new JoystickButton(stick, 7).whileTrue(new SetSelenoidsCmd(pneumaticsSubsystem, true));
+    new JoystickButton(stick, 8).whileTrue(new SetSelenoidsCmd(pneumaticsSubsystem, false));
     new JoystickButton(stick, 11).whileTrue(new SetCompressorCmd(pneumaticsSubsystem, true));
     new JoystickButton(stick, 12).whileTrue(new SetCompressorCmd(pneumaticsSubsystem, false));
     
   }
   private void RobotInit() {
     CameraServer.startAutomaticCapture();
+    acceleratorSubsystem.resetAll();
     m_chooser.setDefaultOption("Timer Auto", AutonomousConstants.kTimedAuto);
     m_chooser.addOption("Gyro Auto", AutonomousConstants.kGyroAuto);
     m_chooser.addOption("Camera Auto", AutonomousConstants.kCameraAuto);
