@@ -61,10 +61,10 @@ public final class Constants {
     public static final int Z_AXIS = 2;
   }
   public static class AutonomousConstants {
-    public static final double kDriveSpeed = 0;
-    public static final double kDriveTime = 0;
-    public static final double kRedlineSpeed = 0;
-    public static final double kRedlineTime = 0;
+    public static final double kDriveSpeed = 0.4;
+    public static final double kDriveTime = 3;
+    public static final double kRedlineSpeed = 0.1;
+    public static final double kRedlineTime = 1;
 
     public static final String kTimedAuto = "Timer Auto";
     public static final String kGyroAuto = "Gyro Auto";
