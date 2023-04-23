@@ -34,9 +34,9 @@ public class DriveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setMotors(double leftSpeed, double rightSpeed) {
-    leftMotorsGroup.set(leftSpeed);
-    rightMotorsGroup.set(rightSpeed);
+  public void setMotors(double LeftMotorSpeed, double RightMotorSpeed) {
+    leftMotorsGroup.set(LeftMotorSpeed);
+    rightMotorsGroup.set(RightMotorSpeed);
   }
   public void drive(double speed, double rotation) {
     driveTrain.arcadeDrive(-speed, -rotation);
