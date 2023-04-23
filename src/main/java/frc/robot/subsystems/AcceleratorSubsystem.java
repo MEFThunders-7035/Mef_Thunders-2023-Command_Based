@@ -62,6 +62,30 @@ public class AcceleratorSubsystem extends SubsystemBase{
     }
 
     /**
+     * Resets the position and velocity of the robot
+     */
+    public void resetAll() {
+        positionX = 0;
+        positionY = 0;
+        positionZ = 0;
+        velocityX = 0;
+        velocityY = 0;
+        velocityZ = 0;
+    }
+    
+    public void resetPosition() {
+        positionX = 0;
+        positionY = 0;
+        positionZ = 0;
+    }
+
+    public void resetVelocity() {
+        velocityX = 0;
+        velocityY = 0;
+        velocityZ = 0;
+    }
+
+    /**
      * Gets the Velocity of the robot as an array using the integration of the acceleration
      * @return array of doubles with the velocity of the robot {x, y, z}
      */    
