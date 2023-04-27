@@ -154,7 +154,7 @@ public class AcceleratorSubsystem extends SubsystemBase{
      * @return x acceleration of the robot in double
      */
     public double getAccelerationX() {
-        return accel.getX();
+        return -accel.getY();
     }
 
     /**
@@ -162,7 +162,7 @@ public class AcceleratorSubsystem extends SubsystemBase{
      * @return y acceleration of the robot in double
      */
     public double getAccelerationY() {
-        return accel.getY();
+        return -accel.getX();
     }
 
     /**
