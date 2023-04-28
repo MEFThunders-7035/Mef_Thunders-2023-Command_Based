@@ -27,8 +27,8 @@ public final class Constants {
     public static final int kRightMotor1Port = 1;
     public static final int kRightMotor2Port = 2;
 
-    public static final boolean kLeftMotorInverted = true;
-    public static final boolean kRightMotorInverted = false;
+    public static final boolean kLeftMotorInverted = false;
+    public static final boolean kRightMotorInverted = true;
 
     public static final int kEncoderLeftPort1 = 0;
     public static final int kEncoderLeftPort2 = 1;
