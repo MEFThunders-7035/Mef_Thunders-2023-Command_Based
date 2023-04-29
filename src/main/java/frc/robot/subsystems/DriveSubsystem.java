@@ -82,6 +82,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @param RightMotorSpeed double between -1 and 1
    */
   public void setMotors(double LeftMotorSpeed, double RightMotorSpeed) {
+    if (Math.abs(LeftMotorSpeed) > 1 || Math.abs(RightMotorSpeed) > 1) {
+      DriverStation.reportError("Speed must be between -1 and 1", false);
+      throw new IllegalArgumentException("Speed must be between -1 and 1");
+    }
     leftMotorsGroup.set(LeftMotorSpeed);
     rightMotorsGroup.set(RightMotorSpeed);
   }
@@ -92,6 +96,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Counterclockwise is positive.
    */
   public void drive(double xSpeed, double zRotation) {
+    if (Math.abs(xSpeed) > 1 || Math.abs(zRotation) > 1) {
+      DriverStation.reportError("Speed must be between -1 and 1", false);
+      throw new IllegalArgumentException("Speed must be between -1 and 1");
+    }
     driveTrain.arcadeDrive(-xSpeed, -zRotation);
   }
 
@@ -102,6 +110,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @param squaredInputs If set, decreases the input sensitivity at low speeds.
    */
   public void drive(double xSpeed, double zRotation, boolean squaredInputs) {
+    if (Math.abs(xSpeed) > 1 || Math.abs(zRotation) > 1) {
+      DriverStation.reportError("Speed must be between -1 and 1", false);
+      throw new IllegalArgumentException("Speed must be between -1 and 1");
+    }
     driveTrain.arcadeDrive(-xSpeed, -zRotation, squaredInputs);
   }
 
