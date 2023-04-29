@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
@@ -67,7 +68,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   public void periodic() {
     if (getGyroIsConnected()) {
       field.setRobotPose(field.getRobotPose().getX(), field.getRobotPose().getY(), getGyroRotation2d());
+      SmartDashboard.putNumber("Rotation", getGyroAngleFixed());
     }
+
+    SmartDashboard.putNumber("Left Encoder Distance", getLeftEncoderDistance());
+    SmartDashboard.putNumber("Right Encoder Distance", getRightEncoderDistance());
     // This method will be called once per scheduler run
   }
 
