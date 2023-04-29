@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -152,6 +153,9 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @return boolean true if connected
    */
   public boolean getGyroIsConnected() {
+    if (!navX.isConnected()) {
+      DriverStation.reportError("NavX is not connected", false);
+    }
     return navX.isConnected();
   }
 
@@ -179,8 +183,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   /**
    * Gets the rotation of the navX in {@link Rotation2d}
-   * @return Rotation2d
-   * @throws RuntimeException if the navX is not connected
+   * @return Rotatation in terms of {@link Rotation2d}. returns null if navX is not connected.
    */
   public Rotation2d getGyroRotation2d() {
     if (!getGyroIsConnected()) {
