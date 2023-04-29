@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
-public class DriveSubsystem extends SubsystemBase {
+public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final WPI_VictorSPX leftMotor1 = new WPI_VictorSPX(DriveConstants.kLeftMotor1Port);
   private final WPI_VictorSPX leftMotor2 = new WPI_VictorSPX(DriveConstants.kLeftMotor2Port);
   
@@ -37,6 +37,8 @@ public class DriveSubsystem extends SubsystemBase {
   
   public DriveSubsystem(Field2d field) {
     this.field = field;
+    calibrateGyro();
+    resetEncoders();
     leftMotorsGroup.setInverted(DriveConstants.kLeftMotorInverted);
     rightMotorsGroup.setInverted(DriveConstants.kRightMotorInverted);
     leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
@@ -44,6 +46,20 @@ public class DriveSubsystem extends SubsystemBase {
 
     leftEncoder.setReverseDirection(DriveConstants.kEncoderLeftReversed);
     rightEncoder.setReverseDirection(DriveConstants.kEncoderRightReversed);
+  }
+
+  @Override
+  public void close() throws Exception {
+    leftMotor1.close();
+    leftMotor2.close();
+    rightMotor1.close();
+    rightMotor2.close();
+    leftMotorsGroup.close();
+    rightMotorsGroup.close();
+    driveTrain.close();
+    leftEncoder.close();
+    rightEncoder.close();
+    navX.close();
   }
 
   @Override
