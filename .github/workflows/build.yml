@@ -7,7 +7,8 @@ name: Unit Tests
 on:
   push:
     branches: [ master ]
-    paths: -src/**
+    paths: 
+      - src/**
   pull_request:
     branches: [ master ]
 
