@@ -1,6 +1,9 @@
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.subsystems.DriveSubsystem;
@@ -61,9 +64,39 @@ public class DriveTrainTest {
     }
 
     @Test
-    void DriveTrainDriveOverLimitTest() {
+    void DriveTrainDriveOverLimitTest1() throws Exception{
+        try {
         driveSubsystem.drive(2, 2);
-        driveSubsystem.drive(-2, 0.5);
+        throw new Exception("DriveTrainDriveOverLimitTest failed");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Speed must be between -1 and 1", e.getMessage());
+        }
+    }
+
+    @Test
+    void DriveTrainDriveOverLimitTest2() throws Exception{
+        try {
+        driveSubsystem.drive(-2, -1.2,true);
+        throw new Exception("DriveTrainDriveOverLimitTest failed");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Speed must be between -1 and 1", e.getMessage());
+        }
+    }
+
+    @Test
+    void DriveTrainMotorSetOverLimitTest() throws Exception{
+        try {
+        driveSubsystem.setMotors(2.1, -2.5);
+        throw new Exception("DriveTrainDriveOverLimitTest failed");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Speed must be between -1 and 1", e.getMessage());
+        }
+    }
+
+    @Test
+    void DriveTrainDriveUnderLimitTest() throws Exception{
+        driveSubsystem.drive(0.1, 0.2);
+        driveSubsystem.drive(-0.1, -0.1);
         driveSubsystem.stop();
     }
 }
