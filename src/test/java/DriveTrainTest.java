@@ -15,11 +15,11 @@ public class DriveTrainTest {
     void setup() {
         driveSubsystem = new DriveSubsystem(null);
         try {
-            Thread.sleep(300);
+            Thread.sleep(150);
         } catch (Exception e) {
             DriverStation.reportError("Interrupted", e.getStackTrace());
         }
-        HAL.initialize(700, 0);
+        HAL.initialize(500, 0);
     }
 
     @AfterEach
@@ -27,7 +27,7 @@ public class DriveTrainTest {
         driveSubsystem.stop();
         driveSubsystem.close();
         try {
-            Thread.sleep(200);
+            Thread.sleep(150);
         } catch (Exception e) {
             DriverStation.reportError("Interrupted", e.getStackTrace());
         }
