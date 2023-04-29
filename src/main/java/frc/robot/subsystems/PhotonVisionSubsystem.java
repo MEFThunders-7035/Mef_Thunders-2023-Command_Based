@@ -21,13 +21,16 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class PhotonVisionSubsystem extends SubsystemBase{
+public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseable{
     private PhotonCamera camera;
     private PhotonPoseEstimator photonPoseEstimator;
     private boolean temp_target_detected;
     private Field2d field;
 
     public PhotonVisionSubsystem(Field2d field2d) {
+        if (field2d == null) {
+            field2d = new Field2d();
+        }
         this.field = field2d;
         SmartDashboard.putData("Field", field);
         if (RobotBase.isSimulation()) {
@@ -40,7 +43,10 @@ public class PhotonVisionSubsystem extends SubsystemBase{
         photonPoseEstimator = getPhotonPoseEstimator();
     }
 
-    
+    @Override
+    public void close() throws Exception {
+        camera.close();
+    }
     @Override
     public void simulationPeriodic() {
         

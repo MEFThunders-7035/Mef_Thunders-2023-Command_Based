@@ -161,7 +161,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    */
   public void calibrateGyro() {
     if (!getGyroIsConnected()) {
-      throw new RuntimeException("NavX is not connected");
+      return;
     }
     navX.calibrate();
   }
@@ -172,7 +172,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    */
   public void resetGyro() {
     if (!getGyroIsConnected()) {
-      throw new RuntimeException("NavX is not connected");
+      return;
     }
     navX.reset();
   }
@@ -184,7 +184,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    */
   public Rotation2d getGyroRotation2d() {
     if (!getGyroIsConnected()) {
-      throw new RuntimeException("NavX is not connected");
+      return null;
     }
     return navX.getRotation2d();
   }
@@ -195,11 +195,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * This ensures that algorithms that wouldn't want to see a discontinuity in the gyro output 
    * as it sweeps past 0 on the second time around.
    * if you want it to be fixed use {@link DriveSubsystem#getGyroAngleFixed}
-   * @return the total accumilated yaw angle (Z axis) double rotation in degrees 
+   * @return the total accumilated yaw angle (Z axis) double rotation in degrees. returns 0 if navX is not connected.
    */
   public double getGyroAngle() {
     if (!getGyroIsConnected()) {
-      throw new RuntimeException("NavX is not connected");
+      return 0.0;
     }
     return navX.getAngle();
   }
@@ -207,33 +207,33 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   /**
    * Gets the rotation of the navX in degrees but does not go past 360 degrees.
    * if you want it to be continuous use {@link DriveSubsystem#getGyroAngle}
-   * @return the yaw angle (Z axis) double rotation in degrees
+   * @return the yaw angle (Z axis) double rotation in degrees. returns 0 if navX is not connected.
    */
   public double getGyroAngleFixed() {
     if (!getGyroIsConnected()) {
-      throw new RuntimeException("NavX is not connected");
+      return 0;
     }
     return navX.getAngle() % 360;
   }
 
   /**
    * Gets the rate of rotation of the navX in degrees per second
-   * @return double rotation in degrees per second
+   * @return double rotation in degrees per second.  returns 0 if navX is not connected.
    */
   public double getGyroRate() {
     if (!getGyroIsConnected()) {
-      throw new RuntimeException("NavX is not connected");
+      return 0;
     }
     return navX.getRate();
   }
 
   /**
-   * gets if Gyro Is Calibrating
-   * @return boolean true if calibrating
+   * Gets if Gyro Is Calibrating
+   * @return boolean true if calibrating. returns false if navX is not connected.
    */
   public boolean getGyroIsCalibrating() {
     if (!getGyroIsConnected()) {
-      throw new RuntimeException("NavX is not connected");
+      return false;
     }
     return navX.isCalibrating();
   }

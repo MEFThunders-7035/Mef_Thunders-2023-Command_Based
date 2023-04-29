@@ -30,10 +30,10 @@ public final class Constants {
     public static final boolean kLeftMotorInverted = false;
     public static final boolean kRightMotorInverted = true;
 
-    public static final int kEncoderLeftPort1 = 0;
-    public static final int kEncoderLeftPort2 = 1;
-    public static final int kEncoderRightPort1 = 2;
-    public static final int kEncoderRightPort2 = 3;
+    public static final int kEncoderLeftPort1 = 2;
+    public static final int kEncoderLeftPort2 = 3;
+    public static final int kEncoderRightPort1 = 4;
+    public static final int kEncoderRightPort2 = 5;
 
     public static final boolean kEncoderLeftReversed = false;
     public static final boolean kEncoderRightReversed = false;
