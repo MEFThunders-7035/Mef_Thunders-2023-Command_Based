@@ -16,13 +16,18 @@ public class DriveTrainTest {
         } catch (Exception e) {
             DriverStation.reportError("Interrupted", e.getStackTrace());
         }
-        HAL.initialize(500, 0);
+        HAL.initialize(700, 0);
     }
 
     @AfterEach
     void tearDown() throws Exception {
         driveSubsystem.stop();
         driveSubsystem.close();
+        try {
+            Thread.sleep(200);
+        } catch (Exception e) {
+            DriverStation.reportError("Interrupted", e.getStackTrace());
+        }
     }
 
     @Test
