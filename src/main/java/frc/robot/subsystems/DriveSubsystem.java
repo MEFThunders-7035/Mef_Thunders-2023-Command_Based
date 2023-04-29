@@ -161,7 +161,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   /**
    * Calibrates the navX
-   * @throws RuntimeException if the navX is not connected
+   * Doesn't do anything if the navX is not connected.
    */
   public void calibrateGyro() {
     if (!getGyroIsConnected()) {
@@ -171,8 +171,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
 
   /**
-   * Resets the navX
-   * @throws RuntimeException if the navX is not connected
+   * Resets the Gyro Z (Yaw) axis to a heading of zero.
+   * doesn't do anything if the navX is not connected.
    */
   public void resetGyro() {
     if (!getGyroIsConnected()) {
