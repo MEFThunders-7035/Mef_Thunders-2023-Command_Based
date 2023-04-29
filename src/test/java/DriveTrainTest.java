@@ -2,7 +2,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import edu.wpi.first.hal.HAL;
-
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveTrainTest {
@@ -11,6 +11,11 @@ public class DriveTrainTest {
     @BeforeEach
     void setup() {
         driveSubsystem = new DriveSubsystem(null);
+        try {
+            Thread.sleep(300);
+        } catch (Exception e) {
+            DriverStation.reportError("Interrupted", e.getStackTrace());
+        }
         HAL.initialize(500, 0);
     }
 
