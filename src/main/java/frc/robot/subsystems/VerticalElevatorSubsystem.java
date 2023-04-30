@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HorizontalElevatorConstants;
 
-public class VerticalElevatorSubsystem extends SubsystemBase{
+public class VerticalElevatorSubsystem extends SubsystemBase implements AutoCloseable{
 
-    public static final Spark Elevator = new Spark(HorizontalElevatorConstants.kHorizontalElevatorPort);
+    private final Spark Elevator;
     private final DigitalInput toplimitSwitch = new DigitalInput(0);
     private final DigitalInput bottomlimitSwitch = new DigitalInput(1);
     private boolean topLimitSwitch_temp;
@@ -19,6 +19,7 @@ public class VerticalElevatorSubsystem extends SubsystemBase{
 
 
     public VerticalElevatorSubsystem() {
+        this.Elevator = new Spark(HorizontalElevatorConstants.kHorizontalElevatorPort);
         topLimitSwitch_temp = getTopLimitSwitch();
         bottomLimitSwitch_temp = getBottomLimitSwitch();
         SmartDashboard.putBoolean("Top Limit Switch", getTopLimitSwitch());
@@ -26,6 +27,13 @@ public class VerticalElevatorSubsystem extends SubsystemBase{
         Elevator.setInverted(true);
     }
     
+    @Override
+    public void close() throws Exception {
+        Elevator.close();
+        toplimitSwitch.close();
+        bottomlimitSwitch.close();
+    }
+
     @Override
     public void periodic() {
         if (topLimitSwitch_temp != getTopLimitSwitch()) {
@@ -43,10 +51,33 @@ public class VerticalElevatorSubsystem extends SubsystemBase{
         }
     }
 
+    /**
+     * Stops the elevator motor
+     */
+    public void stop() {
+        Elevator.stopMotor();
+    }
+
+    /**
+     * Sets the motor value
+     * @param speed double between -1 and 1
+     */
     public void setMotor(double speed) {
+        if (Math.abs(speed) > 1) {
+            DriverStation.reportError("Elevator motor speed is out of range", false);
+            throw new IllegalArgumentException("Vertical elevator motor setpoint out of range: " + speed);
+        }
         Elevator.set(speed);
     }
-    
+
+    /**
+     * Gets the last set motor value
+     * @return the last set motor value double between -1 and 1
+     */
+    public double getLastMotorSet() {
+        return Elevator.get();
+    }
+
     public boolean getTopLimitSwitch() {
         return !toplimitSwitch.get();
     }
