@@ -55,4 +55,13 @@ public class NeoTest {
         neoSubsystem.setNeoRampRate(0.5);
         assertEquals(0.5, neoSubsystem.getNeoRampRate());
     }
+
+    @Test
+    void setNeoOverLimitTest() {
+        try {
+            neoSubsystem.setNeo(1.5);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Neo setpoint out of range: 1.5", e.getMessage());
+        }
+    }
 }

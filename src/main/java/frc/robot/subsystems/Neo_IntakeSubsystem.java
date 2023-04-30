@@ -27,6 +27,9 @@ public class Neo_IntakeSubsystem extends SubsystemBase implements AutoCloseable{
         SmartDashboard.putNumber("Neo Temp", Neo.getMotorTemperature());
     }
     public void setNeo(double speed) {
+        if (Math.abs(speed) > 1) {
+            throw new IllegalArgumentException("Neo setpoint out of range: " + speed);
+        }
         Neo.set(speed);
     }
     
