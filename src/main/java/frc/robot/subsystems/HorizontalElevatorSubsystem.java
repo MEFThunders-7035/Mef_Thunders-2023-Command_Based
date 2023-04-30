@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VerticalElevatorConstants;
 
 
-public class HorizontalElevatorSubsytem extends SubsystemBase{
+public class HorizontalElevatorSubsystem extends SubsystemBase{
 
     private final Spark Vertical_Elevator = new Spark(VerticalElevatorConstants.kVerticalElevatorPort);
     
-    public HorizontalElevatorSubsytem() {
+    public HorizontalElevatorSubsystem() {
         Vertical_Elevator.setInverted(true);
     }
 

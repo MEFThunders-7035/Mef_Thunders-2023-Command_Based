@@ -1,11 +1,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.HorizontalElevatorSubsytem;
+import frc.robot.subsystems.HorizontalElevatorSubsystem;
 public class HorizontalElevatorJoystickCmd extends CommandBase{
-    private final HorizontalElevatorSubsytem horizontalElevatorSubsytem;
+    private final HorizontalElevatorSubsystem horizontalElevatorSubsytem;
     private final double speed;
-    public HorizontalElevatorJoystickCmd(HorizontalElevatorSubsytem horizontalElevatorSubsytem, double speed) {
+    public HorizontalElevatorJoystickCmd(HorizontalElevatorSubsystem horizontalElevatorSubsytem, double speed) {
         this.horizontalElevatorSubsytem = horizontalElevatorSubsytem;
         this.speed = speed;
         addRequirements(horizontalElevatorSubsytem);

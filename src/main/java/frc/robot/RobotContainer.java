@@ -37,7 +37,7 @@ import frc.robot.commands.VisionTargettingCmd;
 
 import frc.robot.subsystems.AcceleratorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.HorizontalElevatorSubsytem;
+import frc.robot.subsystems.HorizontalElevatorSubsystem;
 import frc.robot.subsystems.Neo_IntakeSubsystem;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
@@ -51,7 +51,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem driveSubsystem = new DriveSubsystem(field2d);
   private final VerticalElevatorSubsystem Vertical_Elevator_Subsytem = new VerticalElevatorSubsystem();
-  private final HorizontalElevatorSubsytem Horizontal_Elevator_Subsystem = new HorizontalElevatorSubsytem();
+  private final HorizontalElevatorSubsystem Horizontal_Elevator_Subsystem = new HorizontalElevatorSubsystem();
   private final Neo_IntakeSubsystem Neo_IntakeSubsystem = new Neo_IntakeSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
   private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
