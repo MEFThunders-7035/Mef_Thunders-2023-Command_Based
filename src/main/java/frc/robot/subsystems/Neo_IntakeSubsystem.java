@@ -111,12 +111,27 @@ public class Neo_IntakeSubsystem extends SubsystemBase implements AutoCloseable{
     public double getNeoTempreture() {
         return Neo.getMotorTemperature();
     }
+
+    /**
+     * returns the Neo's encoder position
+     * @return the Neo's encoder position in rotations (1 rotation = 1 full rotation of the motor)
+     */
     public Double getNeoPos() {
         return Neo.getEncoder().getPosition();
     }
+
+    /**
+     * returns the Neo's encoder velocity
+     * @return the Neo's encoder velocity in RPM
+     */
     public Double getNeoVel() {
         return Neo.getEncoder().getVelocity();
     }
+
+    /**
+     * sets the Neo's encoder position
+     * @param pos the position to set the Neo's encoder to in rotations (1 rotation = 1 full rotation of the motor)
+     */
     public void setNeoPos(double pos) {
         Neo.getEncoder().setPosition(pos);
     }
