@@ -1,16 +1,16 @@
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import edu.wpi.first.hal.HAL;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 
 class PhotonVisionTest {
-    static final double kDelta = 1e-5;
     PhotonVisionSubsystem photonVisionSubsystem;
 
     @BeforeEach
     void setup() {
-        HAL.initialize(1500, 0);
+        HAL.initialize(500, 0);
         photonVisionSubsystem = new PhotonVisionSubsystem(null);
     }
 
