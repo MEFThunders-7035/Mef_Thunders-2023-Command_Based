@@ -33,16 +33,35 @@ public class Neo_IntakeSubsystem extends SubsystemBase implements AutoCloseable{
         Neo.set(speed);
     }
     
+    /**
+     * gets the last set motor value
+     * @return The current set speed. Value is between -1.0 and 1.0.
+     */
     public double getNeoLastSet() {
         return Neo.get();
     }
+
+    /**
+     * Get the last error of the Neo
+     * @return the last error of the Neo as a  {@link REVLibError}
+     */
     public REVLibError getNeoError() {
         return Neo.getLastError();
     }
+
+    /**
+     * Get the configured open loop ramp rate.
+     * This is the maximum rate at which the motor controller's output is allowed to change.
+     * @return ramp rate time in seconds to go from 0 to full throttle.
+     */
     public double getNeoRampRate() {
         return Neo.getOpenLoopRampRate();
     }
 
+    /**
+     * Get the idle mode of the Neo
+     * @return true = brake, false = coast
+     */
     public boolean getNeoBrakeMode() {
         if (Neo.getIdleMode().equals(CANSparkMax.IdleMode.kBrake)) {
             return true;
@@ -50,6 +69,7 @@ public class Neo_IntakeSubsystem extends SubsystemBase implements AutoCloseable{
             return false;
         }
     }
+    
     /**
      * get the fault bits of the Neo
      * @return the fault bits of the Neo as a short
