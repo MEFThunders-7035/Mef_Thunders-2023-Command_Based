@@ -6,20 +6,25 @@ import org.junit.jupiter.api.Test;
 
 import edu.wpi.first.hal.HAL;
 import frc.robot.subsystems.Neo_IntakeSubsystem;
+import frc.robot.subsystems.Redline_IntakeSubsystem;
 
-public class NeoTest {
+public class IntakeTests {
     Neo_IntakeSubsystem neoSubsystem;
+    Redline_IntakeSubsystem redlineSubsystem;
 
     @BeforeEach
     void setup() {
         HAL.initialize(800, 0);
         neoSubsystem = new Neo_IntakeSubsystem();
+        redlineSubsystem = new Redline_IntakeSubsystem();
     }
 
     @AfterEach
     void tearDown() throws Exception {
         neoSubsystem.stopNeo();
+        redlineSubsystem.stopMotor();
         neoSubsystem.close();
+        redlineSubsystem.close();
     }
 
     @Test
@@ -62,6 +67,23 @@ public class NeoTest {
             neoSubsystem.setNeo(1.5);
         } catch (IllegalArgumentException e) {
             assertEquals("Neo setpoint out of range: 1.5", e.getMessage());
+        }
+    }
+
+    @Test
+    void setRedlineTest() throws Exception {
+        redlineSubsystem.setRedline(1.0);
+        assertEquals(1.0, redlineSubsystem.getLastMotorSet());
+        redlineSubsystem.setRedline(-1.0);
+        assertEquals(-1.0, redlineSubsystem.getLastMotorSet());
+    }
+
+    @Test
+    void setRedlineOverLimitTest() {
+        try {
+            redlineSubsystem.setRedline(1.5);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Redline motor setpoint out of range: 1.5", e.getMessage());
         }
     }
 }
