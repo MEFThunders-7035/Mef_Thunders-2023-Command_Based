@@ -5,9 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import edu.wpi.first.hal.HAL;
-
-import frc.robot.subsystems.VerticalElevatorSubsystem;
 import frc.robot.subsystems.HorizontalElevatorSubsystem;
+import frc.robot.subsystems.VerticalElevatorSubsystem;
 
 public class ElevatorsTest {
     VerticalElevatorSubsystem verticalElevatorSubsystem;
