@@ -21,6 +21,11 @@
           "open": true
         }
       },
+      "SPARK MAX [5]": {
+        "header": {
+          "open": true
+        }
+      },
       "Victor SPX[1]": {
         "header": {
           "open": true
@@ -37,6 +42,11 @@
         }
       },
       "Victor SPX[4]": {
+        "header": {
+          "open": true
+        }
+      },
+      "navX-Sensor[0]": {
         "header": {
           "open": true
         }
@@ -74,5 +84,8 @@
         "open": true
       }
     }
+  },
+  "NetworkTables Info": {
+    "visible": true
   }
 }
