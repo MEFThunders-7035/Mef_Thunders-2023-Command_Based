@@ -11,7 +11,9 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,11 +35,14 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final Encoder leftEncoder = new Encoder(DriveConstants.kEncoderLeftPort1, DriveConstants.kEncoderLeftPort2);
   private final Encoder rightEncoder = new Encoder(DriveConstants.kEncoderRightPort1, DriveConstants.kEncoderRightPort2);
   
-  private final AHRS navX = new AHRS();
-    
+  private final AHRS navX;
+  private final I2C.Port port;
+  
   private final Field2d field;
   
   public DriveSubsystem(Field2d field) {
+    this.port = I2C.Port.kOnboard;
+    this.navX = new AHRS(port);
     this.field = field;
     calibrateGyro();
     resetEncoders();
@@ -234,6 +239,18 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
       return 0;
     }
     return navX.getAngle() % 360;
+  }
+
+  /**
+   * Gets the pitch of the navX in degrees
+   * WARNING: This uses the Magnetometer do not use with a mpu6050
+   * @return double rotation in degrees (0-360). returns 0 if navX is not connected.
+   */
+  public double getGyroCompassHeading() {
+    if (!getGyroIsConnected()) {
+      return 0;
+    }
+    return navX.getCompassHeading();
   }
 
   /**
