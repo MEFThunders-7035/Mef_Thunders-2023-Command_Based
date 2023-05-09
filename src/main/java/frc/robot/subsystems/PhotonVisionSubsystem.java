@@ -61,6 +61,8 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
             temp_target_detected = hasTargets();
         }
         if (hasTargets()) {
+            SmartDashboard.putNumber("Distance", getDistance());
+            SmartDashboard.putNumber("Area", getArea());
             // SmartDashboard.putNumber("Target X", camera.getLatestResult().getBestTarget().getYaw());
             // SmartDashboard.putNumber("Target Y", camera.getLatestResult().getBestTarget().getPitch());
             // SmartDashboard.putNumber("Target Area", camera.getLatestResult().getBestTarget().getArea());
@@ -99,7 +101,9 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
             DriverStation.reportError("No Target Found", false);
             return 0;
         }
-        return camera.getLatestResult().getBestTarget().getYaw();
+        if (hasTargets()) return camera.getLatestResult().getBestTarget().getYaw();
+
+        return 0;
     }
 
     /**

@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -8,7 +9,9 @@ public class TimedDriveCmd extends CommandBase{
     private final DriveSubsystem driveSubsystem;
     private final double speed;
     private final double time;
+    private Timer timer;
     private boolean finlished = false;
+    private boolean started = false;
     
     /**
     * Drives foward for a certain amount of time
@@ -23,20 +26,37 @@ public class TimedDriveCmd extends CommandBase{
         this.driveSubsystem = driveSubsystem;
         this.speed = speed;
         this.time = time;
+        this.timer = new Timer();
         addRequirements(driveSubsystem);
     }
     @Override
     public void initialize() {
+        timer.reset();
         finlished = false;
+        started = false;
+        timer.start();
     }
     @Override
     public void execute() {
         if (Math.abs(speed) > 1) throw new IllegalArgumentException("Speed must be between -1 and 1");
+        if (started) {
+            return;
+        }
+        
+        if (timer.get() < time) {
+            driveSubsystem.drive(speed, 0);
+        }
+        else {
+            driveSubsystem.stop();
+            finlished = true;
+        }
+        /* 
         new Thread(() -> {
             try {
                 System.out.println("TimedDriveCommand started");
                 driveSubsystem.drive(speed, 0);
                 System.out.println("TimedDriveCommand waiting for " + time + " seconds");
+                started = true;
                 Thread.sleep((long) (time * 1000));
                 driveSubsystem.drive(0, 0);
             } catch (InterruptedException e) {
@@ -47,6 +67,7 @@ public class TimedDriveCmd extends CommandBase{
             }
             finlished = true;
         }).start();
+        */
     }
     @Override
     public void end(boolean interrupted) {

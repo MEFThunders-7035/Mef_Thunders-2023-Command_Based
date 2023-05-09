@@ -17,18 +17,26 @@ public class VisionTargettingCmd extends CommandBase{
         this.driveSubsystem = driveSubsystem;
         addRequirements(photonVisionSubsystem);
         addRequirements(driveSubsystem);
+
+        FowardController.setIntegratorRange(0.1, 0.4);
+        TurnController.setIntegratorRange(0.1, 0.5);
     }
 
     @Override
     public void initialize() {
-
+        System.out.println("Vision Targetting Started!");
     }
     
     @Override
     public void execute() {
-        fowardSpeed = FowardController.calculate(photonVisionSubsystem.getDistance(),0);
+        if (!photonVisionSubsystem.hasTargets()) {
+            driveSubsystem.stop();
+            return;
+        }
+
+        fowardSpeed = FowardController.calculate(photonVisionSubsystem.getArea(),PhotonVisionConstants.kTargetArea);
         turnSpeed = TurnController.calculate(photonVisionSubsystem.getYaw(),0);
-        driveSubsystem.drive(fowardSpeed, turnSpeed);
+        driveSubsystem.drive(-fowardSpeed, -turnSpeed, false);
     }
 
     @Override
