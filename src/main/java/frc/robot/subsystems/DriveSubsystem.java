@@ -72,10 +72,9 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   @Override
   public void periodic() {
     field.setRobotPose(field.getRobotPose().getX(), field.getRobotPose().getY(), getGyroRotation2d());
-    SmartDashboard.putNumber("Rotation", getGyroAngleFixed());
-    SmartDashboard.putNumber("Left Encoder Distance", getLeftEncoderDistance());
-    SmartDashboard.putNumber("Right Encoder Distance", getRightEncoderDistance());
-    // This method will be called once per scheduler run
+    // SmartDashboard.putNumber("Rotation", getGyroAngle());
+    //SmartDashboard.putNumber("Left Encoder Distance", getLeftEncoderDistance());
+    //SmartDashboard.putNumber("Right Encoder Distance", getRightEncoderDistance());
   }
 
   /**
@@ -114,7 +113,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   public void drive(double xSpeed, double zRotation, boolean squaredInputs) {
     if (Math.abs(xSpeed) > 1 || Math.abs(zRotation) > 1) {
       DriverStation.reportError("Speed must be between -1 and 1", false);
-      throw new IllegalArgumentException("Speed must be between -1 and 1");
     }
     driveTrain.arcadeDrive(-xSpeed, -zRotation, squaredInputs);
   }
