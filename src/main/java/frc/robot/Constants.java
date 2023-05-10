@@ -40,10 +40,12 @@ public final class Constants {
 
     public static final int kEncoderDistancePerPulse = 1;
   }
+  
   public static class VerticalElevatorConstants {
     public static final int kVerticalElevatorPort = 2;
     public static final double kSpeed = 0.6;
   }
+  
   public static class HorizontalElevatorConstants {
     public static final int kHorizontalElevatorPort = 0;
     public static final double kSpeed = 0.8;
@@ -86,7 +88,11 @@ public final class Constants {
   }
 
   public static class PhotonVisionConstants {
-    public static final String kCameraName = "IMX219";
+    public static class Cameras {
+      public static final String kPiCamera = "IMX219";
+      public static final String kWideCamera = "WideCamera";
+    }
+
     public static final double kTargetArea = 3;
     public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(1);
     public static final double TARGET_HEIGHT_METERS = Units.inchesToMeters(15.13);

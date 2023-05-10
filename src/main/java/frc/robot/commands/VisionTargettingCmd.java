@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.PhotonVisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
@@ -36,10 +37,14 @@ public class VisionTargettingCmd extends CommandBase{
             driveSubsystem.stop();
             return;
         }
-
+        try {
         fowardSpeed = FowardController.calculate(photonVisionSubsystem.getArea(),PhotonVisionConstants.kTargetArea);
         turnSpeed = TurnController.calculate(photonVisionSubsystem.getYaw(),0);
         driveSubsystem.drive(-fowardSpeed, -turnSpeed, false);
+        }
+        catch (Exception e) {
+            DriverStation.reportError(e.getMessage(), e.getStackTrace());
+        }
     }
 
     @Override
