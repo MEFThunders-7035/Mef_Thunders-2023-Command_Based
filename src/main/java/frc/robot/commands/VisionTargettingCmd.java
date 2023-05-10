@@ -8,13 +8,16 @@ import frc.robot.subsystems.PhotonVisionSubsystem;
 public class VisionTargettingCmd extends CommandBase{
     private final PhotonVisionSubsystem photonVisionSubsystem;
     private final DriveSubsystem driveSubsystem;
-    private final PIDController FowardController = new PIDController(PhotonVisionConstants.FowardPIDConstants.kP, PhotonVisionConstants.FowardPIDConstants.kI, PhotonVisionConstants.FowardPIDConstants.kD);
-    private final PIDController TurnController = new PIDController(PhotonVisionConstants.TurnPIDConstants.kP, PhotonVisionConstants.TurnPIDConstants.kI, PhotonVisionConstants.TurnPIDConstants.kD);
+    private final PIDController FowardController;
+    private final PIDController TurnController;
     private double fowardSpeed;
     private double turnSpeed;
+
     public VisionTargettingCmd(PhotonVisionSubsystem photonVisionSubsystem, DriveSubsystem driveSubsystem) {
         this.photonVisionSubsystem = photonVisionSubsystem;
         this.driveSubsystem = driveSubsystem;
+        FowardController = new PIDController(PhotonVisionConstants.FowardPIDConstants.kP, PhotonVisionConstants.FowardPIDConstants.kI, PhotonVisionConstants.FowardPIDConstants.kD);
+        TurnController = new PIDController(PhotonVisionConstants.TurnPIDConstants.kP, PhotonVisionConstants.TurnPIDConstants.kI, PhotonVisionConstants.TurnPIDConstants.kD);
         addRequirements(photonVisionSubsystem);
         addRequirements(driveSubsystem);
 
