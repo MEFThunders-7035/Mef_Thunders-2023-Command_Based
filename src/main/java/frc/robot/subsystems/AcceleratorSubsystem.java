@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -30,6 +31,10 @@ public class AcceleratorSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
+        if (DriverStation.isDisabled()) {
+            resetAll();
+            return;
+        }
         double currentTimestamp = Timer.getFPGATimestamp() / 10;
         double dt = currentTimestamp - lastTimestamp;
         lastTimestamp = currentTimestamp;
@@ -53,9 +58,6 @@ public class AcceleratorSubsystem extends SubsystemBase{
 
         field.setRobotPose(positionX, positionY, field.getRobotPose().getRotation());
         SmartDashboard.putData(field);
-        SmartDashboard.putNumber("PositionX", positionX);
-        SmartDashboard.putNumber("PositionY", positionY);
-        SmartDashboard.putNumber("PositionZ", positionZ);
         SmartDashboard.putNumber("VelocityX", velocityX);
         SmartDashboard.putNumber("VelocityY", velocityY);
         SmartDashboard.putNumber("VelocityZ", velocityZ);
