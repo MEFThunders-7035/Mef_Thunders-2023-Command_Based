@@ -42,7 +42,7 @@ public final class Constants {
   }
   
   public static class VerticalElevatorConstants {
-    public static final int kVerticalElevatorPort = 2;
+    public static final int kVerticalElevatorPort = 0;
     public static final double kSpeed = 0.6;
   }
 
