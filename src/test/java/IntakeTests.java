@@ -5,23 +5,23 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import edu.wpi.first.hal.HAL;
-import frc.robot.subsystems.Neo_IntakeSubsystem;
+import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.Redline_IntakeSubsystem;
 
 public class IntakeTests {
-    Neo_IntakeSubsystem neoSubsystem;
+    IntakeArmSubsystem neoSubsystem;
     Redline_IntakeSubsystem redlineSubsystem;
 
     @BeforeEach
     void setup() {
         HAL.initialize(800, 0);
-        neoSubsystem = new Neo_IntakeSubsystem();
+        neoSubsystem = new IntakeArmSubsystem();
         redlineSubsystem = new Redline_IntakeSubsystem();
     }
 
     @AfterEach
     void tearDown() throws Exception {
-        neoSubsystem.stopNeo();
+        neoSubsystem.stopMotors();
         redlineSubsystem.stopMotor();
         neoSubsystem.close();
         redlineSubsystem.close();
@@ -29,45 +29,25 @@ public class IntakeTests {
 
     @Test
     void setNeoTest() throws Exception {
-        neoSubsystem.setNeo(1.0);
-        assertEquals(1.0, neoSubsystem.getNeoLastSet());
-        neoSubsystem.setNeo(-1.0);
-        assertEquals(-1.0, neoSubsystem.getNeoLastSet());
+        neoSubsystem.setMotors(1.0);
+        assertEquals(1.0, neoSubsystem.getMotorsLastSet());
+        neoSubsystem.setMotors(-1.0);
+        assertEquals(-1.0, neoSubsystem.getMotorsLastSet());
     }
 
     @Test
     void stopNeoTest() throws Exception {
-        neoSubsystem.setNeo(1.0);
-        neoSubsystem.stopNeo();
-        assertEquals(0.0, neoSubsystem.getNeoLastSet());
+        neoSubsystem.setMotors(1.0);
+        neoSubsystem.stopMotors();
+        assertEquals(0.0, neoSubsystem.getMotorsLastSet());
     }
 
     @Test
     void NeoSetBrakeModeTest() throws Exception {
-        neoSubsystem.setNeoBrake(false);
-        assertEquals(false, neoSubsystem.getNeoBrakeMode());
-        neoSubsystem.setNeoBrake(true);
-        assertEquals(true, neoSubsystem.getNeoBrakeMode());
-    }
-
-    @Test
-    void setNeoCurrentLimitTest() {
-        neoSubsystem.setNeoCurrentLimit(40);
-    }
-
-    @Test
-    void setNeoRampRateTest() {
-        neoSubsystem.setNeoRampRate(0.5);
-        assertEquals(0.5, neoSubsystem.getNeoRampRate());
-    }
-
-    @Test
-    void setNeoOverLimitTest() {
-        try {
-            neoSubsystem.setNeo(1.5);
-        } catch (IllegalArgumentException e) {
-            assertEquals("Neo setpoint out of range: 1.5", e.getMessage());
-        }
+        neoSubsystem.setMotorsBrake(false);
+        assertEquals(false, neoSubsystem.getMotorsBrakeMode());
+        neoSubsystem.setMotorsBrake(true);
+        assertEquals(true, neoSubsystem.getMotorsBrakeMode());
     }
 
     @Test

@@ -23,8 +23,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseable{
     private PhotonCamera camera;
+    private PhotonCamera camera2;
     private PhotonPoseEstimator photonPoseEstimator;
-    private boolean temp_target_detected;
     private Field2d field;
 
     public PhotonVisionSubsystem(Field2d field2d) {
@@ -33,20 +33,53 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
         }
         this.field = field2d;
         SmartDashboard.putData("Field", field);
-        if (RobotBase.isSimulation()) {
-            return;
-        }
-        camera = new PhotonCamera(PhotonVisionConstants.kCameraName);
-        SmartDashboard.putBoolean("Target Detected", camera.getLatestResult().hasTargets());
-        temp_target_detected = camera.getLatestResult().hasTargets();
+        camera = new PhotonCamera(PhotonVisionConstants.Cameras.kPiCamera);
+        camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kWideCamera);
+        camera2.setDriverMode(true);
         System.out.println("Loaded PhotonCamera, Added Field to SmartDashboard");
         photonPoseEstimator = getPhotonPoseEstimator();
     }
 
-    @Override
-    public void close() throws Exception {
-        camera.close();
+    public PhotonVisionSubsystem(Field2d field, String Camera_Name) {
+        if (field == null) {
+            field = new Field2d();
+        }
+
+        this.field = field;
+        SmartDashboard.putData("Field", field);
+        
+        camera = new PhotonCamera(Camera_Name);
+        
+        if (Camera_Name == PhotonVisionConstants.Cameras.kPiCamera) {
+            camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kWideCamera);
+            camera2.setDriverMode(true);
+        }
+        
+        else if (Camera_Name == PhotonVisionConstants.Cameras.kWideCamera) {
+            camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kPiCamera);
+            camera2.setDriverMode(true);
+        }
+        
+        System.out.println("Loaded PhotonCamera, Added Field to SmartDashboard");
     }
+
+    public void setCamera(String Camera) {
+        camera = new PhotonCamera(Camera);
+
+        if (Camera == PhotonVisionConstants.Cameras.kPiCamera) {
+            camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kWideCamera);
+            camera2.setDriverMode(true);
+        }
+        
+        else if (Camera == PhotonVisionConstants.Cameras.kWideCamera) {
+            camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kPiCamera);
+            camera2.setDriverMode(true);
+        }
+    }
+
+    @Override
+    public void close() throws Exception {}
+    
     @Override
     public void simulationPeriodic() {
         
@@ -54,24 +87,27 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
 
     @Override
     public void periodic() {
-        if (temp_target_detected != hasTargets()) {
-            System.out.println("New Target Change");
-            System.out.print(hasTargets());
-            SmartDashboard.putBoolean("Target Detected", hasTargets());
-            temp_target_detected = hasTargets();
-        }
         if (hasTargets()) {
-            // SmartDashboard.putNumber("Target X", camera.getLatestResult().getBestTarget().getYaw());
-            // SmartDashboard.putNumber("Target Y", camera.getLatestResult().getBestTarget().getPitch());
-            // SmartDashboard.putNumber("Target Area", camera.getLatestResult().getBestTarget().getArea());
-            // SmartDashboard.putNumber("Target Skew", camera.getLatestResult().getBestTarget().getSkew());
             try {
                 field.setRobotPose(getEstimatedGlobalPose(field.getRobotPose()).get().estimatedPose.toPose2d());
             }
             catch (Exception e) {
-                DriverStation.reportError(e.toString(), e.getStackTrace());
+                DriverStation.reportWarning(e.toString(), e.getStackTrace());
             }
         }
+
+    }
+
+    public void enableSecondCamera() {
+        camera2.setDriverMode(false);
+    }
+
+    public void disableSecondCamera() {
+        camera2.setDriverMode(true);
+    }
+
+    public PhotonCamera getSecondCamera() {
+        return camera2;
     }
     
     /**
@@ -96,10 +132,12 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
      */
     public double getYaw() {
         if (!hasTargets()) {
-            DriverStation.reportError("No Target Found", false);
+            DriverStation.reportWarning("No Target Found", false);
             return 0;
         }
-        return camera.getLatestResult().getBestTarget().getYaw();
+        if (hasTargets()) return camera.getLatestResult().getBestTarget().getYaw();
+
+        return 0;
     }
 
     /**
@@ -108,7 +146,7 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
      */
     public double getArea() {
         if (!hasTargets()) {
-            DriverStation.reportError("No Target Found", false);
+            DriverStation.reportWarning("No Target Found", false);
             return 0;
         }
         return camera.getLatestResult().getBestTarget().getArea();
@@ -116,7 +154,7 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
     
     public double getPitch() {
         if (!hasTargets()) {
-            DriverStation.reportError("No Target Found", false);
+            DriverStation.reportWarning("No Target Found", false);
             return 0;
         }
         return camera.getLatestResult().getBestTarget().getPitch();
@@ -124,7 +162,7 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
     
     public double getSkew() {
         if (!hasTargets()) {
-            DriverStation.reportError("No Target Found", false);
+            DriverStation.reportWarning("No Target Found", false);
             return 0;
         }
         return camera.getLatestResult().getBestTarget().getSkew();
