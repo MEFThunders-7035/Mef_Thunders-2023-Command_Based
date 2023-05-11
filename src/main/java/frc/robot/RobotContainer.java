@@ -20,6 +20,7 @@ import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IoConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.PhotonVisionConstants;
 import frc.robot.Constants.VerticalElevatorConstants;
 
 import frc.robot.commands.ArcadeDriveCmd;
@@ -54,12 +55,15 @@ public class RobotContainer {
   private final AcceleratorSubsystem acceleratorSubsystem = new AcceleratorSubsystem(field2d); //updates field data don't delete
   private final PhotonVisionSubsystem photonVisionSubsystem = new PhotonVisionSubsystem(field2d);
 
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  private final SendableChooser<String> Auto_chooser = new SendableChooser<>();
+  private final SendableChooser<String> Camera_chooser = new SendableChooser<>();
   private final Joystick stick = new Joystick(OperatorConstants.kJoystickPort);
   private String autoSelected;
   public RobotContainer() {
     PortForwarder.add(5800, "photonvision.local", 5800);
     configureBindings();
+    AddChoosers();
+    SetupCamera();
     RobotInit();
     Vertical_Elevator_Subsytem.setDefaultCommand(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, 0));
     Neo_IntakeSubsystem.setDefaultCommand(new HoldIntakeCmd(Neo_IntakeSubsystem));
@@ -79,21 +83,31 @@ public class RobotContainer {
     new JoystickButton(stick, 12).whileTrue(new SetCompressorCmd(pneumaticsSubsystem, false));
     
   }
+  
   private void RobotInit() {
     CameraServer.startAutomaticCapture();
     acceleratorSubsystem.resetAll();
-    m_chooser.setDefaultOption("Timer Auto", AutonomousConstants.kTimedAuto);
-    m_chooser.addOption("Gyro Auto", AutonomousConstants.kGyroAuto);
-    m_chooser.addOption("Camera Auto", AutonomousConstants.kCameraAuto);
-    m_chooser.addOption("Stabilize Auto", AutonomousConstants.kStabilize);
-    SmartDashboard.putData("Auto choices", m_chooser);
-    // schedule the autonomous command (example)
-    // if (m_autonomousCommand != null) {
-    //   m_autonomousCommand.schedule();
-    // }
   }
+
+  private void AddChoosers() {
+    Auto_chooser.setDefaultOption("Timer Auto", AutonomousConstants.kTimedAuto);
+    Auto_chooser.addOption("Gyro Auto", AutonomousConstants.kGyroAuto);
+    Auto_chooser.addOption("Camera Auto", AutonomousConstants.kCameraAuto);
+    Auto_chooser.addOption("Stabilize Auto", AutonomousConstants.kStabilize);
+    SmartDashboard.putData("Auto choices", Auto_chooser);
+
+    Camera_chooser.setDefaultOption("Pi Cam", PhotonVisionConstants.Cameras.kPiCamera);
+    Camera_chooser.addOption("Wide Cam", PhotonVisionConstants.Cameras.kWideCamera);
+    SmartDashboard.putData("Camera choices", Camera_chooser);
+  }
+
+  private void SetupCamera() {
+    photonVisionSubsystem.setCamera(Camera_chooser.getSelected());
+    System.out.println("Selected Camera: " + Camera_chooser.getSelected());
+  }
+
   public Command getAutonomousCommand() {
-    autoSelected = m_chooser.getSelected();
+    autoSelected = Auto_chooser.getSelected();
 
     switch (autoSelected) {
       case AutonomousConstants.kTimedAuto:
@@ -121,6 +135,7 @@ public class RobotContainer {
   }
   
   private Command cameraAuto() {
+    SetupCamera();
     return new VisionTargettingCmd(photonVisionSubsystem, driveSubsystem);
   }
   

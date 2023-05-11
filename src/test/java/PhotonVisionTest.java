@@ -22,13 +22,11 @@ class PhotonVisionTest {
         // this test will pass if a camera is not connected and the code runs
         // this test will fail if a camera is not connected and the code does not run
 
-        photonVisionSubsystem.getCamera();
         photonVisionSubsystem.periodic();
         photonVisionSubsystem.getDistance();
         photonVisionSubsystem.getPitch();
         photonVisionSubsystem.getYaw();
         photonVisionSubsystem.getArea();
         photonVisionSubsystem.getSkew();
-        photonVisionSubsystem.getEstimatedGlobalPose(null);
     }    
 }
