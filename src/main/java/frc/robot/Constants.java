@@ -54,6 +54,7 @@ public final class Constants {
 
   public static class IntakeConstants {
     public static final int kRedlinePort = 1;
+    public static final int kIntakeArmPotPort = 0;
     public static final int kCanIntakeArmMotor1Port = 5;
     public static final int kCanIntakeArmMotor2Port = 2;
     public static final double kUpSpeed = 0.5;

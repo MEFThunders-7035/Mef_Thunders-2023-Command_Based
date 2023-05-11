@@ -4,7 +4,6 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
@@ -72,7 +71,7 @@ public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
      * @return 0 and nothing else; do not use!
      */
     @Deprecated
-    public double getMotorsPos() {
+    public double getArmPos() {
         return 0;
     }
 }
