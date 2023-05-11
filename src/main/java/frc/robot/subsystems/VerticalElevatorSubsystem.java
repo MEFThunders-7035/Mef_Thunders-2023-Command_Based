@@ -19,7 +19,7 @@ public class VerticalElevatorSubsystem extends SubsystemBase implements AutoClos
 
 
     public VerticalElevatorSubsystem() {
-        this.Elevator = new Spark(VerticalElevatorConstants.kHorizontalElevatorPort);
+        this.Elevator = new Spark(VerticalElevatorConstants.kVerticalElevatorPort);
         topLimitSwitch_temp = getTopLimitSwitch();
         bottomLimitSwitch_temp = getBottomLimitSwitch();
         SmartDashboard.putBoolean("Top Limit Switch", getTopLimitSwitch());
