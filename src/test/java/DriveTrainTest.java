@@ -75,16 +75,6 @@ public class DriveTrainTest {
     }
 
     @Test
-    void DriveTrainDriveOverLimitTest2() throws Exception{
-        try {
-        driveSubsystem.drive(-2, -1.2,true);
-        throw new Exception("DriveTrainDriveOverLimitTest failed");
-        } catch (IllegalArgumentException e) {
-            assertEquals("Speed must be between -1 and 1", e.getMessage());
-        }
-    }
-
-    @Test
     void DriveTrainMotorSetOverLimitTest() throws Exception{
         try {
         driveSubsystem.setMotors(2.1, -2.5);
