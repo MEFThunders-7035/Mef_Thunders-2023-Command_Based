@@ -1,11 +1,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Neo_IntakeSubsystem;
+import frc.robot.subsystems.IntakeArmSubsystem;
 public class IntakeNeoJoystickCmd extends CommandBase{
     private final double speed;
-    private final Neo_IntakeSubsystem Intakesubsystem;
-    public IntakeNeoJoystickCmd(Neo_IntakeSubsystem Intakesubsystem, double speed) {
+    private final IntakeArmSubsystem Intakesubsystem;
+    public IntakeNeoJoystickCmd(IntakeArmSubsystem Intakesubsystem, double speed) {
         this.Intakesubsystem = Intakesubsystem;
         this.speed = speed;
         addRequirements(Intakesubsystem);
@@ -16,11 +16,11 @@ public class IntakeNeoJoystickCmd extends CommandBase{
 
     @Override
     public void execute() {
-        Intakesubsystem.setNeo(speed);
+        Intakesubsystem.setMotors(speed);
     }
     @Override
     public void end(boolean interrupted) {
-        Intakesubsystem.setNeo(0);
+        Intakesubsystem.setMotors(0);
     }
     @Override
     public boolean isFinished() {

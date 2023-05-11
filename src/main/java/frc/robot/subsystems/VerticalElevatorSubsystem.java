@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.HorizontalElevatorConstants;
+import frc.robot.Constants.VerticalElevatorConstants;
 
 public class VerticalElevatorSubsystem extends SubsystemBase implements AutoCloseable{
 
@@ -19,7 +19,7 @@ public class VerticalElevatorSubsystem extends SubsystemBase implements AutoClos
 
 
     public VerticalElevatorSubsystem() {
-        this.Elevator = new Spark(HorizontalElevatorConstants.kHorizontalElevatorPort);
+        this.Elevator = new Spark(VerticalElevatorConstants.kHorizontalElevatorPort);
         topLimitSwitch_temp = getTopLimitSwitch();
         bottomLimitSwitch_temp = getBottomLimitSwitch();
         SmartDashboard.putBoolean("Top Limit Switch", getTopLimitSwitch());

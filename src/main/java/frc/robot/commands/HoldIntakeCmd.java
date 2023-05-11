@@ -3,30 +3,30 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.subsystems.Neo_IntakeSubsystem;
+import frc.robot.subsystems.IntakeArmSubsystem;
 
 
 public class HoldIntakeCmd extends CommandBase{
-    private final Neo_IntakeSubsystem Intakesubsystem;
+    private final IntakeArmSubsystem IntakeArmsubsystem;
     private final PIDController pos_pid = new PIDController(IntakeConstants.IntakePIDConstants.kP, IntakeConstants.IntakePIDConstants.kI, IntakeConstants.IntakePIDConstants.kD);
 
-    public HoldIntakeCmd(Neo_IntakeSubsystem Intakesubsystem) {
-        this.Intakesubsystem = Intakesubsystem;
+    public HoldIntakeCmd(IntakeArmSubsystem Intakesubsystem) {
+        this.IntakeArmsubsystem = Intakesubsystem;
         addRequirements(Intakesubsystem);
     }
     @Override
     public void initialize() {
         pos_pid.reset();
-        pos_pid.setSetpoint(Intakesubsystem.getNeoPos());
+        pos_pid.setSetpoint(IntakeArmsubsystem.getMotorsPos());
     }
     @Override
     public void execute() {
-        double speed = pos_pid.calculate(Intakesubsystem.getNeoPos());
-        Intakesubsystem.setNeo(speed);
+        double speed = pos_pid.calculate(IntakeArmsubsystem.getMotorsPos());
+        IntakeArmsubsystem.setMotors(speed);
     }
     @Override
     public void end(boolean interrupted) {
-        Intakesubsystem.setNeo(0);
+        IntakeArmsubsystem.setMotors(0);
     }
     @Override
     public boolean isFinished() {
