@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 import frc.robot.Constants.AutonomousConstants;
-import frc.robot.Constants.HorizontalElevatorConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IoConstants;
 import frc.robot.Constants.OperatorConstants;
@@ -25,7 +24,6 @@ import frc.robot.Constants.VerticalElevatorConstants;
 
 import frc.robot.commands.ArcadeDriveCmd;
 import frc.robot.commands.HoldIntakeCmd;
-import frc.robot.commands.HorizontalElevatorJoystickCmd;
 import frc.robot.commands.IntakeNeoJoystickCmd;
 import frc.robot.commands.IntakeRedlineJoystickCmd;
 import frc.robot.commands.SetCompressorCmd;
@@ -37,8 +35,7 @@ import frc.robot.commands.VisionTargettingCmd;
 
 import frc.robot.subsystems.AcceleratorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.HorizontalElevatorSubsystem;
-import frc.robot.subsystems.Neo_IntakeSubsystem;
+import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.Redline_IntakeSubsystem;
@@ -51,8 +48,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem driveSubsystem = new DriveSubsystem(field2d);
   private final VerticalElevatorSubsystem Vertical_Elevator_Subsytem = new VerticalElevatorSubsystem();
-  private final HorizontalElevatorSubsystem Horizontal_Elevator_Subsystem = new HorizontalElevatorSubsystem();
-  private final Neo_IntakeSubsystem Neo_IntakeSubsystem = new Neo_IntakeSubsystem();
+  private final IntakeArmSubsystem Neo_IntakeSubsystem = new IntakeArmSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
   private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
   private final AcceleratorSubsystem acceleratorSubsystem = new AcceleratorSubsystem(field2d); //updates field data don't delete
@@ -66,7 +62,6 @@ public class RobotContainer {
     configureBindings();
     RobotInit();
     Vertical_Elevator_Subsytem.setDefaultCommand(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, 0));
-    Horizontal_Elevator_Subsystem.setDefaultCommand(new HorizontalElevatorJoystickCmd(Horizontal_Elevator_Subsystem, 0));
     Neo_IntakeSubsystem.setDefaultCommand(new HoldIntakeCmd(Neo_IntakeSubsystem));
     driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, () -> stick.getRawAxis(IoConstants.Y_AXIS), () -> stick.getRawAxis(IoConstants.Z_AXIS)));
   }
@@ -74,8 +69,6 @@ public class RobotContainer {
   private void configureBindings() {
     new POVButton(stick, 0).whileTrue(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, VerticalElevatorConstants.kSpeed).until(Vertical_Elevator_Subsytem.getTopLimitSwitchSupplier()));
     new POVButton(stick, 180).whileTrue(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, -VerticalElevatorConstants.kSpeed).until(Vertical_Elevator_Subsytem.getBottomLimitSwitchSupplier()));
-    new JoystickButton(stick, 1).whileTrue(new HorizontalElevatorJoystickCmd(Horizontal_Elevator_Subsystem, HorizontalElevatorConstants.kSpeed));
-    new JoystickButton(stick, 2).whileTrue(new HorizontalElevatorJoystickCmd(Horizontal_Elevator_Subsystem, -HorizontalElevatorConstants.kSpeed));
     new JoystickButton(stick, 3).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kUpSpeed));
     new JoystickButton(stick, 4).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kDownSpeed));
     new JoystickButton(stick, 5).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, IntakeConstants.kRedlineSpeed));

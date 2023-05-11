@@ -40,13 +40,10 @@ public final class Constants {
 
     public static final int kEncoderDistancePerPulse = 1;
   }
+
   public static class VerticalElevatorConstants {
-    public static final int kVerticalElevatorPort = 2;
-    public static final double kSpeed = 0.6;
-  }
-  public static class HorizontalElevatorConstants {
     public static final int kHorizontalElevatorPort = 0;
-    public static final double kSpeed = 0.8;
+    public static final double kSpeed = 1;
   }
 
   public static class PneumaticsConstants {
@@ -57,9 +54,10 @@ public final class Constants {
 
   public static class IntakeConstants {
     public static final int kRedlinePort = 1;
-    public static final int kCanNeoPort = 5;
-    public static final double kUpSpeed = 0.6;
-    public static final double kDownSpeed = -0.1;
+    public static final int kCanIntakeArmMotor1Port = 5;
+    public static final int kCanIntakeArmMotor2Port = 2;
+    public static final double kUpSpeed = 0.5;
+    public static final double kDownSpeed = -0.3;
     public static final double kRedlineSpeed = 0.5;
     public static class IntakePIDConstants {
       public static final double kP = 0.4;
