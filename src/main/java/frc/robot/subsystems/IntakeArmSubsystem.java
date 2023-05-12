@@ -2,8 +2,10 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
@@ -11,6 +13,8 @@ public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
 
     public static final CANSparkMax IntakeArmMotor = new CANSparkMax(IntakeConstants.kCanIntakeArmMotor1Port, CANSparkMax.MotorType.kBrushed);
     public static final Spark IntakeArmMotor2 = new Spark(IntakeConstants.kCanIntakeArmMotor2Port);
+    public static final AnalogPotentiometer IntakeArmPot = new AnalogPotentiometer(IntakeConstants.kIntakeArmPotPort);
+    
     public IntakeArmSubsystem() {
         IntakeArmMotor.setInverted(true);
     }
@@ -22,7 +26,7 @@ public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
 
     @Override
     public void periodic() {
-
+        SmartDashboard.putNumber("Potantiometer:", getArmPos());
     }
     public void setMotors(double speed) {
         if (Math.abs(speed) > 1) {
@@ -72,6 +76,6 @@ public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
      */
     @Deprecated
     public double getArmPos() {
-        return 0;
+        return IntakeArmPot.get();
     }
 }

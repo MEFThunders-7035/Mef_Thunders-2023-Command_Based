@@ -17,13 +17,10 @@ public class VisionTargettingCmd extends CommandBase{
     public VisionTargettingCmd(PhotonVisionSubsystem photonVisionSubsystem, DriveSubsystem driveSubsystem) {
         this.photonVisionSubsystem = photonVisionSubsystem;
         this.driveSubsystem = driveSubsystem;
-        FowardController = new PIDController(PhotonVisionConstants.FowardPIDConstants.kP, PhotonVisionConstants.FowardPIDConstants.kI, PhotonVisionConstants.FowardPIDConstants.kD);
-        TurnController = new PIDController(PhotonVisionConstants.TurnPIDConstants.kP, PhotonVisionConstants.TurnPIDConstants.kI, PhotonVisionConstants.TurnPIDConstants.kD);
+        FowardController = new PIDController(photonVisionSubsystem.getCurrentFowardPIDConstant()[0], photonVisionSubsystem.getCurrentFowardPIDConstant()[1], photonVisionSubsystem.getCurrentFowardPIDConstant()[2]);
+        TurnController = new PIDController(photonVisionSubsystem.getCurrentTurnPIDConstants()[0], photonVisionSubsystem.getCurrentTurnPIDConstants()[1], photonVisionSubsystem.getCurrentTurnPIDConstants()[2]);
         addRequirements(photonVisionSubsystem);
         addRequirements(driveSubsystem);
-
-        FowardController.setIntegratorRange(0.1, 0.4);
-        TurnController.setIntegratorRange(0.1, 0.5);
     }
 
     @Override
@@ -38,9 +35,9 @@ public class VisionTargettingCmd extends CommandBase{
             return;
         }
         try {
-        fowardSpeed = FowardController.calculate(photonVisionSubsystem.getArea(),PhotonVisionConstants.kTargetArea);
-        turnSpeed = TurnController.calculate(photonVisionSubsystem.getYaw(),0);
-        driveSubsystem.drive(-fowardSpeed, -turnSpeed, false);
+            fowardSpeed = FowardController.calculate(photonVisionSubsystem.getArea(),PhotonVisionConstants.kTargetArea);
+            turnSpeed = TurnController.calculate(photonVisionSubsystem.getYaw(),0);
+            driveSubsystem.drive(-fowardSpeed, -turnSpeed, false);
         }
         catch (Exception e) {
             DriverStation.reportError(e.getMessage(), e.getStackTrace());

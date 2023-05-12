@@ -5,7 +5,6 @@
 package frc.robot;
 
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -85,7 +84,6 @@ public class RobotContainer {
   }
   
   private void RobotInit() {
-    CameraServer.startAutomaticCapture();
     acceleratorSubsystem.resetAll();
   }
 

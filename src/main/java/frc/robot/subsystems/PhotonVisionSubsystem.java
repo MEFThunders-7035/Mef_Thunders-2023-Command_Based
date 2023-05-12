@@ -14,7 +14,7 @@ import frc.robot.Constants.PhotonVisionConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
-
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -26,6 +26,8 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
     private PhotonCamera camera2;
     private PhotonPoseEstimator photonPoseEstimator;
     private Field2d field;
+    private double CAMERA_HEIGHT_METERS;
+    private double CAMERA_PITCH_RADIANS;
 
     public PhotonVisionSubsystem(Field2d field2d) {
         if (field2d == null) {
@@ -36,6 +38,7 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
         camera = new PhotonCamera(PhotonVisionConstants.Cameras.kPiCamera);
         camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kWideCamera);
         camera2.setDriverMode(true);
+        setCurrentCameraHeightAndPitch();
         System.out.println("Loaded PhotonCamera, Added Field to SmartDashboard");
         photonPoseEstimator = getPhotonPoseEstimator();
     }
@@ -44,37 +47,13 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
         if (field == null) {
             field = new Field2d();
         }
-
         this.field = field;
         SmartDashboard.putData("Field", field);
-        
-        camera = new PhotonCamera(Camera_Name);
-        
-        if (Camera_Name == PhotonVisionConstants.Cameras.kPiCamera) {
-            camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kWideCamera);
-            camera2.setDriverMode(true);
-        }
-        
-        else if (Camera_Name == PhotonVisionConstants.Cameras.kWideCamera) {
-            camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kPiCamera);
-            camera2.setDriverMode(true);
-        }
+        setCamera(Camera_Name);
+        setCurrentCameraHeightAndPitch();
         
         System.out.println("Loaded PhotonCamera, Added Field to SmartDashboard");
-    }
-
-    public void setCamera(String Camera) {
-        camera = new PhotonCamera(Camera);
-
-        if (Camera == PhotonVisionConstants.Cameras.kPiCamera) {
-            camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kWideCamera);
-            camera2.setDriverMode(true);
-        }
-        
-        else if (Camera == PhotonVisionConstants.Cameras.kWideCamera) {
-            camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kPiCamera);
-            camera2.setDriverMode(true);
-        }
+        photonPoseEstimator = getPhotonPoseEstimator();
     }
 
     @Override
@@ -84,7 +63,7 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
     public void simulationPeriodic() {
         
     }
-
+    
     @Override
     public void periodic() {
         if (hasTargets()) {
@@ -96,6 +75,64 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
             }
         }
 
+    }
+
+    public boolean isPicam() {
+        return camera.getName() == PhotonVisionConstants.Cameras.kPiCamera;
+    }
+
+    public void setCurrentCameraHeightAndPitch() {
+        if (isPicam()) {
+            CAMERA_HEIGHT_METERS = PhotonVisionConstants.PiCamera.CAMERA_HEIGHT_METERS;
+            CAMERA_PITCH_RADIANS = PhotonVisionConstants.PiCamera.CAMERA_PITCH_RADIANS;
+        } else {
+            CAMERA_HEIGHT_METERS = PhotonVisionConstants.WideCamera.kCamera_Height_Meters;
+            CAMERA_PITCH_RADIANS = PhotonVisionConstants.WideCamera.kCamera_Pitch_Radians;
+        }
+    }
+
+    private Transform3d getCurrentTransform3d() {
+        if (camera.getName() == PhotonVisionConstants.Cameras.kPiCamera) {
+            return PhotonVisionConstants.PiCamera.robotToCam;
+        } else {
+            return PhotonVisionConstants.WideCamera.robotToCam;
+        }
+    }
+    
+    public double[] getCurrentTurnPIDConstants() {
+        if (camera.getName() == PhotonVisionConstants.Cameras.kPiCamera) {
+            return new double[] {PhotonVisionConstants.PiCamera.TurnPIDConstants.kP, PhotonVisionConstants.PiCamera.TurnPIDConstants.kI, PhotonVisionConstants.PiCamera.TurnPIDConstants.kD};
+        } else {
+            return new double[] {PhotonVisionConstants.WideCamera.TurnPIDConstants.kP, PhotonVisionConstants.WideCamera.TurnPIDConstants.kI, PhotonVisionConstants.WideCamera.TurnPIDConstants.kD};
+        }
+    }
+
+    public double[] getCurrentFowardPIDConstant() {
+        if (camera.getName() == PhotonVisionConstants.Cameras.kPiCamera) {
+            return new double[] {PhotonVisionConstants.PiCamera.FowardPIDConstants.kP, PhotonVisionConstants.PiCamera.FowardPIDConstants.kI, PhotonVisionConstants.PiCamera.FowardPIDConstants.kD};
+        } else {
+            return new double[] {PhotonVisionConstants.WideCamera.FowardPIDConstants.kP, PhotonVisionConstants.WideCamera.FowardPIDConstants.kI, PhotonVisionConstants.WideCamera.FowardPIDConstants.kD};
+        }
+    }
+
+    
+
+    public void setCamera(String Camera) {
+        camera = new PhotonCamera(Camera);
+        camera.setDriverMode(false);
+        if (Camera == PhotonVisionConstants.Cameras.kPiCamera) {
+            camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kWideCamera);
+            camera2.setDriverMode(true);
+        }
+        
+        else if (Camera == PhotonVisionConstants.Cameras.kWideCamera) {
+            camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kPiCamera);
+            camera2.setDriverMode(true);
+        }
+
+        else {
+            DriverStation.reportError("Unknown Camera Name Please use PhotonVisionConstants.Cameras", null);
+        }
     }
 
     public void enableSecondCamera() {
@@ -193,8 +230,13 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
         return photonPoseEstimator.update();
     }
     
+    /**
+     * Gets the distance to the target in meters.
+     * Use {@link #getEstimatedGlobalPose(Pose2d)} to get the robot position, as it is more accurate.
+     * @return
+     */
     public double getDistance() {
-        return PhotonUtils.calculateDistanceToTargetMeters(PhotonVisionConstants.CAMERA_HEIGHT_METERS, PhotonVisionConstants.TARGET_HEIGHT_METERS, 0, getPitch());
+        return PhotonUtils.calculateDistanceToTargetMeters(CAMERA_HEIGHT_METERS, PhotonVisionConstants.TARGET_HEIGHT_METERS, -CAMERA_PITCH_RADIANS, getPitch());
     }
 
 
@@ -205,7 +247,7 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
             // Create pose estimator
             photonPoseEstimator =
                     new PhotonPoseEstimator(
-                            fieldLayout, PoseStrategy.MULTI_TAG_PNP, camera, PhotonVisionConstants.robotToCam);
+                            fieldLayout, PoseStrategy.MULTI_TAG_PNP, camera, getCurrentTransform3d());
             photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
             System.out.println("Loaded PhotonPoseEstimator");
         } catch (IOException e) {
