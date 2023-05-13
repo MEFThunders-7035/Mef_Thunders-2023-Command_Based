@@ -5,20 +5,20 @@
 package frc.robot.subsystems;
 
 
+import javax.management.RuntimeErrorException;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Interphases.ArduinoGyro;
 
 public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final WPI_VictorSPX leftMotor1 = new WPI_VictorSPX(DriveConstants.kLeftMotor1Port);
@@ -35,14 +35,12 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final Encoder leftEncoder = new Encoder(DriveConstants.kEncoderLeftPort1, DriveConstants.kEncoderLeftPort2);
   private final Encoder rightEncoder = new Encoder(DriveConstants.kEncoderRightPort1, DriveConstants.kEncoderRightPort2);
   
-  private final AHRS navX;
-  private final I2C.Port port;
+  private final ArduinoGyro Arduino_Gyro;
   
   private final Field2d field;
   
   public DriveSubsystem(Field2d field) {
-    this.port = I2C.Port.kOnboard;
-    this.navX = new AHRS(port);
+    this.Arduino_Gyro = new ArduinoGyro();
     this.field = field;
     calibrateGyro();
     resetEncoders();
@@ -66,7 +64,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     driveTrain.close();
     leftEncoder.close();
     rightEncoder.close();
-    navX.close();
+    Arduino_Gyro.close();
   }
 
   @Override
@@ -171,105 +169,86 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
   
   /**
-   * Finds if the NavX is connected
+   * Finds if the Arduino is connected
    * @return boolean true if connected
    */
   public boolean getGyroIsConnected() {
-    
-    return true;
+    return Arduino_Gyro.isConnected();
   }
 
   /**
-   * Calibrates the navX
-   * Doesn't do anything if the navX is not connected.
+   * Calibrates the Arduino
+   * Doesn't do anything if the Arduino is not connected.
    */
   public void calibrateGyro() {
     if (!getGyroIsConnected()) {
       return;
     }
-    navX.calibrate();
+    Arduino_Gyro.calibrate();
   }
 
   /**
    * Resets the Gyro Z (Yaw) axis to a heading of zero.
-   * doesn't do anything if the navX is not connected.
+   * doesn't do anything if the Arduino is not connected.
    */
   public void resetGyro() {
     if (!getGyroIsConnected()) {
       return;
     }
-    navX.reset();
+    Arduino_Gyro.reset();
   }
 
   /**
-   * Gets the rotation of the navX in {@link Rotation2d}
-   * @return Rotatation in terms of {@link Rotation2d}. returns null if navX is not connected.
+   * Gets the rotation of the Arduino in {@link Rotation2d}
+   * @return Rotatation in terms of {@link Rotation2d}.
+   * @throws RuntimeException if Arduino is not connected
    */
-  public Rotation2d getGyroRotation2d() {
+  public Rotation2d getGyroRotation2d() throws RuntimeException{
     if (!getGyroIsConnected()) {
-      return null;
+      throw new RuntimeException("Arduino is not connected");
     }
-    return navX.getRotation2d();
+    return new Rotation2d(Math.toRadians(getGyroAngleFixed()));
   }
 
   /**
-   * Gets the rotation of the navX in degrees
+   * Gets the rotation of the Arduino in degrees
    * NOTE: The angle is continuous, meaning it's range is beyond 360 degrees. 
    * This ensures that algorithms that wouldn't want to see a discontinuity in the gyro output 
    * as it sweeps past 0 on the second time around.
    * if you want it to be fixed use {@link DriveSubsystem#getGyroAngleFixed}
-   * @return the total accumilated yaw angle (Z axis) double rotation in degrees. returns 0 if navX is not connected.
+   * @return the total accumilated yaw angle (Z axis) double rotation in degrees.
+   * @throws RuntimeException if Arduino is not connected
    */
   public double getGyroAngle() {
     if (!getGyroIsConnected()) {
-      return 0.0;
+      throw new RuntimeException("Arduino is not connected");
     }
-    return navX.getAngle();
+    return Arduino_Gyro.getAngle();
   }
 
   /**
-   * Gets the rotation of the navX in degrees but does not go past 360 degrees.
+   * Gets the rotation of the Arduino in degrees but does not go past 360 degrees.
    * if you want it to be continuous use {@link DriveSubsystem#getGyroAngle}
-   * @return the yaw angle (Z axis) double rotation in degrees. returns 0 if navX is not connected.
+   * @return the yaw angle (Z axis) double rotation in degrees.
+   * @throws RuntimeException if Arduino is not connected
    */
-  public double getGyroAngleFixed() {
+  public double getGyroAngleFixed() throws RuntimeException{
     if (!getGyroIsConnected()) {
-      return 0;
+      throw new RuntimeException("Arduino is not connected");
     }
-    return navX.getAngle() % 360;
+    return getGyroAngle() % 360;
   }
 
   /**
-   * Gets the pitch of the navX in degrees
-   * WARNING: This uses the Magnetometer do not use with a mpu6050
-   * @return double rotation in degrees (0-360). returns 0 if navX is not connected.
+   * Gets the rate of rotation of the Arduino in degrees per second
+   * @return double rotation in degrees per second.
+   * @throws RuntimeException if Arduino is not connected
    */
-  public double getGyroCompassHeading() {
+  public double getGyroRate() throws RuntimeException{
     if (!getGyroIsConnected()) {
-      return 0;
+      throw new RuntimeException("Arduino is not connected");
     }
-    return navX.getCompassHeading();
-  }
 
-  /**
-   * Gets the rate of rotation of the navX in degrees per second
-   * @return double rotation in degrees per second.  returns 0 if navX is not connected.
-   */
-  public double getGyroRate() {
-    if (!getGyroIsConnected()) {
-      return 0;
-    }
-    return navX.getRate();
-  }
-
-  /**
-   * Gets if Gyro Is Calibrating
-   * @return boolean true if calibrating. returns false if navX is not connected.
-   */
-  public boolean getGyroIsCalibrating() {
-    if (!getGyroIsConnected()) {
-      return false;
-    }
-    return navX.isCalibrating();
+    return Arduino_Gyro.getRate();
   }
 }
