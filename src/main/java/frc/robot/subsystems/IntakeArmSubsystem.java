@@ -26,7 +26,7 @@ public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Potantiometer:", getArmPos());
+        SmartDashboard.putNumber("Potantiometer", getArmPos());
     }
     public void setMotors(double speed) {
         if (Math.abs(speed) > 1) {
@@ -71,10 +71,9 @@ public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
         IntakeArmMotor.setIdleMode(brake ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
     }
     /**
-     * Warning DOES NOT WORK! THERE ARE NO ENCODERS.
-     * @return 0 and nothing else; do not use!
+     * Uses the potentiometer to get the position of the arm.
+     * @return the position of the arm in degrees
      */
-    @Deprecated
     public double getArmPos() {
         return IntakeArmPot.get();
     }
