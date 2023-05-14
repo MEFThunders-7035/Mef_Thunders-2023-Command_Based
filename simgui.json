@@ -6,8 +6,15 @@
       }
     },
     "Encoders": {
-      "window": {
-        "visible": true
+      "0": {
+        "header": {
+          "open": true
+        }
+      },
+      "1": {
+        "header": {
+          "open": true
+        }
       }
     },
     "Other Devices": {
@@ -17,11 +24,6 @@
         }
       },
       "Compressor[0]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [5]": {
         "header": {
           "open": true
         }

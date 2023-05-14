@@ -35,14 +35,14 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final Encoder leftEncoder = new Encoder(DriveConstants.kEncoderLeftPort1, DriveConstants.kEncoderLeftPort2);
   private final Encoder rightEncoder = new Encoder(DriveConstants.kEncoderRightPort1, DriveConstants.kEncoderRightPort2);
   
-  private final AHRS navX;
+  private final Gyro mpu6050;
   private final I2C.Port port;
   
   private final Field2d field;
   
   public DriveSubsystem(Field2d field) {
     this.port = I2C.Port.kOnboard;
-    this.navX = new AHRS(port);
+    this.mpu6050 = new AHRS(port);
     this.field = field;
     calibrateGyro();
     resetEncoders();
@@ -66,19 +66,15 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     driveTrain.close();
     leftEncoder.close();
     rightEncoder.close();
-    navX.close();
+    mpu6050.close();
   }
 
   @Override
   public void periodic() {
-    if (getGyroIsConnected()) {
-      field.setRobotPose(field.getRobotPose().getX(), field.getRobotPose().getY(), getGyroRotation2d());
-      SmartDashboard.putNumber("Rotation", getGyroAngleFixed());
-    }
-
-    SmartDashboard.putNumber("Left Encoder Distance", getLeftEncoderDistance());
-    SmartDashboard.putNumber("Right Encoder Distance", getRightEncoderDistance());
-    // This method will be called once per scheduler run
+    field.setRobotPose(field.getRobotPose().getX(), field.getRobotPose().getY(), getGyroRotation2d());
+    // SmartDashboard.putNumber("Rotation", getGyroAngle());
+    //SmartDashboard.putNumber("Left Encoder Distance", getLeftEncoderDistance());
+    //SmartDashboard.putNumber("Right Encoder Distance", getRightEncoderDistance());
   }
 
   /**
@@ -117,7 +113,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   public void drive(double xSpeed, double zRotation, boolean squaredInputs) {
     if (Math.abs(xSpeed) > 1 || Math.abs(zRotation) > 1) {
       DriverStation.reportError("Speed must be between -1 and 1", false);
-      throw new IllegalArgumentException("Speed must be between -1 and 1");
     }
     driveTrain.arcadeDrive(-xSpeed, -zRotation, squaredInputs);
   }
@@ -175,8 +170,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @return boolean true if connected
    */
   public boolean getGyroIsConnected() {
-    
-    return true;
+    if (!navX.isConnected()) {
+      DriverStation.reportError("NavX is not connected", false);
+    }
+    return navX.isConnected();
   }
 
   /**
@@ -184,32 +181,24 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * Doesn't do anything if the navX is not connected.
    */
   public void calibrateGyro() {
-    if (!getGyroIsConnected()) {
-      return;
-    }
-    navX.calibrate();
+    mpu6050.calibrate();
   }
 
   /**
-   * Resets the Gyro Z (Yaw) axis to a heading of zero.
-   * doesn't do anything if the navX is not connected.
+   * Reset the gyro. Resets the gyro to a heading of zero. 
+   * This can be used if there is significant drift in the gyro, 
+   * and it needs to be recalibrated after it has been running.
    */
   public void resetGyro() {
-    if (!getGyroIsConnected()) {
-      return;
-    }
-    navX.reset();
+    mpu6050.reset();
   }
 
   /**
    * Gets the rotation of the navX in {@link Rotation2d}
-   * @return Rotatation in terms of {@link Rotation2d}. returns null if navX is not connected.
+   * @return Rotatation in terms of {@link Rotation2d}.
    */
   public Rotation2d getGyroRotation2d() {
-    if (!getGyroIsConnected()) {
-      return null;
-    }
-    return navX.getRotation2d();
+    return mpu6050.getRotation2d();
   }
 
   /**
@@ -218,58 +207,26 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * This ensures that algorithms that wouldn't want to see a discontinuity in the gyro output 
    * as it sweeps past 0 on the second time around.
    * if you want it to be fixed use {@link DriveSubsystem#getGyroAngleFixed}
-   * @return the total accumilated yaw angle (Z axis) double rotation in degrees. returns 0 if navX is not connected.
+   * @return the total accumilated yaw angle (Z axis) double rotation in degrees.
    */
   public double getGyroAngle() {
-    if (!getGyroIsConnected()) {
-      return 0.0;
-    }
-    return navX.getAngle();
+    return mpu6050.getAngle();
   }
 
   /**
    * Gets the rotation of the navX in degrees but does not go past 360 degrees.
    * if you want it to be continuous use {@link DriveSubsystem#getGyroAngle}
-   * @return the yaw angle (Z axis) double rotation in degrees. returns 0 if navX is not connected.
+   * @return the yaw angle (Z axis) double rotation in degrees.
    */
   public double getGyroAngleFixed() {
-    if (!getGyroIsConnected()) {
-      return 0;
-    }
-    return navX.getAngle() % 360;
-  }
-
-  /**
-   * Gets the pitch of the navX in degrees
-   * WARNING: This uses the Magnetometer do not use with a mpu6050
-   * @return double rotation in degrees (0-360). returns 0 if navX is not connected.
-   */
-  public double getGyroCompassHeading() {
-    if (!getGyroIsConnected()) {
-      return 0;
-    }
-    return navX.getCompassHeading();
+    return mpu6050.getAngle() % 360;
   }
 
   /**
    * Gets the rate of rotation of the navX in degrees per second
-   * @return double rotation in degrees per second.  returns 0 if navX is not connected.
+   * @return double rotation in degrees per second. 
    */
   public double getGyroRate() {
-    if (!getGyroIsConnected()) {
-      return 0;
-    }
-    return navX.getRate();
-  }
-
-  /**
-   * Gets if Gyro Is Calibrating
-   * @return boolean true if calibrating. returns false if navX is not connected.
-   */
-  public boolean getGyroIsCalibrating() {
-    if (!getGyroIsConnected()) {
-      return false;
-    }
-    return navX.isCalibrating();
+    return mpu6050.getRate();
   }
 }
