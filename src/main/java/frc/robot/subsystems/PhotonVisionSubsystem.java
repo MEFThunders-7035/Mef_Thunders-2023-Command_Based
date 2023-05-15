@@ -177,7 +177,28 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         }
     }
 
+    /**
+     * @return the current id of the best april tag being tracked. If no tag is being tracked, it will return -1.
+     */
+    public int getCurrentAprilTagID() {
+        if (camera.getLatestResult().hasTargets()) {
+            return camera.getLatestResult().getBestTarget().getFiducialId();
+        }
+        return -1;
+    }
     
+    /**
+     * @return the current ids of each apriltag being tracked. If there are no aprilTags is being tracked, it will return an empty array.
+     */
+    public List<Integer> getTrackedTargets() {
+        List<Integer> ids = new ArrayList<Integer>();
+        if (!camera.getLatestResult().hasTargets()) return ids;
+        var targets = camera.getLatestResult().getTargets();
+        for (var target : targets) {
+            ids.add(target.getFiducialId());
+        }
+        return ids;
+    }
 
     /**
      * Allows you to set camera used to detect the targets.
