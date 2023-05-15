@@ -57,8 +57,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         System.out.println("Loaded PhotonCamera, Added Field to SmartDashboard");
         photonPoseEstimator = getPhotonPoseEstimator();
     }
-
-    }
+    
     
     @Override
     public void periodic() {
