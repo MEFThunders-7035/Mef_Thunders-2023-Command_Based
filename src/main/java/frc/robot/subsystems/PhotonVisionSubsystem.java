@@ -102,6 +102,33 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     }
     
     /**
+     * has the Turn PID constants for the current camera. Use {@link #getkP()} , {@link #getkI()}, and {@link #getkD()} to get the constants.
+     */
+    public class CurrentTurnPIDConstants {
+
+        /**
+         * @return returns the kP constant for the current camera.
+         */
+        public double getkP() {
+            return getCurrentTurnPIDConstants()[0];
+        }
+        
+        /**
+         * @return returns the kI constant for the current camera.
+         */
+        public double getkI() {
+            return getCurrentTurnPIDConstants()[1];
+        }
+
+        /**
+         * @return returns the kD constant for the current camera.
+         */
+        public double getkD() {
+            return getCurrentTurnPIDConstants()[2];
+        }
+    }
+
+    /**
      * @return returns the turn PID constants for the current camera. [0] = kP, [1] = kI, [2] = kD.
      */
     public double[] getCurrentTurnPIDConstants() {
@@ -109,6 +136,33 @@ public class PhotonVisionSubsystem extends SubsystemBase {
             return new double[] {PhotonVisionConstants.PiCamera.TurnPIDConstants.kP, PhotonVisionConstants.PiCamera.TurnPIDConstants.kI, PhotonVisionConstants.PiCamera.TurnPIDConstants.kD};
         } else {
             return new double[] {PhotonVisionConstants.WideCamera.TurnPIDConstants.kP, PhotonVisionConstants.WideCamera.TurnPIDConstants.kI, PhotonVisionConstants.WideCamera.TurnPIDConstants.kD};
+        }
+    }
+    
+    /**
+     * Has the foward PID constants for the current camera. Use {@link #getkP()} , {@link #getkI()}, and {@link #getkD()} to get the constants.
+     */
+    public class CurrentFowardPIDConstants {
+
+        /**
+         * @return returns the kP constant for the current camera.
+         */
+        public double getkP() {
+            return getCurrentFowardPIDConstants()[0];
+        }
+        
+        /**
+         * @return returns the kI constant for the current camera.
+         */
+        public double getkI() {
+            return getCurrentFowardPIDConstants()[1];
+        }
+
+        /**
+         * @return returns the kD constant for the current camera.
+         */
+        public double getkD() {
+            return getCurrentFowardPIDConstants()[2];
         }
     }
 
