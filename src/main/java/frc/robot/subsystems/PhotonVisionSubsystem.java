@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
@@ -21,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseable{
+public class PhotonVisionSubsystem extends SubsystemBase {
     private PhotonCamera camera;
     private PhotonCamera camera2;
     private PhotonPoseEstimator photonPoseEstimator;
@@ -56,12 +58,6 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
         photonPoseEstimator = getPhotonPoseEstimator();
     }
 
-    @Override
-    public void close() throws Exception {}
-    
-    @Override
-    public void simulationPeriodic() {
-        
     }
     
     @Override
@@ -77,11 +73,14 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
 
     }
 
+    /**
+     * @return return if the current Camera is the picam.
+     */
     public boolean isPicam() {
         return camera.getName() == PhotonVisionConstants.Cameras.kPiCamera;
     }
 
-    public void setCurrentCameraHeightAndPitch() {
+    private void setCurrentCameraHeightAndPitch() {
         if (isPicam()) {
             CAMERA_HEIGHT_METERS = PhotonVisionConstants.PiCamera.CAMERA_HEIGHT_METERS;
             CAMERA_PITCH_RADIANS = PhotonVisionConstants.PiCamera.CAMERA_PITCH_RADIANS;
@@ -91,6 +90,9 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
         }
     }
 
+    /**
+     * @return returns the current camera's 3d transform.
+     */
     private Transform3d getCurrentTransform3d() {
         if (camera.getName() == PhotonVisionConstants.Cameras.kPiCamera) {
             return PhotonVisionConstants.PiCamera.robotToCam;
@@ -99,6 +101,9 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
         }
     }
     
+    /**
+     * @return returns the turn PID constants for the current camera. [0] = kP, [1] = kI, [2] = kD.
+     */
     public double[] getCurrentTurnPIDConstants() {
         if (camera.getName() == PhotonVisionConstants.Cameras.kPiCamera) {
             return new double[] {PhotonVisionConstants.PiCamera.TurnPIDConstants.kP, PhotonVisionConstants.PiCamera.TurnPIDConstants.kI, PhotonVisionConstants.PiCamera.TurnPIDConstants.kD};
@@ -107,7 +112,10 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
         }
     }
 
-    public double[] getCurrentFowardPIDConstant() {
+    /**
+     * @return returns the foward PID constants for the current camera. [0] = kP, [1] = kI, [2] = kD.
+     */
+    public double[] getCurrentFowardPIDConstants() {
         if (camera.getName() == PhotonVisionConstants.Cameras.kPiCamera) {
             return new double[] {PhotonVisionConstants.PiCamera.FowardPIDConstants.kP, PhotonVisionConstants.PiCamera.FowardPIDConstants.kI, PhotonVisionConstants.PiCamera.FowardPIDConstants.kD};
         } else {
@@ -117,9 +125,14 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
 
     
 
+    /**
+     * Allows you to set camera used to detect the targets.
+     * @param Camera the name of the camera you want to use. Use {@link PhotonVisionConstants.Cameras}
+     */
     public void setCamera(String Camera) {
         camera = new PhotonCamera(Camera);
         camera.setDriverMode(false);
+        
         if (Camera == PhotonVisionConstants.Cameras.kPiCamera) {
             camera2 = new PhotonCamera(PhotonVisionConstants.Cameras.kWideCamera);
             camera2.setDriverMode(true);
@@ -135,14 +148,23 @@ public class PhotonVisionSubsystem extends SubsystemBase implements AutoCloseabl
         }
     }
 
+    /**
+     * disables the Driver Mode on the PhotonVision camera.
+     */
     public void enableSecondCamera() {
         camera2.setDriverMode(false);
     }
 
+    /**
+     * puts the second camera to driver mode.
+     */
     public void disableSecondCamera() {
         camera2.setDriverMode(true);
     }
 
+    /**
+     * @return the Second Camera.
+     */
     public PhotonCamera getSecondCamera() {
         return camera2;
     }

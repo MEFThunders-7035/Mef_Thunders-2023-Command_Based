@@ -17,7 +17,7 @@ public class VisionTargettingCmd extends CommandBase{
     public VisionTargettingCmd(PhotonVisionSubsystem photonVisionSubsystem, DriveSubsystem driveSubsystem) {
         this.photonVisionSubsystem = photonVisionSubsystem;
         this.driveSubsystem = driveSubsystem;
-        FowardController = new PIDController(photonVisionSubsystem.getCurrentFowardPIDConstant()[0], photonVisionSubsystem.getCurrentFowardPIDConstant()[1], photonVisionSubsystem.getCurrentFowardPIDConstant()[2]);
+        FowardController = new PIDController(photonVisionSubsystem.getCurrentFowardPIDConstants()[0], photonVisionSubsystem.getCurrentFowardPIDConstants()[1], photonVisionSubsystem.getCurrentFowardPIDConstants()[2]);
         TurnController = new PIDController(photonVisionSubsystem.getCurrentTurnPIDConstants()[0], photonVisionSubsystem.getCurrentTurnPIDConstants()[1], photonVisionSubsystem.getCurrentTurnPIDConstants()[2]);
         addRequirements(photonVisionSubsystem);
         addRequirements(driveSubsystem);
