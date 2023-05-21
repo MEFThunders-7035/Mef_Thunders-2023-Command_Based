@@ -23,8 +23,8 @@ public class MPU6050 implements Gyro{
         LoopTime = 0.2;
         offset = 0;
         angle = 0;
-        write(0x1B, (byte) 0x08); // Set full scale range for gyro
-        write(0x1C, (byte) 0x08); // Set full scale range for accelerometer
+        // write(0x1B, (byte) 0x08); // Set full scale range for gyro
+        // write(0x1C, (byte) 0x08); // Set full scale range for accelerometer
     }
 
     public void write(int register, byte value) {
