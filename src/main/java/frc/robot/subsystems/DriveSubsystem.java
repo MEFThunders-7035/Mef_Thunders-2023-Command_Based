@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,8 +40,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   
   private final Field2d field;
 
-  private long lastTime = 0;
-  private double loopTime = 0;
   private double currentTimestamp;
   private double lastTimestamp;
   private double dt;
