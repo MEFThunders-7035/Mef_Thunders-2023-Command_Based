@@ -35,7 +35,7 @@ public class AcceleratorSubsystem extends SubsystemBase{
             resetAll();
             return;
         }
-        double currentTimestamp = Timer.getFPGATimestamp() / 10;
+        double currentTimestamp = Timer.getFPGATimestamp() / 1000.0;
         double dt = currentTimestamp - lastTimestamp;
         lastTimestamp = currentTimestamp;
 

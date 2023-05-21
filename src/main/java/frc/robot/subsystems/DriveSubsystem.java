@@ -6,12 +6,12 @@ package frc.robot.subsystems;
 
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Interphases.MPU6050;
 
 public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final WPI_VictorSPX leftMotor1 = new WPI_VictorSPX(DriveConstants.kLeftMotor1Port);
@@ -35,14 +36,20 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final Encoder leftEncoder = new Encoder(DriveConstants.kEncoderLeftPort1, DriveConstants.kEncoderLeftPort2);
   private final Encoder rightEncoder = new Encoder(DriveConstants.kEncoderRightPort1, DriveConstants.kEncoderRightPort2);
   
-  private final Gyro mpu6050;
+  private final MPU6050 mpu6050;
   private final I2C.Port port;
   
   private final Field2d field;
+
+  private long lastTime = 0;
+  private double loopTime = 0;
+  private double currentTimestamp;
+  private double lastTimestamp;
+  private double dt;
   
   public DriveSubsystem(Field2d field) {
     this.port = I2C.Port.kOnboard;
-    this.mpu6050 = new AHRS(port);
+    this.mpu6050 = new MPU6050(port);
     this.field = field;
     calibrateGyro();
     resetEncoders();
@@ -71,8 +78,12 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   @Override
   public void periodic() {
+    currentTimestamp = Timer.getFPGATimestamp();
+    dt = currentTimestamp - lastTimestamp;
+    lastTimestamp = currentTimestamp;
+    mpu6050.setLoopTime(dt);
     field.setRobotPose(field.getRobotPose().getX(), field.getRobotPose().getY(), getGyroRotation2d());
-    // SmartDashboard.putNumber("Rotation", getGyroAngle());
+    SmartDashboard.putNumber("Rotation", getGyroAngle());
     //SmartDashboard.putNumber("Left Encoder Distance", getLeftEncoderDistance());
     //SmartDashboard.putNumber("Right Encoder Distance", getRightEncoderDistance());
   }
