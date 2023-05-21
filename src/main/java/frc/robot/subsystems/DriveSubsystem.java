@@ -84,6 +84,12 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     mpu6050.setLoopTime(dt);
     field.setRobotPose(field.getRobotPose().getX(), field.getRobotPose().getY(), getGyroRotation2d());
     SmartDashboard.putNumber("Rotation", getGyroAngle());
+    SmartDashboard.putNumber("AccelX", mpu6050.getAccelX());
+    SmartDashboard.putNumber("AccelY", mpu6050.getAccelY());
+    SmartDashboard.putNumber("AccelZ", mpu6050.getAccelZ());
+    SmartDashboard.putNumber("GyroX", mpu6050.getGyroX());
+    SmartDashboard.putNumber("GyroY", mpu6050.getGyroY());
+    SmartDashboard.putNumber("GyroZ", mpu6050.getGyroZ());
     //SmartDashboard.putNumber("Left Encoder Distance", getLeftEncoderDistance());
     //SmartDashboard.putNumber("Right Encoder Distance", getRightEncoderDistance());
   }
