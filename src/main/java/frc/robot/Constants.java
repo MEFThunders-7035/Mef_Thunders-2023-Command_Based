@@ -38,7 +38,7 @@ public final class Constants {
     public static final boolean kEncoderLeftReversed = false;
     public static final boolean kEncoderRightReversed = false;
 
-    public static final int kEncoderDistancePerPulse = 1;
+    public static final double kEncoderDistancePerPulse = 0.025;
   }
   
   public static class VerticalElevatorConstants {
@@ -73,8 +73,8 @@ public final class Constants {
     public static final int Z_AXIS = 2;
   }
   public static class AutonomousConstants {
-    public static final double kDriveSpeed = -0.5;
-    public static final double kDriveTime = 3;
+    public static final double kDriveSpeed = -0.25;
+    public static final double kDriveTime = 8;
     public static final double kRedlineSpeed = 0.1;
     public static final double kRedlineTime = 1;
 
@@ -82,6 +82,12 @@ public final class Constants {
     public static final String kGyroAuto = "Gyro Auto";
     public static final String kCameraAuto = "Camera Auto";
     public static final String kStabilize = "Stabilize Auto";
+
+    public static class headingPIDConstants {
+      public static final double kP = 0.01;
+      public static final double kI = 0;
+      public static final double kD = 0;
+    }
   }
 
   public static class PhotonVisionConstants {

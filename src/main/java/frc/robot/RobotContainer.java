@@ -33,7 +33,6 @@ import frc.robot.commands.TimedIntakeRedlineCmd;
 import frc.robot.commands.VerticalElevatorJoystickCmd;
 import frc.robot.commands.VisionTargettingCmd;
 
-import frc.robot.subsystems.AcceleratorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.PhotonVisionSubsystem;
@@ -51,7 +50,6 @@ public class RobotContainer {
   private final IntakeArmSubsystem Neo_IntakeSubsystem = new IntakeArmSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
   private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
-  private final AcceleratorSubsystem acceleratorSubsystem = new AcceleratorSubsystem(field2d); //updates field data don't delete
   private final PhotonVisionSubsystem photonVisionSubsystem = new PhotonVisionSubsystem(field2d);
 
   private final SendableChooser<String> Auto_chooser = new SendableChooser<>();
@@ -63,7 +61,6 @@ public class RobotContainer {
     configureBindings();
     AddChoosers();
     SetupCamera();
-    RobotInit();
     Vertical_Elevator_Subsytem.setDefaultCommand(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, 0));
     Neo_IntakeSubsystem.setDefaultCommand(new HoldIntakeCmd(Neo_IntakeSubsystem));
     driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, () -> stick.getRawAxis(IoConstants.Y_AXIS), () -> stick.getRawAxis(IoConstants.Z_AXIS)));
@@ -81,10 +78,6 @@ public class RobotContainer {
     new JoystickButton(stick, 11).whileTrue(new SetCompressorCmd(pneumaticsSubsystem, true));
     new JoystickButton(stick, 12).whileTrue(new SetCompressorCmd(pneumaticsSubsystem, false));
     
-  }
-  
-  private void RobotInit() {
-    acceleratorSubsystem.resetAll();
   }
 
   private void AddChoosers() {
