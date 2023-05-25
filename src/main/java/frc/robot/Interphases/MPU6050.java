@@ -16,6 +16,9 @@ public class MPU6050 implements Gyro{
     private final I2C mpu6050;
     private double angle_offset;
     private double rate_offset;
+    private double X_Accel_offset;
+    private double Y_Accel_offset;
+    private double Z_Accel_offset;
     private double angle;
     private double LoopTime;
 
@@ -29,6 +32,9 @@ public class MPU6050 implements Gyro{
         LoopTime = 0.2;
         angle_offset = 0;
         rate_offset = 0;
+        X_Accel_offset = 0;
+        X_Accel_offset = 0;
+        Z_Accel_offset = 0;
         angle = 0;
         // write(0x1B, (byte) 0x08); // Set full scale range for gyro
         // write(0x1C, (byte) 0x08); // Set full scale range for accelerometer
@@ -65,54 +71,6 @@ public class MPU6050 implements Gyro{
     }
 
     /**
-     * Gets the angle of the sensor.
-     * @return The rate of the sensor in degrees per second.
-     */
-    public double getGyroX() {
-        return readShort(GYRO_XOUT_H) / 131.0;
-    }
-
-    /**
-     * Gets the angle of the sensor.
-     * @return The rate of the sensor in degrees per second.
-     */
-    public double getGyroY() {
-        return readShort(GYRO_YOUT_H) / 131.0;
-    }
-
-    /**
-     * Gets the angle of the sensor.
-     * @return The rate of the sensor in degrees per second.
-     */
-    public double getGyroZ() {
-        return readShort(GYRO_ZOUT_H) / 131.0;
-    }
-
-    /**
-     * Gets the Acceleration of the sensor.
-     * @return The Acceleration of the sensor in meters per second squared.
-     */
-    public double getAccelX() {
-        return readShort(ACCEL_XOUT_H) / 16384.0;
-    }
-
-    /**
-     * Gets the Acceleration of the sensor.
-     * @return The Acceleration of the sensor in meters per second squared.
-     */
-    public double getAccelY() {
-        return readShort(ACCEL_YOUT_H) / 16384.0;
-    }
-
-    /**
-     * Gets the Acceleration of the sensor.
-     * @return The Acceleration of the sensor in meters per second squared.
-     */
-    public double getAccelZ() {
-        return readShort(ACCEL_ZOUT_H) / 16384.0;
-    }
-    
-    /**
      * Closes the connection to the sensor.
      */
     @Override
@@ -123,6 +81,9 @@ public class MPU6050 implements Gyro{
     @Override
     public void calibrate() {
         angle_offset = getAngle();
+        X_Accel_offset = getAccelX();
+        Y_Accel_offset = getAccelY();
+        Z_Accel_offset = 9.81 - getAccelZ();
         for (int i = 0; i < 100; i++) {
             rate_offset += getRate();
             try {
@@ -175,6 +136,54 @@ public class MPU6050 implements Gyro{
         return ((double) z / 131.0) - rate_offset;
     }
 
+    /**
+     * Gets the angle of the sensor.
+     * @return The rate of the sensor in degrees per second.
+     */
+    public double getGyroX() {
+        return readShort(GYRO_XOUT_H) / 131.0;
+    }
+
+    /**
+     * Gets the angle of the sensor.
+     * @return The rate of the sensor in degrees per second.
+     */
+    public double getGyroY() {
+        return readShort(GYRO_YOUT_H) / 131.0;
+    }
+
+    /**
+     * Gets the angle of the sensor.
+     * @return The rate of the sensor in degrees per second.
+     */
+    public double getGyroZ() {
+        return (readShort(GYRO_ZOUT_H) - rate_offset) / 131.0;
+    }
+
+    /**
+     * Gets the Acceleration of the sensor.
+     * @return The Acceleration of the sensor in meters per second squared.
+     */
+    public double getAccelX() {
+        return (readShort(ACCEL_XOUT_H) - X_Accel_offset) / 16384.0;
+    }
+
+    /**
+     * Gets the Acceleration of the sensor.
+     * @return The Acceleration of the sensor in meters per second squared.
+     */
+    public double getAccelY() {
+        return (readShort(ACCEL_YOUT_H) - Y_Accel_offset) / 16384.0;
+    }
+
+    /**
+     * Gets the Acceleration of the sensor.
+     * @return The Acceleration of the sensor in meters per second squared.
+     */
+    public double getAccelZ() {
+        return (readShort(ACCEL_ZOUT_H) - Z_Accel_offset) / 16384.0;
+    }
+    
     /**
      * Sets the offset of the sensor. 
      * @apiNote IS DONE AUTOMATICALLY IN {@link #calibrate()}.
