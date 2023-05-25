@@ -34,6 +34,12 @@ public class MPU6050 implements Gyro{
         // write(0x1C, (byte) 0x08); // Set full scale range for accelerometer
     }
 
+    public boolean isConnected() {
+        boolean isConnected = !mpu6050.addressOnly();
+        if (!isConnected) {
+            DriverStation.reportError("MPU6050 is not connected!", false);
+        }
+        return isConnected;
     }
 
     /**
