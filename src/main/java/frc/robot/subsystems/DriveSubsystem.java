@@ -142,6 +142,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     driveTrain.stopMotor();
   }
 
+  public DifferentialDriveOdometry getDiffOdometry() {
+    return odometry;
+  }
+
   public void setEnabled(boolean enabled) {
     driveTrain.setSafetyEnabled(enabled);
   }
