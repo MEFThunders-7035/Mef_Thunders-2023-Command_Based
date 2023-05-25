@@ -88,6 +88,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     Pose2d pose = odometry.update(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
     field.setRobotPose(pose.getX(), pose.getY(), pose.getRotation());
     SmartDashboard.putNumber("Rotation", getGyroAngle());
+    SmartDashboard.putNumber("Rotation Rate", getGyroRate());
+    SmartDashboard.putNumber("Rotation offset", mpu6050.getRate_offset());
     SmartDashboard.putNumber("AccelX", mpu6050.getAccelX());
     SmartDashboard.putNumber("AccelY", mpu6050.getAccelY());
     SmartDashboard.putNumber("AccelZ", mpu6050.getAccelZ());
