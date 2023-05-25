@@ -1,13 +1,18 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class TimedDriveCmd extends CommandBase{
     private final DriveSubsystem driveSubsystem;
     private final double speed;
     private final double time;
+    private double first_heading;
+    private PIDController headingPidController;
+    private double fixheadingspeed;
     private Timer timer;
     private boolean finlished = false;
     private boolean started = false;
@@ -26,6 +31,10 @@ public class TimedDriveCmd extends CommandBase{
         this.speed = speed;
         this.time = time;
         this.timer = new Timer();
+        headingPidController = new PIDController(
+            Constants.AutonomousConstants.headingPIDConstants.kP,
+            Constants.AutonomousConstants.headingPIDConstants.kI, 
+            Constants.AutonomousConstants.headingPIDConstants.kD);
         addRequirements(driveSubsystem);
     }
     @Override
@@ -34,6 +43,8 @@ public class TimedDriveCmd extends CommandBase{
         finlished = false;
         started = false;
         timer.start();
+        first_heading = driveSubsystem.getGyroAngle();
+        headingPidController.setSetpoint(first_heading);
     }
     @Override
     public void execute() {
@@ -41,32 +52,14 @@ public class TimedDriveCmd extends CommandBase{
         if (started) {
             return;
         }
-        
+        fixheadingspeed = headingPidController.calculate(driveSubsystem.getGyroAngle());
         if (timer.get() < time) {
-            driveSubsystem.drive(speed, 0);
+            driveSubsystem.drive(speed, fixheadingspeed, false);
         }
         else {
             driveSubsystem.stop();
             finlished = true;
         }
-        /* 
-        new Thread(() -> {
-            try {
-                System.out.println("TimedDriveCommand started");
-                driveSubsystem.drive(speed, 0);
-                System.out.println("TimedDriveCommand waiting for " + time + " seconds");
-                started = true;
-                Thread.sleep((long) (time * 1000));
-                driveSubsystem.drive(0, 0);
-            } catch (InterruptedException e) {
-                driveSubsystem.setMotors(0, 0);
-                DriverStation.reportError("Auto Command interrupted", e.getStackTrace());
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-            finlished = true;
-        }).start();
-        */
     }
     @Override
     public void end(boolean interrupted) {

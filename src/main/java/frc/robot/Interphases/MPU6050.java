@@ -14,6 +14,7 @@ public class MPU6050 implements Gyro{
     private static final int ACCEL_ZOUT_H = 0x3F;
     private final I2C mpu6050;
     private double offset;
+    private double rate_offset;
     private double angle;
     private double LoopTime;
 
@@ -26,6 +27,7 @@ public class MPU6050 implements Gyro{
         mpu6050.write(PWR_MGMT_1, 0);
         LoopTime = 0.2;
         offset = 0;
+        rate_offset = 0;
         angle = 0;
         // write(0x1B, (byte) 0x08); // Set full scale range for gyro
         // write(0x1C, (byte) 0x08); // Set full scale range for accelerometer
@@ -121,6 +123,7 @@ public class MPU6050 implements Gyro{
     @Override
     public void calibrate() {
         offset = getAngle();
+        rate_offset = getRate();
     }
 
     @Override
@@ -160,7 +163,7 @@ public class MPU6050 implements Gyro{
         int x = (buffer[0] << 8) | buffer[1];
         int y = (buffer[2] << 8) | buffer[3];
         int z = (buffer[4] << 8) | buffer[5];
-        return (double) z / 131.0;
+        return ((double) z / 131.0) - rate_offset;
     }
 
     /**

@@ -7,7 +7,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
@@ -31,6 +33,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final MotorControllerGroup leftMotorsGroup = new MotorControllerGroup(leftMotor1, leftMotor2);
   
   private final DifferentialDrive driveTrain = new DifferentialDrive(leftMotorsGroup,rightMotorsGroup);
+
+  private DifferentialDriveOdometry odometry;
   
   private final Encoder leftEncoder = new Encoder(DriveConstants.kEncoderLeftPort1, DriveConstants.kEncoderLeftPort2);
   private final Encoder rightEncoder = new Encoder(DriveConstants.kEncoderRightPort1, DriveConstants.kEncoderRightPort2);
@@ -57,6 +61,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
     leftEncoder.setReverseDirection(DriveConstants.kEncoderLeftReversed);
     rightEncoder.setReverseDirection(DriveConstants.kEncoderRightReversed);
+
+    odometry = new DifferentialDriveOdometry(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
   }
 
   @Override
@@ -79,7 +85,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     dt = currentTimestamp - lastTimestamp;
     lastTimestamp = currentTimestamp;
     mpu6050.setLoopTime(dt);
-    field.setRobotPose(field.getRobotPose().getX(), field.getRobotPose().getY(), getGyroRotation2d());
+    Pose2d pose = odometry.update(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
+    field.setRobotPose(pose.getX(), pose.getY(), pose.getRotation());
     SmartDashboard.putNumber("Rotation", getGyroAngle());
     SmartDashboard.putNumber("AccelX", mpu6050.getAccelX());
     SmartDashboard.putNumber("AccelY", mpu6050.getAccelY());
@@ -87,8 +94,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     SmartDashboard.putNumber("GyroX", mpu6050.getGyroX());
     SmartDashboard.putNumber("GyroY", mpu6050.getGyroY());
     SmartDashboard.putNumber("GyroZ", mpu6050.getGyroZ());
-    //SmartDashboard.putNumber("Left Encoder Distance", getLeftEncoderDistance());
-    //SmartDashboard.putNumber("Right Encoder Distance", getRightEncoderDistance());
+    SmartDashboard.putNumber("Left Encoder Distance", getLeftEncoderDistance());
+    SmartDashboard.putNumber("Right Encoder Distance", getRightEncoderDistance());
   }
 
   /**
