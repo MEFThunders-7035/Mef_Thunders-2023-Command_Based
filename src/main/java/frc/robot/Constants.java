@@ -54,6 +54,7 @@ public final class Constants {
 
   public static class IntakeConstants {
     public static final int kRedlinePort = 1;
+    public static final int kIntakeArmPotPort = 0;
     public static final int kCanIntakeArmMotor1Port = 5;
     public static final int kCanIntakeArmMotor2Port = 2;
     public static final double kUpSpeed = 0.5;
@@ -92,26 +93,53 @@ public final class Constants {
   public static class PhotonVisionConstants {
     public static class Cameras {
       public static final String kPiCamera = "IMX219";
-      public static final String kWideCamera = "WideCamera";
+      public static final String kWideCamera = "HD_Pro_Webcam_C920";
     }
 
-    public static final double kTargetArea = 3;
-    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(1);
+    public static final double kTargetArea = 0.5;
     public static final double TARGET_HEIGHT_METERS = Units.inchesToMeters(15.13);
-    public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);  
-    public static final Transform3d robotToCam = new Transform3d(
-        new Translation3d(0.5, 0.0, 0),
-        new Rotation3d(0, 0,0));
     
-    public static class TurnPIDConstants{
-      public static final double kP = 0.05;
-      public static final double kI = 0.1;
-      public static final double kD = 0;
+    public static class PiCamera{
+      public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(1);
+      public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);  
+      public static final Transform3d robotToCam = new Transform3d(
+          new Translation3d(0.5, 0.0, 0),
+          new Rotation3d(0, 0,0));
+
+          public static class TurnPIDConstants{
+            public static final double kP = 0.05;
+            public static final double kI = 0;
+            public static final double kD = 0;
+          }
+          public static class FowardPIDConstants {
+            public static final double kP = 0.1;
+            public static final double kI = 0;
+            public static final double kD = 0;
+          }
     }
-    public static class FowardPIDConstants {
-      public static final double kP = 0.05;
-      public static final double kI = 0.2;
-      public static final double kD = 0;
+    
+    public static class WideCamera{
+      public static final double kCamera_Height_Meters = 1.15;
+      /**
+       * The angle of the camera relative to the ground in radians counterclockwise is positive.
+       */
+      public static final double kCamera_Pitch_Radians = Units.degreesToRadians(30);  
+      public static final Transform3d robotToCam = new Transform3d(
+          new Translation3d(-0.1, kCamera_Height_Meters, 0),
+          new Rotation3d(0, Units.degreesToRadians(30), 0));
+
+          public static class TurnPIDConstants{
+            public static final double kP = 0.02;
+            public static final double kI = 0;
+            public static final double kD = 0;
+          }
+          public static class FowardPIDConstants {
+            public static final double kP = 0.05;
+            public static final double kI = 0;
+            public static final double kD = 0;
+          }
     }
+    
+    
   }
 }

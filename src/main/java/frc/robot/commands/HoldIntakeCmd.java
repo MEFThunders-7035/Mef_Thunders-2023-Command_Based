@@ -17,11 +17,11 @@ public class HoldIntakeCmd extends CommandBase{
     @Override
     public void initialize() {
         pos_pid.reset();
-        pos_pid.setSetpoint(IntakeArmsubsystem.getMotorsPos());
+        pos_pid.setSetpoint(IntakeArmsubsystem.getArmPos());
     }
     @Override
     public void execute() {
-        double speed = pos_pid.calculate(IntakeArmsubsystem.getMotorsPos());
+        double speed = pos_pid.calculate(IntakeArmsubsystem.getArmPos());
         IntakeArmsubsystem.setMotors(speed);
     }
     @Override

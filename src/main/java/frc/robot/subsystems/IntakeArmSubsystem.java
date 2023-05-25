@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,6 +13,8 @@ public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
 
     public static final CANSparkMax IntakeArmMotor = new CANSparkMax(IntakeConstants.kCanIntakeArmMotor1Port, CANSparkMax.MotorType.kBrushed);
     public static final Spark IntakeArmMotor2 = new Spark(IntakeConstants.kCanIntakeArmMotor2Port);
+    public static final AnalogPotentiometer IntakeArmPot = new AnalogPotentiometer(IntakeConstants.kIntakeArmPotPort);
+    
     public IntakeArmSubsystem() {
         IntakeArmMotor.setInverted(true);
     }
@@ -23,7 +26,7 @@ public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
 
     @Override
     public void periodic() {
-
+        SmartDashboard.putNumber("Potantiometer", getArmPos());
     }
     public void setMotors(double speed) {
         if (Math.abs(speed) > 1) {
@@ -68,11 +71,10 @@ public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
         IntakeArmMotor.setIdleMode(brake ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
     }
     /**
-     * Warning DOES NOT WORK! THERE ARE NO ENCODERS.
-     * @return 0 and nothing else; do not use!
+     * Uses the potentiometer to get the position of the arm.
+     * @return the position of the arm in degrees
      */
-    @Deprecated
-    public double getMotorsPos() {
-        return 0;
+    public double getArmPos() {
+        return IntakeArmPot.get();
     }
 }

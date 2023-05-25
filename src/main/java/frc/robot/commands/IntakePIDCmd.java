@@ -18,7 +18,7 @@ public class IntakePIDCmd extends CommandBase{
     }
     @Override
     public void execute() {
-        double speed = pid.calculate(Intakesubsystem.getMotorsPos());
+        double speed = pid.calculate(Intakesubsystem.getArmPos());
         Intakesubsystem.setMotors(speed);
     }
     @Override
