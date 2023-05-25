@@ -34,13 +34,6 @@ public class MPU6050 implements Gyro{
         // write(0x1C, (byte) 0x08); // Set full scale range for accelerometer
     }
 
-    /**
-     * Writes a byte value to the specified register on the sensor.
-     * @param register The register to write to.
-     * @param value The value to write.
-     */
-    public void write(int register, byte value) {
-        mpu6050.write(register, value);
     }
 
     /**
@@ -174,16 +167,6 @@ public class MPU6050 implements Gyro{
         int y = (buffer[2] << 8) | buffer[3];
         int z = (buffer[4] << 8) | buffer[5];
         return ((double) z / 131.0) - rate_offset;
-    }
-
-    /**
-     * lets you add a spesific offset to the sensor.
-     * WARNING DOES NOT SET THE OFFSET IT ADDS TO THE CURRENT OFFSET
-     * See {@link #setOffset(double)} if you want to set the offset.
-     * @param offset
-     */
-    public void addOffset(double offset) {
-        this.offset += offset;
     }
 
     /**
