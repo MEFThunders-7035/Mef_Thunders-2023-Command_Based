@@ -1,5 +1,6 @@
 package frc.robot.Interphases;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 
@@ -13,7 +14,7 @@ public class MPU6050 implements Gyro{
     private static final int ACCEL_YOUT_H = 0x3D;
     private static final int ACCEL_ZOUT_H = 0x3F;
     private final I2C mpu6050;
-    private double offset;
+    private double angle_offset;
     private double rate_offset;
     private double angle;
     private double LoopTime;
@@ -26,7 +27,7 @@ public class MPU6050 implements Gyro{
         mpu6050 = new I2C(port, DEVICE_ADDRESS);
         mpu6050.write(PWR_MGMT_1, 0);
         LoopTime = 0.2;
-        offset = 0;
+        angle_offset = 0;
         rate_offset = 0;
         angle = 0;
         // write(0x1B, (byte) 0x08); // Set full scale range for gyro
@@ -48,7 +49,7 @@ public class MPU6050 implements Gyro{
      * @param count The number of bytes to read.
      * @return The bytes read from the sensor.
      */
-    public byte[] read(int register, int count) {
+    private byte[] read(int register, int count) {
         byte[] buffer = new byte[count];
         mpu6050.read(register, count, buffer);
         return buffer;
@@ -59,7 +60,7 @@ public class MPU6050 implements Gyro{
      * @param register The register to read.
      * @return The value read from the sensor.
      */
-    public short readShort(int register) {
+    private short readShort(int register) {
         byte[] buffer = read(register, 2);
         return (short) ((buffer[0] << 8) | buffer[1]);
     }
@@ -122,8 +123,16 @@ public class MPU6050 implements Gyro{
 
     @Override
     public void calibrate() {
-        offset = getAngle();
-        rate_offset = getRate();
+        angle_offset = getAngle();
+        for (int i = 0; i < 100; i++) {
+            rate_offset += getRate();
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        rate_offset = rate_offset / 100;
     }
 
     @Override
@@ -134,7 +143,7 @@ public class MPU6050 implements Gyro{
     /**
      * Gets the angle of the sensor.
      * @return The angle of the sensor in degrees does not go higher than 360 and resets back to zero.
-     * @see #getAngle() if you want it to be continous.
+     * @apiNote use {@link #getAngle()} if you want it to be continous.
      */
     public double getGyroAngleFixed() {
         return getAngle() % 360;
@@ -152,8 +161,9 @@ public class MPU6050 implements Gyro{
     @Override
     public double getAngle() {
         double rate = getRate();
-        angle += rate * LoopTime;
-        return angle - offset;
+        double accelZ = getAccelZ();
+        angle = 0.98 * (angle + rate * LoopTime) + 0.02 * accelZ;
+        return angle - angle_offset;
     }
 
     @Override
@@ -181,14 +191,14 @@ public class MPU6050 implements Gyro{
      * @apiNote IS DONE AUTOMATICALLY IN {@link #calibrate()}.
      * @param offset The offset to set in degrees.
      */
-    public void setOffset(double offset) {
-        this.offset = offset;
+    public void setAngle_offset(double offset) {
+        this.angle_offset = offset;
     }
 
     /**
      * @return The current offset of the sensor in degrees.
      */
-    public double getOffset() {
-        return offset;
+    public double getAngle_offset() {
+        return angle_offset;
     }
 }
