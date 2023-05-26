@@ -5,11 +5,15 @@
 package frc.robot.subsystems;
 
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
@@ -35,6 +39,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final DifferentialDrive driveTrain = new DifferentialDrive(leftMotorsGroup,rightMotorsGroup);
 
   private DifferentialDriveOdometry odometry;
+  private DifferentialDriveKinematics kinematics;
   
   private final Encoder leftEncoder = new Encoder(DriveConstants.kEncoderLeftPort1, DriveConstants.kEncoderLeftPort2);
   private final Encoder rightEncoder = new Encoder(DriveConstants.kEncoderRightPort1, DriveConstants.kEncoderRightPort2);
@@ -63,6 +68,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     rightEncoder.setReverseDirection(DriveConstants.kEncoderRightReversed);
 
     odometry = new DifferentialDriveOdometry(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
+
+    kinematics = new DifferentialDriveKinematics(DriveConstants.kTrackwidthMeters);
   }
 
   @Override
@@ -114,6 +121,12 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     rightMotorsGroup.set(RightMotorSpeed);
   }
 
+  public void setMotorVoltage(double leftVoltage, double rightVoltage) {
+    leftMotorsGroup.setVoltage(leftVoltage);
+    rightMotorsGroup.setVoltage(rightVoltage);
+    driveTrain.feed();
+  }
+
   /**
    * Sets the speed of the motors
    * @param xSpeed The robot's speed along the X axis [-1.0..1.0]. Forward is positive.
@@ -144,12 +157,37 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     driveTrain.stopMotor();
   }
 
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
+  
+  public Supplier<Pose2d>  getPose2dSupplier() {
+    return () -> odometry.getPoseMeters();
+  }
+
   public DifferentialDriveOdometry getDiffOdometry() {
     return odometry;
+  }
+  
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(getLeftEncoderRate(), getRightEncoderRate());
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    resetEncoders();
+    odometry.resetPosition(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose); 
   }
 
   public void setEnabled(boolean enabled) {
     driveTrain.setSafetyEnabled(enabled);
+  }
+
+  public double getAvarageEncoderDistance() {
+    return (getLeftEncoderDistance() + getRightEncoderDistance()) / 2.0;
+  }
+
+  public void zeroHeading() {
+    mpu6050.reset();
   }
 
   /**
@@ -244,5 +282,9 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    */
   public double getGyroRate() {
     return mpu6050.getRate();
+  }
+
+  public DifferentialDriveKinematics getKinematics() {
+    return kinematics;
   }
 }

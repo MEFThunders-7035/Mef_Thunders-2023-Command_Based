@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -39,6 +40,24 @@ public final class Constants {
     public static final boolean kEncoderRightReversed = false;
 
     public static final double kEncoderDistancePerPulse = 0.025;
+
+    public static final double kTrackwidthMeters = 70;
+    
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+    
+    public static final double kPDriveVel = 0.1;
+
+    public static final DifferentialDriveKinematics kDriveKinematics =
+        new DifferentialDriveKinematics(kTrackwidthMeters);
+    public static class FeedForwardConstants {
+      //TODO: Tune these values
+      public static final double ksVolts = 0.22;
+      public static final double kvVoltSecondsPerMeter = 1.98;
+      public static final double kaVoltSecondsSquaredPerMeter = 0.2;
+
+      public static final double kPDriveVel = 8.5;
+    }
   }
   
   public static class VerticalElevatorConstants {
