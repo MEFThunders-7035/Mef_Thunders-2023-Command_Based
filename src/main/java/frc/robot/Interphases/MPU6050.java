@@ -13,7 +13,9 @@ public class MPU6050 implements Gyro{
     private static final int ACCEL_XOUT_H = 0x3B;
     private static final int ACCEL_YOUT_H = 0x3D;
     private static final int ACCEL_ZOUT_H = 0x3F;
+    
     private final I2C mpu6050;
+    
     private double angle_offset;
     private double rate_offset;
     private double X_Accel_offset;
@@ -82,21 +84,25 @@ public class MPU6050 implements Gyro{
     public void calibrate() {
         System.out.println("Starting Calibration");
         angle_offset = getAngle();
-        X_Accel_offset = getAccelX();
-        Y_Accel_offset = getAccelY();
-        Z_Accel_offset = 9.81 - getAccelZ();
+        AccCalibrate();
         //for some reason taking the highest value gives the best results.
         for (int i = 0; i < 200; i++) {
             if (rate_offset < getRate()) {
                 rate_offset = getRate();
             }
             try {
-                Thread.sleep(50);
+                Thread.sleep(25);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         System.out.println("Calibration Complete! Rate_Offstet: " + rate_offset);
+    }
+
+    public void AccCalibrate() {
+        X_Accel_offset = getAccelX();
+        Y_Accel_offset = getAccelY();
+        Z_Accel_offset = getAccelZ();
     }
 
     @Override
@@ -125,7 +131,6 @@ public class MPU6050 implements Gyro{
     @Override
     public double getAngle() {
         double rate = getRate();
-        double accelZ = getAccelZ();
         angle += rate * LoopTime;
         return angle - angle_offset;
     }
