@@ -186,10 +186,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     return (getLeftEncoderDistance() + getRightEncoderDistance()) / 2.0;
   }
 
-  public void zeroHeading() {
-    mpu6050.reset();
-  }
-
   /**
    * Resets the encoders
    */
