@@ -178,7 +178,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     odometry.resetPosition(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose); 
   }
 
-  public void setEnabled(boolean enabled) {
+  public void setSafetyEnabled(boolean enabled) {
     driveTrain.setSafetyEnabled(enabled);
   }
 

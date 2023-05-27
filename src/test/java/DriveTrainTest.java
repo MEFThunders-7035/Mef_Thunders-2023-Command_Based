@@ -60,8 +60,8 @@ public class DriveTrainTest {
 
     @Test
     void DriveTrainSafetyTest() throws Exception {
-        driveSubsystem.setEnabled(false);
-        driveSubsystem.setEnabled(true);
+        driveSubsystem.setSafetyEnabled(false);
+        driveSubsystem.setSafetyEnabled(true);
     }
 
     @Test
