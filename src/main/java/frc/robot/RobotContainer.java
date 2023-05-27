@@ -94,6 +94,7 @@ public class RobotContainer {
     Auto_chooser.addOption("Gyro Auto", AutonomousConstants.kGyroAuto);
     Auto_chooser.addOption("Camera Auto", AutonomousConstants.kCameraAuto);
     Auto_chooser.addOption("Stabilize Auto", AutonomousConstants.kStabilize);
+    Auto_chooser.addOption("Ramsete Auto", AutonomousConstants.kRamsete);
     SmartDashboard.putData("Auto choices", Auto_chooser);
 
     Camera_chooser.setDefaultOption("Pi Cam", PhotonVisionConstants.Cameras.kPiCamera);
@@ -118,6 +119,8 @@ public class RobotContainer {
         return cameraAuto();
       case AutonomousConstants.kStabilize:
         return stabilizeAuto();
+      case AutonomousConstants.kRamsete:
+        return ramseteCommand();
       default:
         return timedAuto();
     }

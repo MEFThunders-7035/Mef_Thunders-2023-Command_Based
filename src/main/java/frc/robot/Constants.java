@@ -103,6 +103,7 @@ public final class Constants {
     public static final String kGyroAuto = "Gyro Auto";
     public static final String kCameraAuto = "Camera Auto";
     public static final String kStabilize = "Stabilize Auto";
+    public static final String kRamsete = "Ramsete Auto";
 
     public static class headingPIDConstants {
       public static final double kP = 0.01;
