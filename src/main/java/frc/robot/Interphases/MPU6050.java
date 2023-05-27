@@ -17,11 +17,14 @@ public class MPU6050 implements Gyro{
     private final I2C mpu6050;
     
     private double angle_offset;
+    private double X_angle_offset;
     private double rate_offset;
+    private double X_rate_offset;
     private double X_Accel_offset;
     private double Y_Accel_offset;
     private double Z_Accel_offset;
     private double angle;
+    private double X_angle;
     private double LoopTime;
 
     /**
@@ -34,10 +37,12 @@ public class MPU6050 implements Gyro{
         LoopTime = 0.2;
         angle_offset = 0;
         rate_offset = 0;
+        X_rate_offset = 0;
         X_Accel_offset = 0;
         X_Accel_offset = 0;
         Z_Accel_offset = 0;
         angle = 0;
+        X_angle = 0;
         // write(0x1B, (byte) 0x08); // Set full scale range for gyro
         // write(0x1C, (byte) 0x08); // Set full scale range for accelerometer
     }
@@ -57,6 +62,9 @@ public class MPU6050 implements Gyro{
      * @return The bytes read from the sensor.
      */
     private byte[] read(int register, int count) {
+        if (!isConnected()) {
+            throw new RuntimeException("MPU6050 is not connected!");
+        }
         byte[] buffer = new byte[count];
         mpu6050.read(register, count, buffer);
         return buffer;
@@ -68,6 +76,9 @@ public class MPU6050 implements Gyro{
      * @return The value read from the sensor.
      */
     private short readShort(int register) {
+        if (!isConnected()) {
+            throw new RuntimeException("MPU6050 is not connected!");
+        }
         byte[] buffer = read(register, 2);
         return (short) ((buffer[0] << 8) | buffer[1]);
     }
@@ -80,14 +91,26 @@ public class MPU6050 implements Gyro{
         mpu6050.close();
     }
 
+    /**
+     * Calibrate the gyro. 
+     * <p>It's important to make sure that the robot is not moving while the calibration is in progress, 
+     * this is typically done when the robot is first turned on while it's sitting at rest before the match starts.<p>
+     * 
+     * @apiNote The calibration process takes 5 seconds to complete.
+     */
     @Override
     public void calibrate() {
         System.out.println("Starting Calibration");
         angle_offset = getAngle();
+        X_angle_offset = getAngleX();
         AccCalibrate();
         //for some reason taking the highest value gives the best results.
         for (int i = 0; i < 200; i++) {
-            if (rate_offset < getRate()) {
+            if (Math.abs(X_rate_offset) < Math.abs(getGyro_Rate_X())) {
+                X_rate_offset = getGyro_Rate_X();
+            }
+
+            if (Math.abs(rate_offset) < Math.abs(getRate())) {
                 rate_offset = getRate();
             }
             try {
@@ -135,12 +158,24 @@ public class MPU6050 implements Gyro{
         return angle - angle_offset;
     }
 
+    /**
+     * Return The heading of the X axis.
+     * <p>The angle is continuous, that is it will continue from 360 to 361 degrees. 
+     * This allows algorithms that wouldn't want to see a discontinuity in the gyro output 
+     * as it sweeps past from 360 to 0 on the second time around.<p>
+     * <p> This heading is based on integration of the returned rate from the gyro. <p>
+     * @return The current X angle of the robot in degrees.
+     */
+    public double getAngleX() {
+        double rate = getGyro_Rate_X();
+        X_angle += rate * LoopTime;
+        return X_angle - X_angle_offset;
+    }
+
     @Override
     public double getRate() {
         byte[] buffer = new byte[6];
         mpu6050.read(GYRO_XOUT_H, 6, buffer);
-        int x = (buffer[0] << 8) | buffer[1];
-        int y = (buffer[2] << 8) | buffer[3];
         int z = (buffer[4] << 8) | buffer[5];
         return ((double) z / 131.0) - rate_offset;
     }
