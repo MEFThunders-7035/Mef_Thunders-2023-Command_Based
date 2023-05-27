@@ -149,7 +149,7 @@ public class MPU6050 implements Gyro{
      * Gets the angle of the sensor.
      * @return The rate of the sensor in degrees per second.
      */
-    public double getGyroX() {
+    public double getGyro_Rate_X() {
         return readShort(GYRO_XOUT_H) / 131.0;
     }
 
@@ -157,15 +157,15 @@ public class MPU6050 implements Gyro{
      * Gets the angle of the sensor.
      * @return The rate of the sensor in degrees per second.
      */
-    public double getGyroY() {
-        return readShort(GYRO_YOUT_H) / 131.0;
+    public double getGyro_Rate_Y() {
+        return (readShort(GYRO_YOUT_H) - X_rate_offset) / 131.0;
     }
 
     /**
      * Gets the angle of the sensor.
      * @return The rate of the sensor in degrees per second.
      */
-    public double getGyroZ() {
+    public double getGyro_Rate_Z() {
         return (readShort(GYRO_ZOUT_H) - rate_offset) / 131.0;
     }
 
