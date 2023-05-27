@@ -40,7 +40,6 @@ import frc.robot.commands.ArcadeDriveCmd;
 import frc.robot.commands.HoldIntakeCmd;
 import frc.robot.commands.IntakeNeoJoystickCmd;
 import frc.robot.commands.IntakeRedlineJoystickCmd;
-import frc.robot.commands.SetCompressorCmd;
 import frc.robot.commands.SetSelenoidsCmd;
 import frc.robot.commands.TimedDriveCmd;
 import frc.robot.commands.TimedIntakeRedlineCmd;
@@ -87,6 +86,8 @@ public class RobotContainer {
     new JoystickButton(stick, 4).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kDownSpeed));
     new JoystickButton(stick, 5).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, IntakeConstants.kRedlineSpeed));
     new JoystickButton(stick, 6).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, -IntakeConstants.kRedlineSpeed));
+    new JoystickButton(stick, 7).whileTrue(new SetSelenoidsCmd(pneumaticsSubsystem, false));
+    new JoystickButton(stick, 8).whileTrue(new SetSelenoidsCmd(pneumaticsSubsystem, true));
   }
 
   private void AddChoosers() {

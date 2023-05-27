@@ -7,10 +7,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PneumaticsConstants;
 
 public class PneumaticsSubsystem extends SubsystemBase implements AutoCloseable{
-    private final DoubleSolenoid double_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,PneumaticsConstants.kSolenoidFowardPort, PneumaticsConstants.kSolenoidReversePort);
-    private final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
+    private final DoubleSolenoid double_solenoid;
+    private final Compressor compressor;
 
     public PneumaticsSubsystem() {
+        double_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
+        PneumaticsConstants.kSolenoidFowardPort, 
+        PneumaticsConstants.kSolenoidReversePort);
+
+        compressor = new Compressor(PneumaticsModuleType.CTREPCM);
     }
 
     @Override
