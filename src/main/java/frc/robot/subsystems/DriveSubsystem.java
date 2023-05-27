@@ -187,7 +187,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
 
   /**
-   * Resets the encoders
+   * Resets the encoders to 0
    */
   public void resetEncoders() {
     leftEncoder.reset();
@@ -264,12 +264,33 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
 
   /**
+   * * Gets the rotation of the navX in degrees
+   * NOTE: The angle is continuous, meaning it's range is beyond 360 degrees. 
+   * This ensures that algorithms that wouldn't want to see a discontinuity in the gyro output 
+   * as it sweeps past 0 on the second time around.
+   * if you want it to be fixed use {@link DriveSubsystem#getGyroAngleFixed}
+   * @return the total accumilated Pitch angle (X axis) double rotation in degrees.
+   */
+  public double getGyroPitch() {
+    return mpu6050.getAngleX();
+  }
+
+  /**
    * Gets the rotation of the navX in degrees but does not go past 360 degrees.
    * if you want it to be continuous use {@link DriveSubsystem#getGyroAngle}
    * @return the yaw angle (Z axis) double rotation in degrees.
    */
   public double getGyroAngleFixed() {
     return mpu6050.getAngle() % 360;
+  }
+  
+  /**
+   * Gets the rotation of the navX in degrees but does not go past 360 degrees.
+   * if you want it to be continuous use {@link DriveSubsystem#getGyroAngle}
+   * @return the pitch angle (X axis) rotation in degrees.
+   */
+  public double getGyroPitchFixed() {
+    return mpu6050.getAngleX() % 360;
   }
 
   /**
