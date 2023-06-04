@@ -22,6 +22,7 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kJoystickPort = 0;
   }
+  
   public static class DriveConstants {
     public static final int kLeftMotor1Port = 3;
     public static final int kLeftMotor2Port = 4;
@@ -93,6 +94,7 @@ public final class Constants {
     public static final int Y_AXIS = 1;
     public static final int Z_AXIS = 2;
   }
+  
   public static class AutonomousConstants {
     public static final double kDriveSpeed = -0.25;
     public static final double kDriveTime = 8;
@@ -106,6 +108,11 @@ public final class Constants {
     public static final String kRamsete = "Ramsete Auto";
 
     public static class headingPIDConstants {
+      public static final double kP = 0.01;
+      public static final double kI = 0;
+      public static final double kD = 0;
+    }
+    public static class EncoderPIDConstants {
       public static final double kP = 0.01;
       public static final double kI = 0;
       public static final double kD = 0;
