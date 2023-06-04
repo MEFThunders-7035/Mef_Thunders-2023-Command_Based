@@ -15,7 +15,6 @@ public class TimedDriveCmd extends CommandBase{
     private double fixheadingspeed;
     private Timer timer;
     private boolean finlished = false;
-    private boolean started = false;
     
     /**
     * Drives foward for a certain amount of time
@@ -41,17 +40,13 @@ public class TimedDriveCmd extends CommandBase{
     public void initialize() {
         timer.reset();
         finlished = false;
-        started = false;
         timer.start();
         first_heading = driveSubsystem.getGyroAngle();
         headingPidController.setSetpoint(first_heading);
     }
     @Override
     public void execute() {
-        if (Math.abs(speed) > 1) throw new IllegalArgumentException("Speed must be between -1 and 1");
-        if (started) {
-            return;
-        }
+        if (Math.abs(speed) > 1) throw new RuntimeException("Speed must be between -1 and 1");
         fixheadingspeed = headingPidController.calculate(driveSubsystem.getGyroAngle());
         if (timer.get() < time) {
             driveSubsystem.drive(speed, fixheadingspeed, false);
