@@ -12,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -40,7 +39,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final DifferentialDrive driveTrain = new DifferentialDrive(leftMotorsGroup,rightMotorsGroup);
 
   private DifferentialDriveOdometry odometry;
-  private DifferentialDriveKinematics kinematics;
   
   private final Encoder leftEncoder = new Encoder(DriveConstants.kEncoderLeftPort1, DriveConstants.kEncoderLeftPort2);
   private final Encoder rightEncoder = new Encoder(DriveConstants.kEncoderRightPort1, DriveConstants.kEncoderRightPort2);
@@ -73,8 +71,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     rightEncoder.setReverseDirection(DriveConstants.kEncoderRightReversed);
 
     odometry = new DifferentialDriveOdometry(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
-
-    kinematics = new DifferentialDriveKinematics(DriveConstants.kTrackwidthMeters);
   }
 
   @Override
@@ -164,6 +160,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   public Pose2d getPose() {
     return odometry.getPoseMeters();
+  }
+
+  public void resetPose(Pose2d pose) {
+    resetOdometry(pose);
   }
   
   public Supplier<Pose2d>  getPose2dSupplier() {
@@ -304,9 +304,5 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    */
   public double getGyroRate() {
     return mpu6050.getRate();
-  }
-
-  public DifferentialDriveKinematics getKinematics() {
-    return kinematics;
   }
 }

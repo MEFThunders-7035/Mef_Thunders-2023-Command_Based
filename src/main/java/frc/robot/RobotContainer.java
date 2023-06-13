@@ -37,6 +37,7 @@ import frc.robot.Constants.PhotonVisionConstants;
 import frc.robot.Constants.VerticalElevatorConstants;
 
 import frc.robot.commands.ArcadeDriveCmd;
+import frc.robot.commands.EncoderDriveCmd;
 import frc.robot.commands.HoldIntakeCmd;
 import frc.robot.commands.IntakeNeoJoystickCmd;
 import frc.robot.commands.IntakeRedlineJoystickCmd;
@@ -96,6 +97,7 @@ public class RobotContainer {
     Auto_chooser.addOption("Camera Auto", AutonomousConstants.kCameraAuto);
     Auto_chooser.addOption("Stabilize Auto", AutonomousConstants.kStabilize);
     Auto_chooser.addOption("Ramsete Auto", AutonomousConstants.kRamsete);
+    Auto_chooser.addOption("Encoder Drive Auto", AutonomousConstants.kEncoder);
     SmartDashboard.putData("Auto choices", Auto_chooser);
 
     Camera_chooser.setDefaultOption("Pi Cam", PhotonVisionConstants.Cameras.kPiCamera);
@@ -122,6 +124,8 @@ public class RobotContainer {
         return stabilizeAuto();
       case AutonomousConstants.kRamsete:
         return ramseteCommand();
+      case AutonomousConstants.kEncoder:
+        return EncoderDriveAutoCommand();
       default:
         return timedAuto();
     }
@@ -147,21 +151,25 @@ public class RobotContainer {
     return null;
   }
 
+  private Command EncoderDriveAutoCommand() {
+    return new EncoderDriveCmd(driveSubsystem, 1);
+  }
+
   private Command ramseteCommand() {
     var VoltageConstraint = new DifferentialDriveVoltageConstraint(
       new SimpleMotorFeedforward(
         DriveConstants.FeedForwardConstants.ksVolts,
         DriveConstants.FeedForwardConstants.kvVoltSecondsPerMeter,
         DriveConstants.FeedForwardConstants.kaVoltSecondsSquaredPerMeter), 
-        driveSubsystem.getKinematics(),
-        10);
+        DriveConstants.kDriveKinematics,
+        8);
     
     TrajectoryConfig config =
     new TrajectoryConfig(
       DriveConstants.kMaxSpeedMetersPerSecond,
       DriveConstants.kMaxAccelerationMetersPerSecondSquared)
     // Add kinematics to ensure max speed is actually obeyed
-    .setKinematics(driveSubsystem.getKinematics())
+    .setKinematics(DriveConstants.kDriveKinematics)
     // Apply the voltage constraint
     .addConstraint(VoltageConstraint);
     
