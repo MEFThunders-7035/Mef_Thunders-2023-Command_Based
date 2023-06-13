@@ -1,8 +1,9 @@
 package frc.robot.Interphases;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class MPU6050 implements Gyro{
     private static final int DEVICE_ADDRESS = 0x68;
@@ -47,14 +48,6 @@ public class MPU6050 implements Gyro{
         // write(0x1C, (byte) 0x08); // Set full scale range for accelerometer
     }
 
-    public boolean isConnected() {
-        boolean isConnected = !mpu6050.addressOnly();
-        if (!isConnected) {
-            DriverStation.reportError("MPU6050 is not connected!", false);
-        }
-        return isConnected;
-    }
-
     /**
      * Reads the specified number of bytes from the specified register on the sensor.
      * @param register The register to read from.
@@ -62,9 +55,6 @@ public class MPU6050 implements Gyro{
      * @return The bytes read from the sensor.
      */
     private byte[] read(int register, int count) {
-        if (!isConnected()) {
-            throw new RuntimeException("MPU6050 is not connected!");
-        }
         byte[] buffer = new byte[count];
         mpu6050.read(register, count, buffer);
         return buffer;
@@ -76,9 +66,6 @@ public class MPU6050 implements Gyro{
      * @return The value read from the sensor.
      */
     private short readShort(int register) {
-        if (!isConnected()) {
-            throw new RuntimeException("MPU6050 is not connected!");
-        }
         byte[] buffer = read(register, 2);
         return (short) ((buffer[0] << 8) | buffer[1]);
     }
@@ -155,7 +142,10 @@ public class MPU6050 implements Gyro{
     public double getAngle() {
         double rate = getRate();
         angle += rate * LoopTime;
-        return angle - angle_offset;
+        double gyro_angle = angle - angle_offset;
+        double acc_angle =  Units.radiansToDegrees(Math.atan2(getAccelY(), getAccelZ()));
+        SmartDashboard.putNumber("Acc Angle", acc_angle);
+        return gyro_angle;
     }
 
     /**
