@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -59,6 +60,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     this.field = field;
     calibrateGyro();
     resetEncoders();
+    leftMotor1.setNeutralMode(NeutralMode.Brake);
+    leftMotor2.setNeutralMode(NeutralMode.Brake);
+    rightMotor1.setNeutralMode(NeutralMode.Brake);
+    rightMotor2.setNeutralMode(NeutralMode.Brake);
     leftMotorsGroup.setInverted(DriveConstants.kLeftMotorInverted);
     rightMotorsGroup.setInverted(DriveConstants.kRightMotorInverted);
     leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
