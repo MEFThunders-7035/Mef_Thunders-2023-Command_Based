@@ -5,7 +5,14 @@
 package frc.robot;
 
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.RamseteAutoBuilder;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
@@ -76,7 +83,7 @@ public class RobotContainer {
     AddChoosers();
     SetupCamera();
     Vertical_Elevator_Subsytem.setDefaultCommand(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, 0));
-    Neo_IntakeSubsystem.setDefaultCommand(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kidleSpeed));
+    Neo_IntakeSubsystem.setDefaultCommand(new HoldIntakeCmd(Neo_IntakeSubsystem));
     driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, () -> stick.getRawAxis(IoConstants.Y_AXIS), () -> stick.getRawAxis(IoConstants.Z_AXIS)));
   }
 
@@ -103,6 +110,7 @@ public class RobotContainer {
     Camera_chooser.setDefaultOption("Pi Cam", PhotonVisionConstants.Cameras.kPiCamera);
     Camera_chooser.addOption("Wide Cam", PhotonVisionConstants.Cameras.kWideCamera);
     SmartDashboard.putData("Camera choices", Camera_chooser);
+
   }
 
   private void SetupCamera() {
@@ -176,13 +184,12 @@ public class RobotContainer {
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
       // Start at the origin facing the +X direction
       new Pose2d(0, 0, new Rotation2d(0)),
-      // Pass through these two interior waypoints, making an 's' curve path
+      // Pass through these two interior waypoints, going foward at 2 m/s
       List.of(
-        new Translation2d(1, 1),
-        new Translation2d(2, -1)
+        new Translation2d(1, 0)
       ),
-      // End 3 meters straight ahead of where we started, facing forward
-      new Pose2d(3, 0, new Rotation2d(0)),
+      // End 1 meters straight ahead of where we started, facing forward
+      new Pose2d(2, 0, new Rotation2d(0)),
       // Pass config
       config
     );
@@ -208,6 +215,10 @@ public class RobotContainer {
     driveSubsystem.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return ramseteCommand.andThen(() -> driveSubsystem.setMotorVoltage(0, 0));
+    return ramseteCommand.andThen(() -> driveSubsystem.setMotorVoltage(0, 0)).andThen(() -> System.out.println("Ramsete Command Finished"));
+  }
+
+  private Command pathFollowCommand() {
+    return null;
   }
 }
