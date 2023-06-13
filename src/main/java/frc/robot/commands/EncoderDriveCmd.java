@@ -30,13 +30,17 @@ public class EncoderDriveCmd extends CommandBase {
 						EncoderPIDConstants.kP,
 						EncoderPIDConstants.kI, 
 						EncoderPIDConstants.kD);
+    EncoderPIDController.setTolerance(EncoderPIDConstants.kToleranceMeters);
+    EncoderPIDController.setIntegratorRange(0, 0.4);
     addRequirements(this.driveSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {    
+    System.out.println("Encoder Drive Started!");
     driveSubsystem.resetEncoders();
+    first_heading = driveSubsystem.getGyroAngle();
     headingPidController.setSetpoint(first_heading);
 		EncoderPIDController.setSetpoint(distance);
 		finished = false;
@@ -51,13 +55,15 @@ public class EncoderDriveCmd extends CommandBase {
 		double fixheadingspeed = headingPidController.calculate(driveSubsystem.getGyroAngle());
 		double fixdistancespeed = EncoderPIDController.calculate(driveSubsystem.getAvarageEncoderDistance());
 
-		driveSubsystem.drive(fixdistancespeed, fixheadingspeed, false);
+		driveSubsystem.drive(-fixdistancespeed, fixheadingspeed, false);
+    finished = EncoderPIDController.atSetpoint();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     driveSubsystem.stop();
+    System.out.println("Encoder Command Finished!");
   }
 
   // Returns true when the command should end.
