@@ -97,7 +97,7 @@ public class RobotContainer {
     Auto_chooser.addOption("Stabilize Auto", AutonomousConstants.kStabilize);
     Auto_chooser.addOption("Ramsete Auto", AutonomousConstants.kRamsete);
     Auto_chooser.addOption("Encoder Drive Auto", AutonomousConstants.kEncoder);
-    Auto_chooser.addOption("Path Follow Auto", AutonomousConstants.kPath_Follow);
+    Auto_chooser.addOption("Path Follow Auto", AutonomousConstants.kPath);
     SmartDashboard.putData("Auto choices", Auto_chooser);
 
     Camera_chooser.setDefaultOption("Pi Cam", PhotonVisionConstants.Cameras.kPiCamera);
@@ -125,7 +125,7 @@ public class RobotContainer {
         return ramseteCommand();
       case AutonomousConstants.kEncoder:
         return EncoderDriveAutoCommand();
-      case AutonomousConstants.kPath_Follow:
+      case AutonomousConstants.kPath:
         return pathFollowCommand();
       default:
         return timedAuto();

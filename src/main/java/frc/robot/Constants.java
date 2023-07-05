@@ -108,7 +108,7 @@ public final class Constants {
     public static final String kStabilize = "Stabilize Auto";
     public static final String kRamsete = "Ramsete Auto";
     public static final String kEncoder = "Encoder Auto";
-    public static final String kPath_Follow = "Path Follow Auto";
+    public static final String kPath = "Path Follow Auto";
 
     public static class headingPIDConstants {
       public static final double kP = 0.01;
