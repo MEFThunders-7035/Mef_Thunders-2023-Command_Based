@@ -5,14 +5,7 @@
 package frc.robot;
 
 
-import java.util.ArrayList;
 import java.util.List;
-
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.RamseteAutoBuilder;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
@@ -100,11 +93,11 @@ public class RobotContainer {
 
   private void AddChoosers() {
     Auto_chooser.setDefaultOption("Timer Auto", AutonomousConstants.kTimedAuto);
-    Auto_chooser.addOption("Gyro Auto", AutonomousConstants.kGyroAuto);
     Auto_chooser.addOption("Camera Auto", AutonomousConstants.kCameraAuto);
     Auto_chooser.addOption("Stabilize Auto", AutonomousConstants.kStabilize);
     Auto_chooser.addOption("Ramsete Auto", AutonomousConstants.kRamsete);
     Auto_chooser.addOption("Encoder Drive Auto", AutonomousConstants.kEncoder);
+    Auto_chooser.addOption("Path Follow Auto", AutonomousConstants.kPath_Follow);
     SmartDashboard.putData("Auto choices", Auto_chooser);
 
     Camera_chooser.setDefaultOption("Pi Cam", PhotonVisionConstants.Cameras.kPiCamera);
@@ -124,8 +117,6 @@ public class RobotContainer {
     switch (autoSelected) {
       case AutonomousConstants.kTimedAuto:
         return timedAuto();
-      case AutonomousConstants.kGyroAuto:
-        return gyroAuto();
       case AutonomousConstants.kCameraAuto:
         return cameraAuto();
       case AutonomousConstants.kStabilize:
@@ -134,6 +125,8 @@ public class RobotContainer {
         return ramseteCommand();
       case AutonomousConstants.kEncoder:
         return EncoderDriveAutoCommand();
+      case AutonomousConstants.kPath_Follow:
+        return pathFollowCommand();
       default:
         return timedAuto();
     }
@@ -146,10 +139,6 @@ public class RobotContainer {
     );
   }
   
-  private Command gyroAuto() {
-    return null;
-  }
-  
   private Command cameraAuto() {
     SetupCamera();
     return new VisionTargettingCmd(photonVisionSubsystem, driveSubsystem);
@@ -160,7 +149,7 @@ public class RobotContainer {
   }
 
   private Command EncoderDriveAutoCommand() {
-    return new EncoderDriveCmd(driveSubsystem, 1);
+    return new EncoderDriveCmd(driveSubsystem, AutonomousConstants.kDriveAmount);
   }
 
   private Command ramseteCommand() {
@@ -219,6 +208,6 @@ public class RobotContainer {
   }
 
   private Command pathFollowCommand() {
-    return null;
+    return driveSubsystem.Path_Follow_Command();
   }
 }
