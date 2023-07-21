@@ -1,3 +1,4 @@
+
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -7,21 +8,28 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPRamseteCommand;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Interphases.MPU6050;
@@ -39,6 +47,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final DifferentialDrive driveTrain = new DifferentialDrive(leftMotorsGroup,rightMotorsGroup);
 
   private DifferentialDriveOdometry odometry;
+  private DifferentialDriveKinematics kinematics;
   
   private final Encoder leftEncoder = new Encoder(DriveConstants.kEncoderLeftPort1, DriveConstants.kEncoderLeftPort2);
   private final Encoder rightEncoder = new Encoder(DriveConstants.kEncoderRightPort1, DriveConstants.kEncoderRightPort2);
@@ -48,29 +57,27 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   
   private final Field2d field;
 
-  private double currentTimestamp;
-  private double lastTimestamp;
-  private double dt;
+  private boolean on_extra_loop;
   
   public DriveSubsystem(Field2d field) {
     this.port = I2C.Port.kOnboard;
     this.mpu6050 = new MPU6050(port);
     this.field = field;
+    this.on_extra_loop = false;
     calibrateGyro();
     resetEncoders();
-    leftMotor1.setNeutralMode(NeutralMode.Brake);
-    leftMotor2.setNeutralMode(NeutralMode.Brake);
-    rightMotor1.setNeutralMode(NeutralMode.Brake);
-    rightMotor2.setNeutralMode(NeutralMode.Brake);
     leftMotorsGroup.setInverted(DriveConstants.kLeftMotorInverted);
     rightMotorsGroup.setInverted(DriveConstants.kRightMotorInverted);
+    
     leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
     rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
 
     leftEncoder.setReverseDirection(DriveConstants.kEncoderLeftReversed);
     rightEncoder.setReverseDirection(DriveConstants.kEncoderRightReversed);
 
-    odometry = new DifferentialDriveOdometry(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
+    this.odometry = new DifferentialDriveOdometry(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
+
+    this.kinematics = DriveConstants.kDriveKinematics;
   }
 
   @Override
@@ -89,12 +96,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   @Override
   public void periodic() {
-    currentTimestamp = Timer.getFPGATimestamp();
-    dt = currentTimestamp - lastTimestamp;
-    lastTimestamp = currentTimestamp;
-    mpu6050.setLoopTime(dt);
+    if (!on_extra_loop) {mpu6050.update();}
     Pose2d pose = odometry.update(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
     field.setRobotPose(pose.getX(), pose.getY(), pose.getRotation());
+    dashboard_debug();
+  }
+
+  private void dashboard_debug() {
     SmartDashboard.putNumber("Rotation", getGyroAngle());
     SmartDashboard.putNumber("Rotation Rate", getGyroRate());
     SmartDashboard.putNumber("Rotation offset", mpu6050.getRate_offset());
@@ -159,19 +167,15 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
 
   public Pose2d getPose() {
-    return odometry.getPoseMeters();
-  }
-
-  public void resetPose(Pose2d pose) {
-    resetOdometry(pose);
+    return this.odometry.getPoseMeters();
   }
   
   public Supplier<Pose2d>  getPose2dSupplier() {
-    return () -> odometry.getPoseMeters();
+    return () -> this.odometry.getPoseMeters();
   }
 
   public DifferentialDriveOdometry getDiffOdometry() {
-    return odometry;
+    return this.odometry;
   }
   
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
@@ -180,7 +184,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    odometry.resetPosition(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose); 
+    this.odometry.resetPosition(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose); 
   }
 
   public void setSafetyEnabled(boolean enabled) {
@@ -304,5 +308,35 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    */
   public double getGyroRate() {
     return mpu6050.getRate();
+  }
+
+  public DifferentialDriveKinematics getKinematics() {
+    return kinematics;
+  }
+
+  public void run_gyro_loop() {
+    
+
+    
+  }
+
+  public Command Path_Follow_Command() {
+    PathPlannerTrajectory traj = PathPlanner.loadPath("Foward.path", new PathConstraints(3, 2));
+    
+    return new PPRamseteCommand(
+      traj, 
+      this::getPose, // Pose supplier
+      new RamseteController(),
+      new SimpleMotorFeedforward(DriveConstants.FeedForwardConstants.ksVolts,
+        DriveConstants.FeedForwardConstants.kvVoltSecondsPerMeter,
+        DriveConstants.FeedForwardConstants.kaVoltSecondsSquaredPerMeter),
+      this.kinematics, // DifferentialDriveKinematics
+      this::getWheelSpeeds, // DifferentialDriveWheelSpeeds supplier
+      new PIDController(0, 0, 0), // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+      new PIDController(0, 0, 0), // Right controller (usually the same values as left controller)
+      this::setMotorVoltage, // Voltage biconsumer
+      true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+      this // Requires this drive subsystem
+    );
   }
 }

@@ -59,7 +59,7 @@ import frc.robot.subsystems.VerticalElevatorSubsystem;
 public class RobotContainer {
   private final Field2d field2d = new Field2d();
   // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem driveSubsystem = new DriveSubsystem(field2d);
+  public final DriveSubsystem driveSubsystem = new DriveSubsystem(field2d);
   private final VerticalElevatorSubsystem Vertical_Elevator_Subsytem = new VerticalElevatorSubsystem();
   private final IntakeArmSubsystem Neo_IntakeSubsystem = new IntakeArmSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
@@ -76,7 +76,7 @@ public class RobotContainer {
     AddChoosers();
     SetupCamera();
     Vertical_Elevator_Subsytem.setDefaultCommand(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, 0));
-    Neo_IntakeSubsystem.setDefaultCommand(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kidleSpeed));
+    Neo_IntakeSubsystem.setDefaultCommand(new HoldIntakeCmd(Neo_IntakeSubsystem));
     driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, () -> stick.getRawAxis(IoConstants.Y_AXIS), () -> stick.getRawAxis(IoConstants.Z_AXIS)));
   }
 
@@ -93,16 +93,17 @@ public class RobotContainer {
 
   private void AddChoosers() {
     Auto_chooser.setDefaultOption("Timer Auto", AutonomousConstants.kTimedAuto);
-    Auto_chooser.addOption("Gyro Auto", AutonomousConstants.kGyroAuto);
     Auto_chooser.addOption("Camera Auto", AutonomousConstants.kCameraAuto);
     Auto_chooser.addOption("Stabilize Auto", AutonomousConstants.kStabilize);
     Auto_chooser.addOption("Ramsete Auto", AutonomousConstants.kRamsete);
     Auto_chooser.addOption("Encoder Drive Auto", AutonomousConstants.kEncoder);
+    Auto_chooser.addOption("Path Follow Auto", AutonomousConstants.kPath);
     SmartDashboard.putData("Auto choices", Auto_chooser);
 
     Camera_chooser.setDefaultOption("Pi Cam", PhotonVisionConstants.Cameras.kPiCamera);
     Camera_chooser.addOption("Wide Cam", PhotonVisionConstants.Cameras.kWideCamera);
     SmartDashboard.putData("Camera choices", Camera_chooser);
+
   }
 
   private void SetupCamera() {
@@ -116,8 +117,6 @@ public class RobotContainer {
     switch (autoSelected) {
       case AutonomousConstants.kTimedAuto:
         return timedAuto();
-      case AutonomousConstants.kGyroAuto:
-        return gyroAuto();
       case AutonomousConstants.kCameraAuto:
         return cameraAuto();
       case AutonomousConstants.kStabilize:
@@ -126,6 +125,8 @@ public class RobotContainer {
         return ramseteCommand();
       case AutonomousConstants.kEncoder:
         return EncoderDriveAutoCommand();
+      case AutonomousConstants.kPath:
+        return pathFollowCommand();
       default:
         return timedAuto();
     }
@@ -138,10 +139,6 @@ public class RobotContainer {
     );
   }
   
-  private Command gyroAuto() {
-    return null;
-  }
-  
   private Command cameraAuto() {
     SetupCamera();
     return new VisionTargettingCmd(photonVisionSubsystem, driveSubsystem);
@@ -152,7 +149,7 @@ public class RobotContainer {
   }
 
   private Command EncoderDriveAutoCommand() {
-    return new EncoderDriveCmd(driveSubsystem, 1);
+    return new EncoderDriveCmd(driveSubsystem, AutonomousConstants.kDriveAmount);
   }
 
   private Command ramseteCommand() {
@@ -176,13 +173,12 @@ public class RobotContainer {
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
       // Start at the origin facing the +X direction
       new Pose2d(0, 0, new Rotation2d(0)),
-      // Pass through these two interior waypoints, making an 's' curve path
+      // Pass through these two interior waypoints, going foward at 2 m/s
       List.of(
-        new Translation2d(1, 1),
-        new Translation2d(2, -1)
+        new Translation2d(1, 0)
       ),
-      // End 3 meters straight ahead of where we started, facing forward
-      new Pose2d(3, 0, new Rotation2d(0)),
+      // End 1 meters straight ahead of where we started, facing forward
+      new Pose2d(2, 0, new Rotation2d(0)),
       // Pass config
       config
     );
@@ -208,6 +204,10 @@ public class RobotContainer {
     driveSubsystem.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return ramseteCommand.andThen(() -> driveSubsystem.setMotorVoltage(0, 0));
+    return ramseteCommand.andThen(() -> driveSubsystem.setMotorVoltage(0, 0)).andThen(() -> System.out.println("Ramsete Command Finished"));
+  }
+
+  private Command pathFollowCommand() {
+    return driveSubsystem.Path_Follow_Command();
   }
 }

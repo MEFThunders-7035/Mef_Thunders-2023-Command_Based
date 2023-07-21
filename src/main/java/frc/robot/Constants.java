@@ -97,17 +97,18 @@ public final class Constants {
   }
   
   public static class AutonomousConstants {
+    public static final double kDriveAmount = 2;
     public static final double kDriveSpeed = -0.25;
     public static final double kDriveTime = 8;
     public static final double kRedlineSpeed = 0.1;
     public static final double kRedlineTime = 1;
 
     public static final String kTimedAuto = "Timer Auto";
-    public static final String kGyroAuto = "Gyro Auto";
     public static final String kCameraAuto = "Camera Auto";
     public static final String kStabilize = "Stabilize Auto";
     public static final String kRamsete = "Ramsete Auto";
     public static final String kEncoder = "Encoder Auto";
+    public static final String kPath = "Path Follow Auto";
 
     public static class headingPIDConstants {
       public static final double kP = 0.01;
