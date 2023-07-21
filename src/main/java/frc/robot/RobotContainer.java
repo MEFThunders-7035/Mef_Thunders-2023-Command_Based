@@ -61,7 +61,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public final DriveSubsystem driveSubsystem = new DriveSubsystem(field2d);
   private final VerticalElevatorSubsystem Vertical_Elevator_Subsytem = new VerticalElevatorSubsystem();
-  private final IntakeArmSubsystem Neo_IntakeSubsystem = new IntakeArmSubsystem();
+  private final IntakeArmSubsystem IntakeArmSubsystem = new IntakeArmSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
   private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
   private final PhotonVisionSubsystem photonVisionSubsystem = new PhotonVisionSubsystem(field2d);
@@ -76,15 +76,15 @@ public class RobotContainer {
     AddChoosers();
     SetupCamera();
     Vertical_Elevator_Subsytem.setDefaultCommand(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, 0));
-    Neo_IntakeSubsystem.setDefaultCommand(new HoldIntakeCmd(Neo_IntakeSubsystem));
+    IntakeArmSubsystem.setDefaultCommand(new HoldIntakeCmd(IntakeArmSubsystem));
     driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, () -> stick.getRawAxis(IoConstants.Y_AXIS), () -> stick.getRawAxis(IoConstants.Z_AXIS)));
   }
 
   private void configureBindings() {
     new POVButton(stick, 0).whileTrue(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, VerticalElevatorConstants.kSpeed).until(Vertical_Elevator_Subsytem.getTopLimitSwitchSupplier()));
     new POVButton(stick, 180).whileTrue(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, -VerticalElevatorConstants.kSpeed).until(Vertical_Elevator_Subsytem.getBottomLimitSwitchSupplier()));
-    new JoystickButton(stick, 3).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kUpSpeed));
-    new JoystickButton(stick, 4).whileTrue(new IntakeNeoJoystickCmd(Neo_IntakeSubsystem, IntakeConstants.kDownSpeed));
+    new JoystickButton(stick, 3).whileTrue(new IntakeNeoJoystickCmd(IntakeArmSubsystem, IntakeConstants.kUpSpeed));
+    new JoystickButton(stick, 4).whileTrue(new IntakeNeoJoystickCmd(IntakeArmSubsystem, IntakeConstants.kDownSpeed));
     new JoystickButton(stick, 5).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, IntakeConstants.kRedlineSpeed));
     new JoystickButton(stick, 6).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, -IntakeConstants.kRedlineSpeed));
     new JoystickButton(stick, 7).whileTrue(new SetSelenoidsCmd(pneumaticsSubsystem, false));
