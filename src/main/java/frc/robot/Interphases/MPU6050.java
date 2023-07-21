@@ -2,6 +2,7 @@ package frc.robot.Interphases;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -27,6 +28,9 @@ public class MPU6050 implements Gyro{
     private double angle;
     private double X_angle;
     private double LoopTime;
+    private double currentTimestamp;
+    private double lastTimestamp;
+
 
     /**
      * Creates a new instance of the MPU6050 class.
@@ -77,13 +81,47 @@ public class MPU6050 implements Gyro{
     public void close() throws Exception {
         mpu6050.close();
     }
+    
+    /**
+     * Runs all the calculations to get the angle data, so it's important to run this periodically.
+     * @param period The loop time in seconds.
+     * @apiNote RUN IT PERIODICALLY. 
+     */
+    public void update() {
+        currentTimestamp = Timer.getFPGATimestamp();
+        LoopTime = currentTimestamp - lastTimestamp;
+        lastTimestamp = currentTimestamp;
+        /*
+        // Assuming X axis pointing forward, the Y axis pointing left, and the Z axis pointing up. (probably not the case here)
+        
+        // TODO: check if the axis are correct and if not change them (they are probably wrong!).
+        
+        private final double alpha = 0.98; // adjust this value to change the filter strength
+        
+        double rateX = this.getRate();
+        double rateY = this.getGyro_Rate_Y();
+        double rateZ = this.getGyro_Rate_Z();
+
+        double accelX = this.getAccelX();
+        double accelY = this.getAccelY();
+        double accelZ = this.getAccelZ();
+
+        double angleAccelX = Math.atan2(accelY, accelZ) * 180 / Math.PI;
+        double angleAccelY = Math.atan2(-accelX, Math.sqrt(accelY * accelY + accelZ * accelZ)) * 180 / Math.PI;
+
+        angleX = alpha * (angleX + rateX * LoopTime) + (1 - alpha) * angleAccelX;
+        angleY = alpha * (angleY + rateY * LoopTime) + (1 - alpha) * angleAccelY;
+        angleZ += rateZ * LoopTime;
+        */
+    }
+    
 
     /**
      * Calibrate the gyro. 
      * <p>It's important to make sure that the robot is not moving while the calibration is in progress, 
      * this is typically done when the robot is first turned on while it's sitting at rest before the match starts.<p>
      * 
-     * @apiNote The calibration process takes 5 seconds to complete.
+     * @apiNote The calibration process takes approximately 5 seconds to complete.
      */
     @Override
     public void calibrate() {
@@ -92,24 +130,22 @@ public class MPU6050 implements Gyro{
         X_angle_offset = getAngleX();
         AccCalibrate();
         //for some reason taking the highest value gives the best results.
-        for (int i = 0; i < 200; i++) {
-            if (Math.abs(X_rate_offset) < Math.abs(getGyro_Rate_X())) {
-                X_rate_offset = getGyro_Rate_X();
-            }
-
-            if (Math.abs(rate_offset) < Math.abs(getRate())) {
-                rate_offset = getRate();
-            }
+        for (int i = 0; i < 500; i++) {
+            rate_offset += getRate();
+            X_rate_offset += getGyro_Rate_X();
             try {
-                Thread.sleep(25);
-            } catch (Exception e) {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Calibration Interrupted");
                 e.printStackTrace();
             }
         }
+        rate_offset = rate_offset/200;
+        X_rate_offset = X_rate_offset/200;
         System.out.println("Calibration Complete! Rate_Offstet: " + rate_offset);
     }
 
-    public void AccCalibrate() {
+    private void AccCalibrate() {
         X_Accel_offset = getAccelX();
         Y_Accel_offset = getAccelY();
         Z_Accel_offset = getAccelZ();
@@ -127,15 +163,6 @@ public class MPU6050 implements Gyro{
      */
     public double getGyroAngleFixed() {
         return getAngle() % 360;
-    }
-
-    /**
-     * Sets the loop time for the gyro, deafult is 0.2 seconds.
-     * @param period The loop time in seconds.
-     * @apiNote This is used to calculate the angle of the gyro So RUN IT PERIODICALLY. 
-     */
-    public void setLoopTime(double period) {
-        LoopTime = period;
     }
 
     @Override

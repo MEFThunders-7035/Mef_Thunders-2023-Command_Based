@@ -25,7 +25,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -58,18 +57,18 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   
   private final Field2d field;
 
-  private double currentTimestamp;
-  private double lastTimestamp;
-  private double dt;
+  private boolean on_extra_loop;
   
   public DriveSubsystem(Field2d field) {
     this.port = I2C.Port.kOnboard;
     this.mpu6050 = new MPU6050(port);
     this.field = field;
+    this.on_extra_loop = false;
     calibrateGyro();
     resetEncoders();
     leftMotorsGroup.setInverted(DriveConstants.kLeftMotorInverted);
     rightMotorsGroup.setInverted(DriveConstants.kRightMotorInverted);
+    
     leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
     rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
 
@@ -97,12 +96,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   @Override
   public void periodic() {
-    currentTimestamp = Timer.getFPGATimestamp();
-    dt = currentTimestamp - lastTimestamp;
-    lastTimestamp = currentTimestamp;
-    mpu6050.setLoopTime(dt);
+    if (!on_extra_loop) {mpu6050.update();}
     Pose2d pose = odometry.update(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
     field.setRobotPose(pose.getX(), pose.getY(), pose.getRotation());
+    dashboard_debug();
+  }
+
+  private void dashboard_debug() {
     SmartDashboard.putNumber("Rotation", getGyroAngle());
     SmartDashboard.putNumber("Rotation Rate", getGyroRate());
     SmartDashboard.putNumber("Rotation offset", mpu6050.getRate_offset());
@@ -312,6 +312,12 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   public DifferentialDriveKinematics getKinematics() {
     return kinematics;
+  }
+
+  public void run_gyro_loop() {
+    
+
+    
   }
 
   public Command Path_Follow_Command() {
