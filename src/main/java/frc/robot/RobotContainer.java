@@ -59,7 +59,7 @@ import frc.robot.subsystems.VerticalElevatorSubsystem;
 public class RobotContainer {
   private final Field2d field2d = new Field2d();
   // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem driveSubsystem = new DriveSubsystem(field2d);
+  public final DriveSubsystem driveSubsystem = new DriveSubsystem(field2d);
   private final VerticalElevatorSubsystem Vertical_Elevator_Subsytem = new VerticalElevatorSubsystem();
   private final IntakeArmSubsystem Neo_IntakeSubsystem = new IntakeArmSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
