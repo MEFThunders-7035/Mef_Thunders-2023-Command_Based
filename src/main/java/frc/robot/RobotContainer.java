@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -59,7 +60,7 @@ import frc.robot.subsystems.VerticalElevatorSubsystem;
 public class RobotContainer {
   private final Field2d field2d = new Field2d();
   // The robot's subsystems and commands are defined here...
-  public final DriveSubsystem driveSubsystem = new DriveSubsystem(field2d);
+  private final DriveSubsystem driveSubsystem = new DriveSubsystem(field2d);
   private final VerticalElevatorSubsystem Vertical_Elevator_Subsytem = new VerticalElevatorSubsystem();
   private final IntakeArmSubsystem IntakeArmSubsystem = new IntakeArmSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
@@ -78,6 +79,11 @@ public class RobotContainer {
     Vertical_Elevator_Subsytem.setDefaultCommand(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, 0));
     IntakeArmSubsystem.setDefaultCommand(new HoldIntakeCmd(IntakeArmSubsystem));
     driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, () -> stick.getRawAxis(IoConstants.Y_AXIS), () -> stick.getRawAxis(IoConstants.Z_AXIS)));
+  }
+
+  public void fast_periodic() {
+    driveSubsystem.run_gyro_loop();
+    CommandScheduler.getInstance().run();
   }
 
   private void configureBindings() {

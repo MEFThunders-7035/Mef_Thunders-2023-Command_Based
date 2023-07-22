@@ -20,7 +20,7 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   public Robot() {
-    addPeriodic(m_robotContainer.driveSubsystem::run_gyro_loop,
+    addPeriodic(m_robotContainer::fast_periodic,
      0.01, 0.05);
   }
 
