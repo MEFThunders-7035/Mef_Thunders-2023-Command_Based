@@ -31,7 +31,7 @@ public class VisionTargettingCmd extends CommandBase{
     @Override
     public void execute() {
         if (!photonVisionSubsystem.hasTargets()) {
-            driveSubsystem.stop();
+            driveSubsystem.stopMotors();
             return;
         }
         try {

@@ -103,8 +103,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
 
   private void dashboard_debug() {
-    SmartDashboard.putNumber("Rotation", getGyroAngle());
-    SmartDashboard.putNumber("Rotation Rate", getGyroRate());
+    SmartDashboard.putNumber("Rotation", getAngle());
+    SmartDashboard.putNumber("Rotation Rate", getRotationRate());
     SmartDashboard.putNumber("Rotation offset", mpu6050.getRate_offset());
     SmartDashboard.putNumber("AccelX", mpu6050.getAccelX());
     SmartDashboard.putNumber("AccelY", mpu6050.getAccelY());
@@ -170,7 +170,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   /**
    * Stops all motors in the drive train
    */
-  public void stop() {
+  public void stopMotors() {
     driveTrain.stopMotor();
   }
 
@@ -295,7 +295,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * if you want it to be fixed use {@link DriveSubsystem#getGyroAngleFixed}
    * @return the total accumilated yaw angle (Z axis) double rotation in degrees.
    */
-  public double getGyroAngle() {
+  public double getAngle() {
     return mpu6050.getAngle();
   }
 
@@ -307,7 +307,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * if you want it to be fixed use {@link DriveSubsystem#getGyroAngleFixed}
    * @return the total accumilated Pitch angle (X axis) double rotation in degrees.
    */
-  public double getGyroPitch() {
+  public double getPitch() {
     return mpu6050.getAngleX();
   }
 
@@ -316,7 +316,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * if you want it to be continuous use {@link DriveSubsystem#getGyroAngle}
    * @return the yaw angle (Z axis) double rotation in degrees.
    */
-  public double getGyroAngleFixed() {
+  public double getAngleFixed() {
     return mpu6050.getAngle() % 360;
   }
   
@@ -325,29 +325,35 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * if you want it to be continuous use {@link DriveSubsystem#getGyroAngle}
    * @return the pitch angle (X axis) rotation in degrees.
    */
-  public double getGyroPitchFixed() {
+  public double getPitchFixed() {
     return mpu6050.getAngleX() % 360;
   }
 
   /**
-   * Gets the rate of rotation of the navX in degrees per second
-   * @return double rotation in degrees per second. 
+   * Gets the rate of rotation of the gyro in degrees per second.
+   * You probably won't need this, but it's here if you do.
+   * @return the current rate in degrees per second
    */
-  public double getGyroRate() {
+  public double getRotationRate() {
     return mpu6050.getRate();
   }
 
+  /**
+   * @deprecated Use {@link DriveConstants#kDriveKinematics} instead.
+   * @return The kinematics of the drive train.
+   */
   public DifferentialDriveKinematics getKinematics() {
-    return kinematics;
+    return this.kinematics;
   }
+  
   /**
    * Runs all the calculations to get the angle data, so it's important to run this periodically.
    */
-  public void run_gyro_loop() {
+  public void runGyroLoop() {
     mpu6050.update();    
   }
 
-  public Command Path_Follow_Command() {
+  public Command pathFollowCommand() {
     PathPlannerTrajectory traj = PathPlanner.loadPath("Foward.path", new PathConstraints(3, 2));
     
     return new PPRamseteCommand(

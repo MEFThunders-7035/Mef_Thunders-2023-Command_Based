@@ -41,18 +41,18 @@ public class TimedDriveCmd extends CommandBase{
         timer.reset();
         finlished = false;
         timer.start();
-        first_heading = driveSubsystem.getGyroAngle();
+        first_heading = driveSubsystem.getAngle();
         headingPidController.setSetpoint(first_heading);
     }
     @Override
     public void execute() {
         if (Math.abs(speed) > 1) throw new RuntimeException("Speed must be between -1 and 1");
-        fixheadingspeed = headingPidController.calculate(driveSubsystem.getGyroAngle());
+        fixheadingspeed = headingPidController.calculate(driveSubsystem.getAngle());
         if (timer.get() < time) {
             driveSubsystem.drive(speed, fixheadingspeed, false);
         }
         else {
-            driveSubsystem.stop();
+            driveSubsystem.stopMotors();
             finlished = true;
         }
     }

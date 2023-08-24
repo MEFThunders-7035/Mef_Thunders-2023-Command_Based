@@ -25,7 +25,7 @@ public class DriveTrainTest {
 
     @AfterEach
     void tearDown() throws Exception {
-        driveSubsystem.stop();
+        driveSubsystem.stopMotors();
         driveSubsystem.close();
         try {
             Thread.sleep(kdelay);
@@ -37,8 +37,8 @@ public class DriveTrainTest {
     @Test
     void gyroTest() throws Exception {
         driveSubsystem.calibrateGyro();
-        driveSubsystem.getGyroAngle();
-        driveSubsystem.getGyroRate();
+        driveSubsystem.getAngle();
+        driveSubsystem.getRotationRate();
         driveSubsystem.resetGyro();
     }
 
@@ -55,7 +55,7 @@ public class DriveTrainTest {
     void DrivetrainDriveTest() throws Exception {
         driveSubsystem.drive(1, 1);
         driveSubsystem.drive(-1, -1);
-        driveSubsystem.stop();
+        driveSubsystem.stopMotors();
     }
 
     @Test
@@ -88,6 +88,6 @@ public class DriveTrainTest {
     void DriveTrainDriveUnderLimitTest() throws Exception{
         driveSubsystem.drive(0.1, 0.2);
         driveSubsystem.drive(-0.1, -0.1);
-        driveSubsystem.stop();
+        driveSubsystem.stopMotors();
     }
 }

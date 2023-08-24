@@ -83,7 +83,7 @@ public class RobotContainer {
   }
 
   public void fast_periodic() {
-    driveSubsystem.run_gyro_loop();
+    driveSubsystem.runGyroLoop();
     CommandScheduler.getInstance().run();
   }
 
@@ -215,6 +215,6 @@ public class RobotContainer {
   }
 
   private Command pathFollowCommand() {
-    return driveSubsystem.Path_Follow_Command();
+    return driveSubsystem.pathFollowCommand();
   }
 }

@@ -40,7 +40,7 @@ public class EncoderDriveCmd extends CommandBase {
   public void initialize() {    
     System.out.println("Encoder Drive Started!");
     driveSubsystem.resetEncoders();
-    first_heading = driveSubsystem.getGyroAngle();
+    first_heading = driveSubsystem.getAngle();
     headingPidController.setSetpoint(first_heading);
 		EncoderPIDController.setSetpoint(distance);
 		finished = false;
@@ -52,7 +52,7 @@ public class EncoderDriveCmd extends CommandBase {
 		if (finished) {
 			return;
 		}
-		double fixheadingspeed = headingPidController.calculate(driveSubsystem.getGyroAngle());
+		double fixheadingspeed = headingPidController.calculate(driveSubsystem.getAngle());
 		double fixdistancespeed = EncoderPIDController.calculate(driveSubsystem.getAvarageEncoderDistance());
 
 		driveSubsystem.drive(-fixdistancespeed, fixheadingspeed, false);
@@ -62,7 +62,7 @@ public class EncoderDriveCmd extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    driveSubsystem.stop();
+    driveSubsystem.stopMotors();
     System.out.println("Encoder Command Finished!");
   }
 
