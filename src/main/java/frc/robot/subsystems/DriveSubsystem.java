@@ -232,6 +232,24 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
 
   /**
+   * Gets the left encoder.
+   * You probably won't need this, but it's here for tests.
+   * @return The Left Encoder
+   */
+  public Encoder getLeftEncoder() {
+    return this.leftEncoder;
+  }
+
+  /**
+   * Gets the right encoder.
+   * You probably won't need this, but it's here for tests.
+   * @return The Right Encoder
+   */
+  public Encoder getRightEncoder() {
+    return this.rightEncoder;
+  }
+
+  /**
    * Gets the distance the left encoder has traveled
    * @return double distance in meters
    */
