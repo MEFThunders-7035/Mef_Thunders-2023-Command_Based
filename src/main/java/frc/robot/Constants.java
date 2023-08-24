@@ -114,12 +114,21 @@ public final class Constants {
       public static final double kP = 0.01;
       public static final double kI = 0;
       public static final double kD = 0;
+      public static final double kToleranceDegrees = 0.5;
     }
     public static class EncoderPIDConstants {
       public static final double kP = 0.2;
       public static final double kI = 0.1;
       public static final double kD = 0.1;
       public static final double kToleranceMeters = 0.05;
+    }
+  
+    public static class pitchPidConstants {
+      public static final double kP = 0.1;
+      public static final double kI = 0;
+      public static final double kD = 0;
+      //Add a high tolorance as we do not try to fix this until we are at the climbing angle
+      public static final double kToleranceDegrees = 1.25; 
     }
   }
 
