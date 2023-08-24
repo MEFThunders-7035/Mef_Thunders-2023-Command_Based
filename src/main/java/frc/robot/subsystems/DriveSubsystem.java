@@ -360,6 +360,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @deprecated Use {@link DriveConstants#kDriveKinematics} instead.
    * @return The kinematics of the drive train.
    */
+  @Deprecated
   public DifferentialDriveKinematics getKinematics() {
     return this.kinematics;
   }
