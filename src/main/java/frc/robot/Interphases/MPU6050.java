@@ -125,11 +125,10 @@ public class MPU6050 implements Gyro{
     @Override
     public void calibrate() {
         System.out.println("Starting Calibration");
-        angle_offset = getAngle();
-        X_angle_offset = getAngleX();
         AccCalibrate();
         //for some reason taking the highest value gives the best results.
-        for (int i = 0; i < 500; i++) {
+        new Thread(() -> {
+            for (int i = 0; i < 500; i++) {
             rate_offset += getRate();
             X_rate_offset += getGyro_Rate_X();
             try {
@@ -138,10 +137,11 @@ public class MPU6050 implements Gyro{
                 System.out.println("Calibration Interrupted");
                 e.printStackTrace();
             }
-        }
-        rate_offset = rate_offset/200;
-        X_rate_offset = X_rate_offset/200;
-        System.out.println("Calibration Complete! Rate_Offstet: " + rate_offset);
+            }
+            rate_offset = rate_offset/200;
+            X_rate_offset = X_rate_offset/200;
+            System.out.println("Calibration Complete! Rate_Offstet: " + rate_offset);
+        }).start();
     }
 
     private void AccCalibrate() {
