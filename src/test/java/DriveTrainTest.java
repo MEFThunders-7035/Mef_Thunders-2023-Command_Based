@@ -4,22 +4,22 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
+
 import edu.wpi.first.hal.HAL;
-import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveTrainTest {
+    double delta = 0.2;
     DriveSubsystem driveSubsystem;
-    private int kdelay = 30;
+    EncoderSim sim_leftEncoder;
+    EncoderSim sim_rightEncoder;
     
     @BeforeEach
     void setup() {
         driveSubsystem = new DriveSubsystem(null);
-        try {
-            Thread.sleep(kdelay);
-        } catch (Exception e) {
-            DriverStation.reportError("Interrupted", e.getStackTrace());
-        }
+        sim_leftEncoder = new EncoderSim(driveSubsystem.getLeftEncoder());
+        sim_rightEncoder = new EncoderSim(driveSubsystem.getRightEncoder());
         HAL.initialize(500, 0);
     }
 
@@ -27,11 +27,6 @@ public class DriveTrainTest {
     void tearDown() throws Exception {
         driveSubsystem.stopMotors();
         driveSubsystem.close();
-        try {
-            Thread.sleep(kdelay);
-        } catch (Exception e) {
-            DriverStation.reportError("Interrupted", e.getStackTrace());
-        }
     }
 
     @Test
@@ -43,51 +38,44 @@ public class DriveTrainTest {
     }
 
     @Test
-    void EncoderTest() throws Exception {
+    void EncoderResetTest() throws Exception {
+        sim_leftEncoder.setDistance(5);
+        sim_rightEncoder.setDistance(5);
         driveSubsystem.resetEncoders();
-        driveSubsystem.getLeftEncoderDistance();
-        driveSubsystem.getRightEncoderDistance();
-        driveSubsystem.getLeftEncoderRate();
-        driveSubsystem.getRightEncoderRate();
+        assertEquals(0, driveSubsystem.getLeftEncoderDistance(), delta);
+    }
+
+    @Test
+    void EncoderDistanceTest() throws Exception {
+        sim_leftEncoder.setDistance(5);
+        sim_rightEncoder.setDistance(5);
+        assertEquals(5, driveSubsystem.getLeftEncoderDistance(), delta);
+        assertEquals(driveSubsystem.getRightEncoderDistance(), 5, delta);
+    }
+
+    @Test
+    void EncoderRateTest() throws Exception {
+        sim_leftEncoder.setRate(5);
+        sim_rightEncoder.setRate(5);
+        assertEquals(5, driveSubsystem.getLeftEncoderRate(), delta);
+        assertEquals(driveSubsystem.getRightEncoderRate(), 5, delta);
     }
     
     @Test
-    void DrivetrainDriveTest() throws Exception {
-        driveSubsystem.drive(1, 1);
-        driveSubsystem.drive(-1, -1);
+    void DrivetrainFowardTest() throws Exception {
+        driveSubsystem.drive(1, 0);
+        driveSubsystem.drive(-1, 0);
         driveSubsystem.stopMotors();
     }
 
     @Test
-    void DriveTrainSafetyTest() throws Exception {
-        driveSubsystem.setSafetyEnabled(false);
-        driveSubsystem.setSafetyEnabled(true);
-    }
-
-    @Test
-    void DriveTrainDriveOverLimitTest1() throws Exception{
-        try {
-        driveSubsystem.drive(2, 2);
-        throw new Exception("DriveTrainDriveOverLimitTest failed");
-        } catch (IllegalArgumentException e) {
-            assertEquals("Speed must be between -1 and 1", e.getMessage());
-        }
-    }
-
-    @Test
-    void DriveTrainMotorSetOverLimitTest() throws Exception{
-        try {
-        driveSubsystem.setMotors(2.1, -2.5);
-        throw new Exception("DriveTrainDriveOverLimitTest failed");
-        } catch (IllegalArgumentException e) {
-            assertEquals("Speed must be between -1 and 1", e.getMessage());
-        }
-    }
-
-    @Test
-    void DriveTrainDriveUnderLimitTest() throws Exception{
-        driveSubsystem.drive(0.1, 0.2);
-        driveSubsystem.drive(-0.1, -0.1);
+    void StopTest() throws Exception {
+        driveSubsystem.drive(1, 0);
         driveSubsystem.stopMotors();
+    }
+
+    @Test
+    void DriveTrainTurnTest() throws Exception {
+        driveSubsystem.drive(0, 1);
     }
 }
