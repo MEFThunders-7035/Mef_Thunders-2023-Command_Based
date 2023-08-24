@@ -3,7 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
+import frc.robot.Constants.AutonomousConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class TimedDriveCmd extends CommandBase{
@@ -31,9 +31,9 @@ public class TimedDriveCmd extends CommandBase{
         this.time = time;
         this.timer = new Timer();
         headingPidController = new PIDController(
-            Constants.AutonomousConstants.headingPIDConstants.kP,
-            Constants.AutonomousConstants.headingPIDConstants.kI, 
-            Constants.AutonomousConstants.headingPIDConstants.kD);
+            AutonomousConstants.headingPIDConstants.kP,
+            AutonomousConstants.headingPIDConstants.kI, 
+            AutonomousConstants.headingPIDConstants.kD);
         addRequirements(driveSubsystem);
     }
     @Override
