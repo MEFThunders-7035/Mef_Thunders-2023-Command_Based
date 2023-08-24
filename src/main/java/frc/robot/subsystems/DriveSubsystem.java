@@ -264,8 +264,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
 
   /**
-   * Calibrates the navX
-   * Doesn't do anything if the navX is not connected.
+   * Calibrates the gyro. This should be done before the match starts.
    */
   public void calibrateGyro() {
     mpu6050.calibrate();
