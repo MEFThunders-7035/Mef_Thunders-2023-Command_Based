@@ -130,6 +130,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     rightMotorsGroup.set(RightMotorSpeed);
   }
 
+  /**
+   * Sets the speed of the motors Using Voltages instead of percentages
+   * @param leftVoltage Double between -12 and 12
+   * @param rightVoltage Double between -12 and 12
+   */
   public void setMotorVoltage(double leftVoltage, double rightVoltage) {
     leftMotorsGroup.setVoltage(leftVoltage);
     rightMotorsGroup.setVoltage(rightVoltage);
@@ -162,26 +167,45 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     driveTrain.arcadeDrive(-xSpeed, -zRotation, squaredInputs);
   }
 
+  /**
+   * Stops all motors in the drive train
+   */
   public void stop() {
     driveTrain.stopMotor();
   }
 
+  /**
+   * Returns the position of the robot on the field.
+   * @return The pose of the robot (x and y are in meters).
+   */
   public Pose2d getPose() {
     return this.odometry.getPoseMeters();
   }
   
-  public Supplier<Pose2d>  getPose2dSupplier() {
-    return () -> this.odometry.getPoseMeters();
+  /**
+   * Returns a supplier of the position of the robot on the field.
+   * @return A supplier of {@link DriveSubsystem#getPose}
+   */
+  public Supplier<Pose2d> getPose2dSupplier() {
+    return () -> this.getPose();
   }
 
   public DifferentialDriveOdometry getDiffOdometry() {
     return this.odometry;
   }
   
+  /**
+   * Returns the Wheel Speeds of the robots wheels
+   * @return The left and right wheels speeds
+   */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(getLeftEncoderRate(), getRightEncoderRate());
   }
 
+  /**
+   * Resets the robot's position on the field.
+   * @param pose The position on the field that the robot is at.
+   */
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
     this.odometry.resetPosition(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose); 
@@ -191,6 +215,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     driveTrain.setSafetyEnabled(enabled);
   }
 
+  /**
+   * Returns the Avarage distance of the encoders
+   * @return double distance in meters
+   */
   public double getAvarageEncoderDistance() {
     return (getLeftEncoderDistance() + getRightEncoderDistance()) / 2.0;
   }

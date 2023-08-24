@@ -84,7 +84,6 @@ public class MPU6050 implements Gyro{
     
     /**
      * Runs all the calculations to get the angle data, so it's important to run this periodically.
-     * @param period The loop time in seconds.
      * @apiNote RUN IT PERIODICALLY. 
      */
     public void update() {
