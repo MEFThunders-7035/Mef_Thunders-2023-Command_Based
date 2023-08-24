@@ -340,11 +340,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   public DifferentialDriveKinematics getKinematics() {
     return kinematics;
   }
-
+  /**
+   * Runs all the calculations to get the angle data, so it's important to run this periodically.
+   */
   public void run_gyro_loop() {
-    
-
-    
+    mpu6050.update();    
   }
 
   public Command Path_Follow_Command() {
