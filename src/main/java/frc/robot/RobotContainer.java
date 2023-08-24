@@ -71,11 +71,12 @@ public class RobotContainer {
   private final SendableChooser<String> Camera_chooser = new SendableChooser<>();
   private final Joystick stick = new Joystick(OperatorConstants.kJoystickPort);
   private String autoSelected;
+  
   public RobotContainer() {
     PortForwarder.add(5800, "photonvision.local", 5800);
     configureBindings();
     AddChoosers();
-    SetupCamera();
+    setupPhotonVisionCamera();
     Vertical_Elevator_Subsytem.setDefaultCommand(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, 0));
     IntakeArmSubsystem.setDefaultCommand(new HoldIntakeCmd(IntakeArmSubsystem));
     driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, () -> stick.getRawAxis(IoConstants.Y_AXIS), () -> stick.getRawAxis(IoConstants.Z_AXIS)));
@@ -112,7 +113,7 @@ public class RobotContainer {
 
   }
 
-  private void SetupCamera() {
+  private void setupPhotonVisionCamera() {
     photonVisionSubsystem.setCamera(Camera_chooser.getSelected());
     System.out.println("Selected Camera: " + Camera_chooser.getSelected());
   }
@@ -146,7 +147,7 @@ public class RobotContainer {
   }
   
   private Command cameraAuto() {
-    SetupCamera();
+    setupPhotonVisionCamera();
     return new VisionTargettingCmd(photonVisionSubsystem, driveSubsystem);
   }
   
