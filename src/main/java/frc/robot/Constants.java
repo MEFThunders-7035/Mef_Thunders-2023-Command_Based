@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Abstracts.CameraInterface;
+import frc.robot.Abstracts.PIDConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -141,6 +143,74 @@ public final class Constants {
     public static final double kTargetArea = 0.5;
     public static final double TARGET_HEIGHT_METERS = Units.inchesToMeters(15.13);
     
+    public static class New_PiCamera implements CameraInterface {
+
+      @Override
+      public String getCameraName() {
+        return Cameras.kPiCamera;
+      }
+
+      @Override
+      public double getCameraHeightMeters() {
+        return PiCamera.CAMERA_HEIGHT_METERS;
+      }
+
+      @Override
+      public double getCameraPitchRadians() {
+        return PiCamera.CAMERA_PITCH_RADIANS;
+      }
+
+      @Override
+      public Transform3d getRobotToCam() {
+        return PiCamera.robotToCam;
+      }
+
+      @Override
+      public PIDConstants getTurnPIDConstants() {
+        return new PIDConstants(PiCamera.TurnPIDConstants.kP, PiCamera.TurnPIDConstants.kI, PiCamera.TurnPIDConstants.kD);
+      }
+
+      @Override
+      public PIDConstants getFowardPIDConstants() {
+        return new PIDConstants(PiCamera.FowardPIDConstants.kP, PiCamera.FowardPIDConstants.kI, PiCamera.FowardPIDConstants.kD);
+      }
+      
+    }
+
+    public static class New_WideCamera implements CameraInterface {
+
+      @Override
+      public String getCameraName() {
+        return Cameras.kWideCamera;
+      }
+
+      @Override
+      public double getCameraHeightMeters() {
+        return WideCamera.kCamera_Height_Meters;
+      }
+
+      @Override
+      public double getCameraPitchRadians() {
+        return WideCamera.kCamera_Pitch_Radians;
+      }
+
+      @Override
+      public Transform3d getRobotToCam() {
+        return WideCamera.robotToCam;
+      }
+
+      @Override
+      public PIDConstants getTurnPIDConstants() {
+        return new PIDConstants(WideCamera.TurnPIDConstants.kP, WideCamera.TurnPIDConstants.kI, WideCamera.TurnPIDConstants.kD);
+      }
+
+      @Override
+      public PIDConstants getFowardPIDConstants() {
+        return new PIDConstants(WideCamera.FowardPIDConstants.kP, WideCamera.FowardPIDConstants.kI, WideCamera.FowardPIDConstants.kD);
+      }
+      
+    }
+
     public static class PiCamera{
       public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(1);
       public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);  
