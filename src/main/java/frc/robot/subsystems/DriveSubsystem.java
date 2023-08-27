@@ -8,6 +8,7 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
+
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -17,12 +18,12 @@ import com.pathplanner.lib.commands.PPRamseteCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -33,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Interphases.MPU6050;
+import frc.robot.Interphases.PhotonCameraSystem;
 
 public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final WPI_VictorSPX leftMotor1 = new WPI_VictorSPX(DriveConstants.kLeftMotor1Port);
@@ -48,6 +50,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   private DifferentialDriveOdometry odometry;
   private DifferentialDriveKinematics kinematics;
+  private DifferentialDrivePoseEstimator poseEstimator;
   
   private final Encoder leftEncoder = new Encoder(DriveConstants.kEncoderLeftPort1, DriveConstants.kEncoderLeftPort2);
   private final Encoder rightEncoder = new Encoder(DriveConstants.kEncoderRightPort1, DriveConstants.kEncoderRightPort2);
@@ -57,8 +60,14 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   
   private final Field2d field;
 
+  private final PhotonCameraSystem photonCameraSystem;
+
   private boolean on_extra_loop;
   
+  /**
+   * Creates a new DriveSubsystem.
+   * @param field The field to use for updating the robot pose.
+   */
   public DriveSubsystem(Field2d field) {
     this.port = I2C.Port.kOnboard;
     this.mpu6050 = new MPU6050(port);
@@ -66,18 +75,31 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     this.on_extra_loop = false;
     calibrateGyro();
     resetEncoders();
+
+    // Setup the motors
     leftMotorsGroup.setInverted(DriveConstants.kLeftMotorInverted);
     rightMotorsGroup.setInverted(DriveConstants.kRightMotorInverted);
     
+    // Setup the encoders
     leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
     rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
 
     leftEncoder.setReverseDirection(DriveConstants.kEncoderLeftReversed);
     rightEncoder.setReverseDirection(DriveConstants.kEncoderRightReversed);
 
+    // Setup the odometry
     this.odometry = new DifferentialDriveOdometry(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
-
     this.kinematics = DriveConstants.kDriveKinematics;
+    photonCameraSystem = new PhotonCameraSystem();
+    var estimatedPose = photonCameraSystem.getEstimatedGlobalPose(new Pose2d());
+    poseEstimator =
+      new DifferentialDrivePoseEstimator(
+        kinematics,
+        getGyroRotation2d(),
+        getLeftEncoderDistance(),
+        getRightEncoderDistance(),
+        estimatedPose.isEmpty() ? new Pose2d() : estimatedPose.get().estimatedPose.toPose2d()
+        );
   }
 
   @Override
@@ -96,8 +118,17 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   @Override
   public void periodic() {
-    if (!on_extra_loop) {mpu6050.update();}
+    if (!on_extra_loop) mpu6050.update();
+    
     Pose2d pose = odometry.update(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
+    var photonPose = photonCameraSystem.getEstimatedGlobalPose(pose);
+    if (photonPose.isPresent()) {
+      poseEstimator.addVisionMeasurement(photonPose.get().estimatedPose.toPose2d(), photonPose.get().timestampSeconds);
+    }
+    // Update the odometry in the periodic block
+    poseEstimator.update(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
+    
+    // Update the field Using the odometry data
     field.setRobotPose(pose.getX(), pose.getY(), pose.getRotation());
     dashboard_debug();
   }
@@ -122,10 +153,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @param RightMotorSpeed double between -1 and 1
    */
   public void setMotors(double LeftMotorSpeed, double RightMotorSpeed) {
-    if (Math.abs(LeftMotorSpeed) > 1 || Math.abs(RightMotorSpeed) > 1) {
-      DriverStation.reportError("Speed must be between -1 and 1", false);
-      throw new IllegalArgumentException("Speed must be between -1 and 1");
-    }
     leftMotorsGroup.set(LeftMotorSpeed);
     rightMotorsGroup.set(RightMotorSpeed);
   }
@@ -147,10 +174,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Counterclockwise is positive.
    */
   public void drive(double xSpeed, double zRotation) {
-    if (Math.abs(xSpeed) > 1 || Math.abs(zRotation) > 1) {
-      DriverStation.reportError("Speed must be between -1 and 1", false);
-      throw new IllegalArgumentException("Speed must be between -1 and 1");
-    }
     driveTrain.arcadeDrive(-xSpeed, -zRotation);
   }
 
@@ -161,9 +184,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @param squaredInputs If set, decreases the input sensitivity at low speeds.
    */
   public void drive(double xSpeed, double zRotation, boolean squaredInputs) {
-    if (Math.abs(xSpeed) > 1 || Math.abs(zRotation) > 1) {
-      DriverStation.reportError("Speed must be between -1 and 1", false);
-    }
     driveTrain.arcadeDrive(-xSpeed, -zRotation, squaredInputs);
   }
 
@@ -210,7 +230,12 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     resetEncoders();
     this.odometry.resetPosition(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose); 
   }
-
+  
+  /**
+   * Sets The PWM/Motor Safety Enabled or Disabled.
+   * @param enabled If true, sets the safety enabled. If false, sets the safety disabled.
+   * @see edu.wpi.first.wpilibj.drive.DifferentialDrive#setSafetyEnabled(boolean)
+   */
   public void setSafetyEnabled(boolean enabled) {
     driveTrain.setSafetyEnabled(enabled);
   }
@@ -318,7 +343,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
 
   /**
-   * * Gets the rotation of the navX in degrees
+   * Gets the rotation of the navX in degrees
    * NOTE: The angle is continuous, meaning it's range is beyond 360 degrees. 
    * This ensures that algorithms that wouldn't want to see a discontinuity in the gyro output 
    * as it sweeps past 0 on the second time around.
@@ -369,6 +394,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * Runs all the calculations to get the angle data, so it's important to run this periodically.
    */
   public void runGyroLoop() {
+    on_extra_loop = true;
     mpu6050.update();    
   }
 
