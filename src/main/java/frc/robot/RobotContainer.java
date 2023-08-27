@@ -50,7 +50,6 @@ import frc.robot.commands.VisionTargettingCmd;
 
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
-import frc.robot.subsystems.PhotonVisionSubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.Redline_IntakeSubsystem;
 import frc.robot.subsystems.VerticalElevatorSubsystem;
@@ -65,7 +64,6 @@ public class RobotContainer {
   private final IntakeArmSubsystem IntakeArmSubsystem = new IntakeArmSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
   private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
-  private final PhotonVisionSubsystem photonVisionSubsystem = new PhotonVisionSubsystem(field2d);
 
   private final SendableChooser<String> Auto_chooser = new SendableChooser<>();
   private final SendableChooser<String> Camera_chooser = new SendableChooser<>();
@@ -114,8 +112,7 @@ public class RobotContainer {
   }
 
   private void setupPhotonVisionCamera() {
-    photonVisionSubsystem.setCamera(Camera_chooser.getSelected());
-    System.out.println("Selected Camera: " + Camera_chooser.getSelected());
+    String cameraSelected = Camera_chooser.getSelected();
   }
 
   public Command getAutonomousCommand() {
@@ -147,8 +144,7 @@ public class RobotContainer {
   }
   
   private Command cameraAuto() {
-    setupPhotonVisionCamera();
-    return new VisionTargettingCmd(photonVisionSubsystem, driveSubsystem);
+    return null;
   }
   
   private Command stabilizeAuto() {
