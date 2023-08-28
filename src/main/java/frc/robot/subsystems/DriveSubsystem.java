@@ -36,6 +36,8 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Interphases.MPU6050;
 import frc.robot.Interphases.PhotonCameraSystem;
 
+import static frc.robot.Constants.is_debug;
+
 public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final WPI_VictorSPX leftMotor1 = new WPI_VictorSPX(DriveConstants.kLeftMotor1Port);
   private final WPI_VictorSPX leftMotor2 = new WPI_VictorSPX(DriveConstants.kLeftMotor2Port);
@@ -130,7 +132,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     
     // Update the field Using the odometry data
     field.setRobotPose(pose.getX(), pose.getY(), pose.getRotation());
-    dashboard_debug();
+    SmartDashboard.putData(field);
+    if (is_debug) {
+      dashboard_debug();
+    }
   }
 
   private void dashboard_debug() {

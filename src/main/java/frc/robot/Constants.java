@@ -21,6 +21,8 @@ import frc.robot.Abstracts.PIDConstants;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static boolean is_debug = true;
+
   public static class OperatorConstants {
     public static final int kJoystickPort = 0;
   }
