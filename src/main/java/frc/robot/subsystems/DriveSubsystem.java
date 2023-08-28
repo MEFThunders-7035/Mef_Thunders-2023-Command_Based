@@ -60,7 +60,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   
   private final Field2d field;
 
-  private final PhotonCameraSystem photonCameraSystem;
+  private PhotonCameraSystem photonCameraSystem;
 
   private boolean on_extra_loop;
   
@@ -192,6 +192,14 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    */
   public void stopMotors() {
     driveTrain.stopMotor();
+  }
+  
+  public PhotonCameraSystem getCameraSystem() {
+    return photonCameraSystem;
+  }
+
+  public void setCameraSystem(PhotonCameraSystem cameraSystem) {
+    this.photonCameraSystem = cameraSystem;
   }
 
   /**
