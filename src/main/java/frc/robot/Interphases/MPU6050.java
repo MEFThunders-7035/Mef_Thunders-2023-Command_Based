@@ -225,7 +225,7 @@ public class MPU6050 implements Gyro{
     }
 
     public double getAngleY() {
-        return angleY;
+        return angleY - Y_angle_offset;
     }
 
     @Override
