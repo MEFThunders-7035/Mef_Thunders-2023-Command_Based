@@ -24,7 +24,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     addPeriodic(m_robotContainer::fast_periodic,
-     0.01, 0.05);
+     0.005);
   }
 
   
