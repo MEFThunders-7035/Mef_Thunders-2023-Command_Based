@@ -139,15 +139,20 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
 
   private void dashboard_debug() {
-    SmartDashboard.putNumber("Rotation", getAngle());
-    SmartDashboard.putNumber("Rotation Rate", getRotationRate());
     SmartDashboard.putNumber("Rotation offset", mpu6050.getRate_offset());
+    
+    SmartDashboard.putNumber("Angle", mpu6050.getAngle());
+    SmartDashboard.putNumber("AngleX", mpu6050.getAngleX());
+    SmartDashboard.putNumber("AngleY", mpu6050.getAngleY());
+
     SmartDashboard.putNumber("AccelX", mpu6050.getAccelX());
     SmartDashboard.putNumber("AccelY", mpu6050.getAccelY());
     SmartDashboard.putNumber("AccelZ", mpu6050.getAccelZ());
-    SmartDashboard.putNumber("GyroX", mpu6050.getGyro_Rate_X());
-    SmartDashboard.putNumber("GyroY", mpu6050.getGyro_Rate_Y());
-    SmartDashboard.putNumber("GyroZ", mpu6050.getGyro_Rate_Z());
+
+    SmartDashboard.putNumber("GyroX", mpu6050.getRateX());
+    SmartDashboard.putNumber("GyroY", mpu6050.getRateY());
+    SmartDashboard.putNumber("GyroZ", mpu6050.getRate());
+    
     SmartDashboard.putNumber("Left Encoder Distance", getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder Distance", getRightEncoderDistance());
   }

@@ -46,6 +46,8 @@ public final class Constants {
 
     public static final double kEncoderDistancePerPulse = 0.025;
 
+    public static final double kGyroFilterStrenght = 0.98;
+
     public static final double kTrackwidthMeters = 70;
     
     public static final double kMaxSpeedMetersPerSecond = 3;

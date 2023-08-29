@@ -47,7 +47,6 @@ import frc.robot.commands.SetSelenoidsCmd;
 import frc.robot.commands.TimedDriveCmd;
 import frc.robot.commands.TimedIntakeRedlineCmd;
 import frc.robot.commands.VerticalElevatorJoystickCmd;
-import frc.robot.commands.VisionTargettingCmd;
 
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
