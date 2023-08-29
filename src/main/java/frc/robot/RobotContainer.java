@@ -118,6 +118,14 @@ public class RobotContainer {
 
   private void setupPhotonVisionCamera() {
     String cameraSelected = Camera_chooser.getSelected();
+    switch (cameraSelected) {
+      case PhotonVisionConstants.Cameras.kPiCamera:
+        driveSubsystem.setCameraSystem(new PhotonCameraSystem(new PhotonVisionConstants.New_PiCamera()));
+        break;
+      case PhotonVisionConstants.Cameras.kWideCamera:
+        driveSubsystem.setCameraSystem(new PhotonCameraSystem(new PhotonVisionConstants.New_WideCamera()));
+        break;
+    }
   }
 
   public Command getAutonomousCommand() {
