@@ -61,7 +61,7 @@ public class RobotContainer {
   private final Field2d field2d = new Field2d();
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem driveSubsystem = new DriveSubsystem(field2d);
-  private final VerticalElevatorSubsystem Vertical_Elevator_Subsytem = new VerticalElevatorSubsystem();
+  private final VerticalElevatorSubsystem verticalElevatorSubsystem = new VerticalElevatorSubsystem();
   private final IntakeArmSubsystem IntakeArmSubsystem = new IntakeArmSubsystem();
   private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
   private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
@@ -76,7 +76,7 @@ public class RobotContainer {
     configureBindings();
     AddChoosers();
     setupPhotonVisionCamera();
-    Vertical_Elevator_Subsytem.setDefaultCommand(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, 0));
+    verticalElevatorSubsystem.setDefaultCommand(new VerticalElevatorJoystickCmd(verticalElevatorSubsystem, 0));
     IntakeArmSubsystem.setDefaultCommand(new HoldIntakeCmd(IntakeArmSubsystem));
     driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, () -> stick.getRawAxis(IoConstants.Y_AXIS), () -> stick.getRawAxis(IoConstants.Z_AXIS)));
   }
@@ -91,8 +91,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    new POVButton(stick, 0).whileTrue(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, VerticalElevatorConstants.kSpeed).until(Vertical_Elevator_Subsytem.getTopLimitSwitchSupplier()));
-    new POVButton(stick, 180).whileTrue(new VerticalElevatorJoystickCmd(Vertical_Elevator_Subsytem, -VerticalElevatorConstants.kSpeed).until(Vertical_Elevator_Subsytem.getBottomLimitSwitchSupplier()));
+    new POVButton(stick, 0).whileTrue(new VerticalElevatorJoystickCmd(verticalElevatorSubsystem, VerticalElevatorConstants.kSpeed).until(verticalElevatorSubsystem.getTopLimitSwitchSupplier()));
+    new POVButton(stick, 180).whileTrue(new VerticalElevatorJoystickCmd(verticalElevatorSubsystem, -VerticalElevatorConstants.kSpeed).until(verticalElevatorSubsystem.getBottomLimitSwitchSupplier()));
     new JoystickButton(stick, 3).whileTrue(new IntakeNeoJoystickCmd(IntakeArmSubsystem, IntakeConstants.kUpSpeed));
     new JoystickButton(stick, 4).whileTrue(new IntakeNeoJoystickCmd(IntakeArmSubsystem, IntakeConstants.kDownSpeed));
     new JoystickButton(stick, 5).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, IntakeConstants.kRedlineSpeed));
