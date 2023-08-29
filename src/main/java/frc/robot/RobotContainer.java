@@ -81,8 +81,12 @@ public class RobotContainer {
   }
 
   public void fast_periodic() {
+    double first = Timer.getFPGATimestamp();
     driveSubsystem.runGyroLoop();
-    CommandScheduler.getInstance().run();
+    double time_took = Timer.getFPGATimestamp() - first;
+    if (time_took >= 0.1) {
+      DriverStation.reportWarning("Loop Time of 0.01 Overrun, Time Took: " + time_took, false);
+    } 
   }
 
   private void configureBindings() {
