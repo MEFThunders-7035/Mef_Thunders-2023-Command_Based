@@ -128,7 +128,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
       poseEstimator.addVisionMeasurement(photonPose.get().estimatedPose.toPose2d(), photonPose.get().timestampSeconds);
     }
     // Update the odometry in the periodic block
-    poseEstimator.update(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
+    pose = poseEstimator.update(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
     
     // Update the field Using the odometry data
     field.setRobotPose(pose.getX(), pose.getY(), pose.getRotation());
