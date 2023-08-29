@@ -11,6 +11,7 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.common.hardware.VisionLEDMode;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -132,7 +133,7 @@ public class PhotonCameraSystem {
     /**
      * @return the current ids of each apriltag being tracked. If there are no aprilTags is being tracked, it will return an empty array.
     */
-    public List<Integer> getTrackedTargets() {
+    public List<Integer> getTrackedTargetsIDs() {
         List<Integer> ids = new ArrayList<Integer>();
         // If there are no targets, return an empty array.
         if (!camera.getLatestResult().hasTargets()) return ids;
@@ -142,6 +143,10 @@ public class PhotonCameraSystem {
             ids.add(target.getFiducialId());
         }
         return ids;
+    }
+
+    public List<PhotonTrackedTarget> getTrackedTargets() {
+        return camera.getLatestResult().getTargets();
     }
     
     /**
