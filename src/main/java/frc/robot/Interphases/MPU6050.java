@@ -186,7 +186,9 @@ public class MPU6050 implements Gyro{
 
     @Override
     public void reset() {
-        angleZ = 0;
+        angle_offset = angleZ;
+        X_angle_offset = angleX;
+        Y_angle_offset = angleY;
     }
 
     /**
