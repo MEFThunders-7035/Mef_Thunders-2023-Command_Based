@@ -145,8 +145,6 @@ public class MPU6050 implements Gyro{
     @Override
     public void calibrate() {
         System.out.println("Starting Calibration");
-        AccCalibrate();
-        //for some reason taking the highest value gives the best results.
         if (rate_offset != 0) {
             System.out.println("Rate Offset is already not 0");
             return;
@@ -178,11 +176,6 @@ public class MPU6050 implements Gyro{
         }).start();
     }
 
-    private void AccCalibrate() {
-        X_Accel_offset = getAccelX();
-        Y_Accel_offset = getAccelY();
-        Z_Accel_offset = getAccelZ();
-    }
 
     @Override
     public void reset() {
