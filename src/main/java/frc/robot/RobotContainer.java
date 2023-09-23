@@ -37,7 +37,6 @@ import frc.robot.Constants.IoConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PhotonVisionConstants;
 import frc.robot.Constants.VerticalElevatorConstants;
-import frc.robot.Interphases.PhotonCameraSystem;
 import frc.robot.commands.ArcadeDriveCmd;
 import frc.robot.commands.EncoderDriveCmd;
 import frc.robot.commands.HoldIntakeCmd;
@@ -47,9 +46,9 @@ import frc.robot.commands.SetSelenoidsCmd;
 import frc.robot.commands.TimedDriveCmd;
 import frc.robot.commands.TimedIntakeRedlineCmd;
 import frc.robot.commands.VerticalElevatorJoystickCmd;
-
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
+import frc.robot.subsystems.PhotonCameraSystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.Redline_IntakeSubsystem;
 import frc.robot.subsystems.VerticalElevatorSubsystem;
