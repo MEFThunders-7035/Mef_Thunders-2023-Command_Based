@@ -18,11 +18,11 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+@Deprecated
 public class PhotonVisionSubsystem extends SubsystemBase {
     private PhotonCamera camera;
     private PhotonCamera camera2;
@@ -31,6 +31,10 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     private double CAMERA_HEIGHT_METERS;
     private double CAMERA_PITCH_RADIANS;
 
+    /**
+     * @deprecated Use {@link #PhotonVisionSubsystem(Field2d)} instead.
+     * @param field2d The Field2d that will be used to display the robot's pose on the field.
+     */
     public PhotonVisionSubsystem(Field2d field2d) {
         if (field2d == null) {
             field2d = new Field2d();
@@ -62,16 +66,14 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (hasTargets()) {
-            try {
-                field.setRobotPose(getEstimatedGlobalPose(field.getRobotPose()).get().estimatedPose.toPose2d());
-            }
-            catch (Exception e) {
-                DriverStation.reportWarning(e.toString(), e.getStackTrace());
+            var estimated_global_pose = getEstimatedGlobalPose(field.getRobotPose());
+            if (estimated_global_pose.isPresent()) {
+                field.setRobotPose(estimated_global_pose.get().estimatedPose.toPose2d());
             }
         }
 
     }
-
+    
     /**
      * @return return if the current Camera is the picam.
      */
@@ -93,7 +95,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * @return returns the current camera's 3d transform.
      */
     private Transform3d getCurrentTransform3d() {
-        if (camera.getName() == PhotonVisionConstants.Cameras.kPiCamera) {
+        if (isPicam()) {
             return PhotonVisionConstants.PiCamera.robotToCam;
         } else {
             return PhotonVisionConstants.WideCamera.robotToCam;
@@ -131,7 +133,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * @return returns the turn PID constants for the current camera. [0] = kP, [1] = kI, [2] = kD.
      */
     public double[] getCurrentTurnPIDConstants() {
-        if (camera.getName() == PhotonVisionConstants.Cameras.kPiCamera) {
+        if (isPicam()) {
             return new double[] {PhotonVisionConstants.PiCamera.TurnPIDConstants.kP, PhotonVisionConstants.PiCamera.TurnPIDConstants.kI, PhotonVisionConstants.PiCamera.TurnPIDConstants.kD};
         } else {
             return new double[] {PhotonVisionConstants.WideCamera.TurnPIDConstants.kP, PhotonVisionConstants.WideCamera.TurnPIDConstants.kI, PhotonVisionConstants.WideCamera.TurnPIDConstants.kD};
@@ -169,7 +171,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * @return returns the foward PID constants for the current camera. [0] = kP, [1] = kI, [2] = kD.
      */
     public double[] getCurrentFowardPIDConstants() {
-        if (camera.getName() == PhotonVisionConstants.Cameras.kPiCamera) {
+        if (isPicam()) {
             return new double[] {PhotonVisionConstants.PiCamera.FowardPIDConstants.kP, PhotonVisionConstants.PiCamera.FowardPIDConstants.kI, PhotonVisionConstants.PiCamera.FowardPIDConstants.kD};
         } else {
             return new double[] {PhotonVisionConstants.WideCamera.FowardPIDConstants.kP, PhotonVisionConstants.WideCamera.FowardPIDConstants.kI, PhotonVisionConstants.WideCamera.FowardPIDConstants.kD};
@@ -180,8 +182,9 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * @return the current id of the best april tag being tracked. If no tag is being tracked, it will return -1.
      */
     public int getCurrentAprilTagID() {
-        if (camera.getLatestResult().hasTargets()) {
-            return camera.getLatestResult().getBestTarget().getFiducialId();
+        var latest_result = camera.getLatestResult();
+        if (latest_result.hasTargets()) {
+            return latest_result.getBestTarget().getFiducialId();
         }
         return -1;
     }
@@ -260,8 +263,8 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets the X position of the target.
-     * @return The X position of the target.
+     * Gets the Yaw of the target, acording to the FOV of the camera.
+     * @return The Yaw of the target.
      */
     public double getYaw() {
         if (!hasTargets()) {
@@ -306,9 +309,6 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     }
     
     public Boolean hasTargets() {
-        if (RobotBase.isSimulation()) {
-            return false;
-        }
         return camera.getLatestResult().hasTargets();
     }
 
