@@ -195,6 +195,13 @@ public class MPU6050 implements Gyro{
 
     @Override
     public double getAngle() {
+        /*
+        double rate = getRate();
+        angleZ += rate * LoopTime;
+        double gyro_angle = angleZ - angle_offset;
+        double acc_angle =  Units.radiansToDegrees(Math.atan2(getAccelY(), getAccelZ()));
+        SmartDashboard.putNumber("Acc Angle", acc_angle);
+        */
         return angleZ - angle_offset;
     }
 
