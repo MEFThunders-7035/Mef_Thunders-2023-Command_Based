@@ -36,6 +36,15 @@ class PhotonVisionTest {
         simVisionSystem.clearVisionTargets();
     }
 
+
+    @Test
+    @Deprecated
+    void Test1() {
+        photonCameraSystem.getPitch();
+        photonCameraSystem.getYaw();
+        photonCameraSystem.getArea();
+    }
+
     @Test
     void checkTargetTest() {
         SimVisionTarget simVisionTarget = new SimVisionTarget(new Pose3d(1.5,0.2,0.1, new Rotation3d(0,0,0)), 2, 2.5, 1);
