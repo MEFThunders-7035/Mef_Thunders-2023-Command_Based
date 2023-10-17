@@ -22,6 +22,7 @@ import frc.robot.Abstracts.PIDConstants;
  */
 public final class Constants {
   public static boolean is_debug = true;
+  public static double kFastLoopTime = 0.005;
 
   public static class OperatorConstants {
     public static final int kJoystickPort = 0;
