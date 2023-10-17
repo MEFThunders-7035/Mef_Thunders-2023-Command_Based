@@ -3,7 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
+import frc.robot.Constants.AutonomousConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class TimedDriveCmd extends CommandBase{
@@ -15,7 +15,6 @@ public class TimedDriveCmd extends CommandBase{
     private double fixheadingspeed;
     private Timer timer;
     private boolean finlished = false;
-    private boolean started = false;
     
     /**
     * Drives foward for a certain amount of time
@@ -32,32 +31,28 @@ public class TimedDriveCmd extends CommandBase{
         this.time = time;
         this.timer = new Timer();
         headingPidController = new PIDController(
-            Constants.AutonomousConstants.headingPIDConstants.kP,
-            Constants.AutonomousConstants.headingPIDConstants.kI, 
-            Constants.AutonomousConstants.headingPIDConstants.kD);
+            AutonomousConstants.headingPIDConstants.kP,
+            AutonomousConstants.headingPIDConstants.kI, 
+            AutonomousConstants.headingPIDConstants.kD);
         addRequirements(driveSubsystem);
     }
     @Override
     public void initialize() {
         timer.reset();
         finlished = false;
-        started = false;
         timer.start();
-        first_heading = driveSubsystem.getGyroAngle();
+        first_heading = driveSubsystem.getAngle();
         headingPidController.setSetpoint(first_heading);
     }
     @Override
     public void execute() {
-        if (Math.abs(speed) > 1) throw new IllegalArgumentException("Speed must be between -1 and 1");
-        if (started) {
-            return;
-        }
-        fixheadingspeed = headingPidController.calculate(driveSubsystem.getGyroAngle());
+        if (Math.abs(speed) > 1) throw new RuntimeException("Speed must be between -1 and 1");
+        fixheadingspeed = headingPidController.calculate(driveSubsystem.getAngle());
         if (timer.get() < time) {
             driveSubsystem.drive(speed, fixheadingspeed, false);
         }
         else {
-            driveSubsystem.stop();
+            driveSubsystem.stopMotors();
             finlished = true;
         }
     }

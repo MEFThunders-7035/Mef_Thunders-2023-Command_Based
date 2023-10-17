@@ -47,14 +47,13 @@ public class VerticalElevatorSubsystem extends SubsystemBase implements AutoClos
 
         if (!Elevator.isAlive()) {
             DriverStation.reportError("Elevator motor is not alive", false);
-            throw new RuntimeException("Elevator motor is not alive");
         }
     }
 
     /**
      * Stops the elevator motor
      */
-    public void stop() {
+    public void stopMotor() {
         Elevator.stopMotor();
     }
 
@@ -63,10 +62,6 @@ public class VerticalElevatorSubsystem extends SubsystemBase implements AutoClos
      * @param speed double between -1 and 1
      */
     public void setMotor(double speed) {
-        if (Math.abs(speed) > 1) {
-            DriverStation.reportError("Elevator motor speed is out of range", false);
-            throw new IllegalArgumentException("Vertical elevator motor setpoint out of range: " + speed);
-        }
         Elevator.set(speed);
     }
 
@@ -97,7 +92,7 @@ public class VerticalElevatorSubsystem extends SubsystemBase implements AutoClos
     public void MoveUp() {
         if (getTopLimitSwitch()) {
             Elevator.set(0);
-            throw new RuntimeException("Top limit switch triggered");
+            DriverStation.reportWarning("Top limit switch triggered!", false);
         } else {
             Elevator.set(0.8);
         }
@@ -106,7 +101,7 @@ public class VerticalElevatorSubsystem extends SubsystemBase implements AutoClos
     public void MoveDown() {
         if (getBottomLimitSwitch()) {
             Elevator.set(0);
-            throw new RuntimeException("Bottom limit switch triggered");
+            DriverStation.reportWarning("Buttom limit switch triggered!", false);
         } else {
             Elevator.set(-0.8);
         }

@@ -1,25 +1,26 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.PhotonVisionConstants;
+import frc.robot.Interphases.PhotonCameraSystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.PhotonVisionSubsystem;
+
 public class VisionTargettingCmd extends CommandBase{
-    private final PhotonVisionSubsystem photonVisionSubsystem;
     private final DriveSubsystem driveSubsystem;
     private final PIDController FowardController;
     private final PIDController TurnController;
+    private final PhotonCameraSystem CameraSystem;
     private double fowardSpeed;
     private double turnSpeed;
 
-    public VisionTargettingCmd(PhotonVisionSubsystem photonVisionSubsystem, DriveSubsystem driveSubsystem) {
-        this.photonVisionSubsystem = photonVisionSubsystem;
+    public VisionTargettingCmd(DriveSubsystem driveSubsystem) {
         this.driveSubsystem = driveSubsystem;
-        FowardController = new PIDController(photonVisionSubsystem.getCurrentFowardPIDConstants()[0], photonVisionSubsystem.getCurrentFowardPIDConstants()[1], photonVisionSubsystem.getCurrentFowardPIDConstants()[2]);
-        TurnController = new PIDController(photonVisionSubsystem.getCurrentTurnPIDConstants()[0], photonVisionSubsystem.getCurrentTurnPIDConstants()[1], photonVisionSubsystem.getCurrentTurnPIDConstants()[2]);
-        addRequirements(photonVisionSubsystem);
+        this.CameraSystem = driveSubsystem.getCameraSystem();
+        var fowardPID = CameraSystem.camera_details.getFowardPIDConstants();
+        var turnPID = CameraSystem.camera_details.getTurnPIDConstants();
+        FowardController = new PIDController(fowardPID.kP, fowardPID.kD, fowardPID.kI);
+        TurnController = new PIDController(turnPID.kP, turnPID.kD, turnPID.kI);
         addRequirements(driveSubsystem);
     }
 
@@ -30,18 +31,16 @@ public class VisionTargettingCmd extends CommandBase{
     
     @Override
     public void execute() {
-        if (!photonVisionSubsystem.hasTargets()) {
-            driveSubsystem.stop();
+        var tracked_tagets = CameraSystem.getTrackedTargets();
+        
+        if (tracked_tagets.isEmpty()) {
+            driveSubsystem.stopMotors();
             return;
         }
-        try {
-            fowardSpeed = FowardController.calculate(photonVisionSubsystem.getArea(),PhotonVisionConstants.kTargetArea);
-            turnSpeed = TurnController.calculate(photonVisionSubsystem.getYaw(),0);
-            driveSubsystem.drive(-fowardSpeed, -turnSpeed, false);
-        }
-        catch (Exception e) {
-            DriverStation.reportError(e.getMessage(), e.getStackTrace());
-        }
+
+        fowardSpeed = FowardController.calculate(CameraSystem.getArea(), PhotonVisionConstants.kTargetArea);
+        turnSpeed = TurnController.calculate(CameraSystem.getYaw(),0);
+        driveSubsystem.drive(fowardSpeed, turnSpeed, false);
     }
 
     @Override

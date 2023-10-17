@@ -1,8 +1,11 @@
 package frc.robot.Interphases;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+
 
 public class MPU6050 implements Gyro{
     private static final int DEVICE_ADDRESS = 0x68;
@@ -18,14 +21,28 @@ public class MPU6050 implements Gyro{
     
     private double angle_offset;
     private double X_angle_offset;
+    private double Y_angle_offset;
+
     private double rate_offset;
     private double X_rate_offset;
+    private double Y_rate_offset;
+
     private double X_Accel_offset;
     private double Y_Accel_offset;
     private double Z_Accel_offset;
-    private double angle;
-    private double X_angle;
+    
+    private double angleX;
+    private double angleY;
+    private double angleZ;
+    
     private double LoopTime;
+    private double currentTimestamp;
+    private double lastTimestamp;
+
+    LinearFilter Xfilter;
+    LinearFilter Yfilter;
+    LinearFilter Zfilter;
+
 
     /**
      * Creates a new instance of the MPU6050 class.
@@ -33,26 +50,24 @@ public class MPU6050 implements Gyro{
      */
     public MPU6050(I2C.Port port) {
         mpu6050 = new I2C(port, DEVICE_ADDRESS);
-        mpu6050.write(PWR_MGMT_1, 0);
+        mpu6050.write(PWR_MGMT_1, 0); // Wake up the sensor
         LoopTime = 0.2;
         angle_offset = 0;
         rate_offset = 0;
         X_rate_offset = 0;
+        Y_rate_offset = 0;
         X_Accel_offset = 0;
         X_Accel_offset = 0;
         Z_Accel_offset = 0;
-        angle = 0;
-        X_angle = 0;
+        angleX = 0;
+        angleY = 0;
+        angleZ = 0;
+
+        Xfilter = LinearFilter.singlePoleIIR(0.1, LoopTime);
+        Yfilter = LinearFilter.singlePoleIIR(0.1, LoopTime);
+        Zfilter = LinearFilter.singlePoleIIR(0.1, LoopTime);
         // write(0x1B, (byte) 0x08); // Set full scale range for gyro
         // write(0x1C, (byte) 0x08); // Set full scale range for accelerometer
-    }
-
-    public boolean isConnected() {
-        boolean isConnected = !mpu6050.addressOnly();
-        if (!isConnected) {
-            DriverStation.reportError("MPU6050 is not connected!", false);
-        }
-        return isConnected;
     }
 
     /**
@@ -62,9 +77,6 @@ public class MPU6050 implements Gyro{
      * @return The bytes read from the sensor.
      */
     private byte[] read(int register, int count) {
-        if (!isConnected()) {
-            throw new RuntimeException("MPU6050 is not connected!");
-        }
         byte[] buffer = new byte[count];
         mpu6050.read(register, count, buffer);
         return buffer;
@@ -76,9 +88,6 @@ public class MPU6050 implements Gyro{
      * @return The value read from the sensor.
      */
     private short readShort(int register) {
-        if (!isConnected()) {
-            throw new RuntimeException("MPU6050 is not connected!");
-        }
         byte[] buffer = read(register, 2);
         return (short) ((buffer[0] << 8) | buffer[1]);
     }
@@ -90,39 +99,86 @@ public class MPU6050 implements Gyro{
     public void close() throws Exception {
         mpu6050.close();
     }
+    
+    /**
+     * Runs all the calculations to get the angle data, so it's important to run this periodically.
+     * @apiNote RUN IT PERIODICALLY. 
+     */
+    public void update() {
+        currentTimestamp = Timer.getFPGATimestamp();
+        LoopTime = currentTimestamp - lastTimestamp;
+        lastTimestamp = currentTimestamp;
+        
+        // Assuming X axis pointing forward, the Y axis pointing left, and the Z axis pointing up. (probably not the case here)
+                
+        double rateX = this.getRateX();
+        double rateY = this.getRateY();
+        double rateZ = this.getRate();
+
+        double accelX = this.getAccelX();
+        double accelY = this.getAccelY();
+        double accelZ = this.getAccelZ();
+
+        double accelAngleX = Math.atan2(accelY, accelZ) * 180.0 / Math.PI;
+        double accelAngleY = Math.atan2(-accelX, Math.sqrt(accelY * accelY + accelZ * accelZ)) * 180 / Math.PI;
+
+        //angleX = DriveConstants.kGyroFilterStrenght * (angleX + (rateX * LoopTime)) + (1 - DriveConstants.kGyroFilterStrenght) * angleAccelX;
+        //angleY = DriveConstants.kGyroFilterStrenght * (angleY + (rateY * LoopTime)) + (1 - DriveConstants.kGyroFilterStrenght) * angleAccelY;
+
+        rateX = Xfilter.calculate(rateX);
+        rateY = Yfilter.calculate(rateY);
+        rateZ = Zfilter.calculate(rateZ);
+        
+        angleX += rateX * LoopTime;
+        angleY += rateY * LoopTime;
+        angleZ += rateZ * LoopTime;
+    }
+    
 
     /**
      * Calibrate the gyro. 
      * <p>It's important to make sure that the robot is not moving while the calibration is in progress, 
      * this is typically done when the robot is first turned on while it's sitting at rest before the match starts.<p>
      * 
-     * @apiNote The calibration process takes 5 seconds to complete.
+     * @apiNote The calibration process takes approximately 5 seconds to complete. And is done on another thread
      */
     @Override
     public void calibrate() {
         System.out.println("Starting Calibration");
-        angle_offset = getAngle();
-        X_angle_offset = getAngleX();
         AccCalibrate();
         //for some reason taking the highest value gives the best results.
-        for (int i = 0; i < 200; i++) {
-            if (Math.abs(X_rate_offset) < Math.abs(getGyro_Rate_X())) {
-                X_rate_offset = getGyro_Rate_X();
-            }
-
-            if (Math.abs(rate_offset) < Math.abs(getRate())) {
-                rate_offset = getRate();
-            }
-            try {
-                Thread.sleep(25);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (rate_offset != 0) {
+            System.out.println("Rate Offset is already not 0");
+            return;
         }
-        System.out.println("Calibration Complete! Rate_Offstet: " + rate_offset);
+
+        new Thread(() -> {
+            double Xoffset = 0;
+            double Yoffset = 0;
+            double Zoffset = 0;
+            double XaccelOffset = 0.0;
+            double YaccelOffset = 0.0;
+            double ZaccelOffset = 0.0;
+            for (int i = 0; i < 500; i++) {
+            Zoffset += getRate();
+            Xoffset += getRateX();
+            Yoffset += getRateY();
+            XaccelOffset += getAccelX();
+            YaccelOffset += getAccelY();
+            ZaccelOffset += getAccelZ();
+            Timer.delay(0.01);
+            }
+            rate_offset = Zoffset / 500;
+            X_rate_offset = Xoffset / 500;
+            Y_rate_offset = Yoffset / 500;
+            X_Accel_offset = XaccelOffset / 500;
+            Y_Accel_offset = YaccelOffset / 500;
+            Z_Accel_offset = ZaccelOffset / 500;
+            System.out.println("Calibration Complete! Rate_Offstet: " + rate_offset);
+        }).start();
     }
 
-    public void AccCalibrate() {
+    private void AccCalibrate() {
         X_Accel_offset = getAccelX();
         Y_Accel_offset = getAccelY();
         Z_Accel_offset = getAccelZ();
@@ -130,7 +186,7 @@ public class MPU6050 implements Gyro{
 
     @Override
     public void reset() {
-        angle = 0;
+        angleZ = 0;
     }
 
     /**
@@ -142,20 +198,16 @@ public class MPU6050 implements Gyro{
         return getAngle() % 360;
     }
 
-    /**
-     * Sets the loop time for the gyro, deafult is 0.2 seconds.
-     * @param period The loop time in seconds.
-     * @apiNote This is used to calculate the angle of the gyro So RUN IT PERIODICALLY. 
-     */
-    public void setLoopTime(double period) {
-        LoopTime = period;
-    }
-
     @Override
     public double getAngle() {
+        /*
         double rate = getRate();
-        angle += rate * LoopTime;
-        return angle - angle_offset;
+        angleZ += rate * LoopTime;
+        double gyro_angle = angleZ - angle_offset;
+        double acc_angle =  Units.radiansToDegrees(Math.atan2(getAccelY(), getAccelZ()));
+        SmartDashboard.putNumber("Acc Angle", acc_angle);
+        */
+        return angleZ - angle_offset;
     }
 
     /**
@@ -167,9 +219,11 @@ public class MPU6050 implements Gyro{
      * @return The current X angle of the robot in degrees.
      */
     public double getAngleX() {
-        double rate = getGyro_Rate_X();
-        X_angle += rate * LoopTime;
-        return X_angle - X_angle_offset;
+        return angleX - X_angle_offset;
+    }
+
+    public double getAngleY() {
+        return angleY;
     }
 
     @Override
@@ -184,24 +238,27 @@ public class MPU6050 implements Gyro{
      * Gets the angle of the sensor.
      * @return The rate of the sensor in degrees per second.
      */
-    public double getGyro_Rate_X() {
-        return readShort(GYRO_XOUT_H) / 131.0;
+    public double getRateX() {
+        return (readShort(GYRO_XOUT_H) / 131.0) - X_rate_offset;
     }
 
     /**
      * Gets the angle of the sensor.
      * @return The rate of the sensor in degrees per second.
      */
-    public double getGyro_Rate_Y() {
-        return (readShort(GYRO_YOUT_H) - X_rate_offset) / 131.0;
+    public double getRateY() {
+        return ((readShort(GYRO_YOUT_H)) / 131.0) - Y_rate_offset;
     }
 
     /**
      * Gets the angle of the sensor.
      * @return The rate of the sensor in degrees per second.
      */
-    public double getGyro_Rate_Z() {
-        return (readShort(GYRO_ZOUT_H) - rate_offset) / 131.0;
+    public double getRateZ() {
+        byte[] buffer = new byte[6];
+        mpu6050.read(GYRO_ZOUT_H, 6, buffer);
+        int z = (buffer[4] << 8) | buffer[5];
+        return ((double) z / 131.0) - rate_offset;
     }
 
     /**
