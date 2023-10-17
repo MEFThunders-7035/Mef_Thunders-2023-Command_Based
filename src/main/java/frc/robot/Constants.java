@@ -9,8 +9,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Abstracts.CameraInterface;
-import frc.robot.Abstracts.PIDConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -21,12 +19,9 @@ import frc.robot.Abstracts.PIDConstants;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static boolean is_debug = true;
-
   public static class OperatorConstants {
     public static final int kJoystickPort = 0;
   }
-  
   public static class DriveConstants {
     public static final int kLeftMotor1Port = 3;
     public static final int kLeftMotor2Port = 4;
@@ -46,22 +41,20 @@ public final class Constants {
 
     public static final double kEncoderDistancePerPulse = 0.025 * (3 * (Units.inchesToMeters(3)) * Math.PI); //6 inch diameter wheel with a encoder that has a resuliton of 40
 
-    public static final double kGyroFilterStrenght = 0.98;
-
     public static final double kTrackwidthMeters = 70;
     
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAccelerationMetersPerSecondSquared = 1;
     
-    public static final double kPDriveVel = 0.05;
+    public static final double kPDriveVel = 0.1;
 
     public static final DifferentialDriveKinematics kDriveKinematics =
         new DifferentialDriveKinematics(kTrackwidthMeters);
     public static class FeedForwardConstants {
       //TODO: Tune these values
-      public static final double ksVolts = 1.0863;
-      public static final double kvVoltSecondsPerMeter = 0.025977;
-      public static final double kaVoltSecondsSquaredPerMeter = 0.30616;
+      public static final double ksVolts = 0.22;
+      public static final double kvVoltSecondsPerMeter = 1.98;
+      public static final double kaVoltSecondsSquaredPerMeter = 0.2;
 
       public static final double kPDriveVel = 8.5;
     }
@@ -94,47 +87,28 @@ public final class Constants {
       public static final double kD = 0.0;
     }
   }
-  
   public static class IoConstants {
     public static final int kJoystickPort = 0;
     public static final int X_AXIS = 0;
     public static final int Y_AXIS = 1;
     public static final int Z_AXIS = 2;
   }
-  
   public static class AutonomousConstants {
-    public static final double kDriveAmount = 2;
     public static final double kDriveSpeed = -0.25;
     public static final double kDriveTime = 8;
     public static final double kRedlineSpeed = 0.1;
     public static final double kRedlineTime = 1;
 
     public static final String kTimedAuto = "Timer Auto";
+    public static final String kGyroAuto = "Gyro Auto";
     public static final String kCameraAuto = "Camera Auto";
     public static final String kStabilize = "Stabilize Auto";
     public static final String kRamsete = "Ramsete Auto";
-    public static final String kEncoder = "Encoder Auto";
-    public static final String kPath = "Path Follow Auto";
 
     public static class headingPIDConstants {
       public static final double kP = 0.01;
       public static final double kI = 0;
       public static final double kD = 0;
-      public static final double kToleranceDegrees = 0.5;
-    }
-    public static class EncoderPIDConstants {
-      public static final double kP = 0.2;
-      public static final double kI = 0.1;
-      public static final double kD = 0.1;
-      public static final double kToleranceMeters = 0.05;
-    }
-  
-    public static class pitchPidConstants {
-      public static final double kP = 0.1;
-      public static final double kI = 0;
-      public static final double kD = 0;
-      //Add a high tolorance as we do not try to fix this until we are at the climbing angle
-      public static final double kToleranceDegrees = 1.25; 
     }
   }
 
@@ -147,74 +121,6 @@ public final class Constants {
     public static final double kTargetArea = 0.5;
     public static final double TARGET_HEIGHT_METERS = Units.inchesToMeters(15.13);
     
-    public static class New_PiCamera implements CameraInterface {
-
-      @Override
-      public String getCameraName() {
-        return Cameras.kPiCamera;
-      }
-
-      @Override
-      public double getCameraHeightMeters() {
-        return PiCamera.CAMERA_HEIGHT_METERS;
-      }
-
-      @Override
-      public double getCameraPitchRadians() {
-        return PiCamera.CAMERA_PITCH_RADIANS;
-      }
-
-      @Override
-      public Transform3d getRobotToCam() {
-        return PiCamera.robotToCam;
-      }
-
-      @Override
-      public PIDConstants getTurnPIDConstants() {
-        return new PIDConstants(PiCamera.TurnPIDConstants.kP, PiCamera.TurnPIDConstants.kI, PiCamera.TurnPIDConstants.kD);
-      }
-
-      @Override
-      public PIDConstants getFowardPIDConstants() {
-        return new PIDConstants(PiCamera.FowardPIDConstants.kP, PiCamera.FowardPIDConstants.kI, PiCamera.FowardPIDConstants.kD);
-      }
-      
-    }
-
-    public static class New_WideCamera implements CameraInterface {
-
-      @Override
-      public String getCameraName() {
-        return Cameras.kWideCamera;
-      }
-
-      @Override
-      public double getCameraHeightMeters() {
-        return WideCamera.kCamera_Height_Meters;
-      }
-
-      @Override
-      public double getCameraPitchRadians() {
-        return WideCamera.kCamera_Pitch_Radians;
-      }
-
-      @Override
-      public Transform3d getRobotToCam() {
-        return WideCamera.robotToCam;
-      }
-
-      @Override
-      public PIDConstants getTurnPIDConstants() {
-        return new PIDConstants(WideCamera.TurnPIDConstants.kP, WideCamera.TurnPIDConstants.kI, WideCamera.TurnPIDConstants.kD);
-      }
-
-      @Override
-      public PIDConstants getFowardPIDConstants() {
-        return new PIDConstants(WideCamera.FowardPIDConstants.kP, WideCamera.FowardPIDConstants.kI, WideCamera.FowardPIDConstants.kD);
-      }
-      
-    }
-
     public static class PiCamera{
       public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(1);
       public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);  

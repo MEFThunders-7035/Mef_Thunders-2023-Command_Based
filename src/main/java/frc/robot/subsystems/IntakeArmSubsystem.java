@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,6 +29,9 @@ public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
         SmartDashboard.putNumber("Potantiometer", getArmPos());
     }
     public void setMotors(double speed) {
+        if (Math.abs(speed) > 1) {
+            DriverStation.reportWarning("Motors setpoint out of range: " + speed, false);
+        }
         IntakeArmMotor.set(speed);
         IntakeArmMotor2.set(speed);
     }
@@ -45,7 +49,11 @@ public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
      * @return true = brake, false = coast
      */
     public boolean getMotorsBrakeMode() {
-        return IntakeArmMotor.getIdleMode().equals(CANSparkMax.IdleMode.kBrake);
+        if (IntakeArmMotor.getIdleMode().equals(CANSparkMax.IdleMode.kBrake)) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
     /**

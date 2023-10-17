@@ -19,23 +19,16 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  public Robot() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
-    addPeriodic(m_robotContainer::fast_periodic,
-     0.005);
-  }
-
-  
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
   public void robotInit() {
+    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // autonomous chooser on the dashboard.
+    m_robotContainer = new RobotContainer();
   }
-
 
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics

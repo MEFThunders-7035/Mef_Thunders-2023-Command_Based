@@ -9,45 +9,45 @@ import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.Redline_IntakeSubsystem;
 
 public class IntakeTests {
-    IntakeArmSubsystem IntakeArmsubsystem;
+    IntakeArmSubsystem neoSubsystem;
     Redline_IntakeSubsystem redlineSubsystem;
 
     @BeforeEach
     void setup() {
         HAL.initialize(800, 0);
-        IntakeArmsubsystem = new IntakeArmSubsystem();
+        neoSubsystem = new IntakeArmSubsystem();
         redlineSubsystem = new Redline_IntakeSubsystem();
     }
 
     @AfterEach
     void tearDown() throws Exception {
-        IntakeArmsubsystem.stopMotors();
+        neoSubsystem.stopMotors();
         redlineSubsystem.stopMotor();
-        IntakeArmsubsystem.close();
+        neoSubsystem.close();
         redlineSubsystem.close();
     }
 
     @Test
     void setNeoTest() throws Exception {
-        IntakeArmsubsystem.setMotors(1.0);
-        assertEquals(1.0, IntakeArmsubsystem.getMotorsLastSet());
-        IntakeArmsubsystem.setMotors(-1.0);
-        assertEquals(-1.0, IntakeArmsubsystem.getMotorsLastSet());
+        neoSubsystem.setMotors(1.0);
+        assertEquals(1.0, neoSubsystem.getMotorsLastSet());
+        neoSubsystem.setMotors(-1.0);
+        assertEquals(-1.0, neoSubsystem.getMotorsLastSet());
     }
 
     @Test
     void stopNeoTest() throws Exception {
-        IntakeArmsubsystem.setMotors(1.0);
-        IntakeArmsubsystem.stopMotors();
-        assertEquals(0.0, IntakeArmsubsystem.getMotorsLastSet());
+        neoSubsystem.setMotors(1.0);
+        neoSubsystem.stopMotors();
+        assertEquals(0.0, neoSubsystem.getMotorsLastSet());
     }
 
     @Test
     void NeoSetBrakeModeTest() throws Exception {
-        IntakeArmsubsystem.setMotorsBrake(false);
-        assertEquals(false, IntakeArmsubsystem.getMotorsBrakeMode());
-        IntakeArmsubsystem.setMotorsBrake(true);
-        assertEquals(true, IntakeArmsubsystem.getMotorsBrakeMode());
+        neoSubsystem.setMotorsBrake(false);
+        assertEquals(false, neoSubsystem.getMotorsBrakeMode());
+        neoSubsystem.setMotorsBrake(true);
+        assertEquals(true, neoSubsystem.getMotorsBrakeMode());
     }
 
     @Test
