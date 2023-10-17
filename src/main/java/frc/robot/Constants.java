@@ -44,7 +44,7 @@ public final class Constants {
     public static final boolean kEncoderLeftReversed = false;
     public static final boolean kEncoderRightReversed = false;
 
-    public static final double kEncoderDistancePerPulse = 0.025 * (3 * (Units.inchesToMeters(3)) * Math.PI); //6 inch diameter wheel with a encoder that has a resuliton of 40
+    public static final double kEncoderDistancePerPulse = 0.025;
 
     public static final double kGyroFilterStrenght = 0.98;
 
