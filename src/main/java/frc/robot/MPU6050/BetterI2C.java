@@ -41,6 +41,13 @@ public class BetterI2C extends I2C{
         return writeBytes(register, data, data.length);
     }
 
+    public boolean writeChars(int register, char[] data) {
+        byte[] buffer = new byte[data.length];
+        for (int i = 0; i < data.length; i++) {
+            buffer[i] = (byte) data[i];
+        }
+        return writeBytes(register, buffer);
+    }
     /**
      * Writes the given data to the sensor.
      * @param register The register to write to.
@@ -84,6 +91,15 @@ public class BetterI2C extends I2C{
         return (short) ((buffer[0] << 8) | buffer[1]);
     }
 
+    public char[] readChars(int register, int count) {
+        char[] buffer = new char[count];
+        byte[] temp = readBytes(register, count);
+        for (int i = 0; i < count; i++) {
+            buffer[i] = (char) temp[i];
+        }
+        return buffer;
+    }
+    
     public short[] readWords(int register, int count) {
         short[] buffer = new short[count];
         byte[] temp = readBytes(register, count * 2);

@@ -65,7 +65,7 @@ public class AxisMotionApps extends MPU6050New implements Gyro{
         mpu6050.write(MPU6050_RA_SMPLRT_DIV, 0x04); // Set the sample rate to 200Hz
         mpu6050.write(MPU6050_RA_CONFIG, 0x01); // Digital Low Pass Filter (DLPF) Configuration 188HZ
         
-        if(loadDMPFirmware((short) I2CDEVDMPFIRMWARE.length, I2CDEVDMPFIRMWARE, (short) 0)) return true; // Load DMP Firmware
+        if(writeProgMemoryBlock(I2CDEVDMPFIRMWARE, I2CDEVDMPFIRMWARE.length, 0, 0, true)) return true; // Load DMP Firmware
         
         mpu6050.writeWord(MPU6050_RA_DMP_CFG_1, 0x0400); // DMP Program Start Address
         setFullScaleGyroRange(MPU6050_GYRO_FS_2000); // Set the gyro to +/- 2000 degrees per second (idk why, but it is what the I2C DEV code does)
