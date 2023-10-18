@@ -53,14 +53,14 @@ public class AxisMotionApps extends MPU6050New implements Gyro{
      * @return Transfer Aborted... false for success, true for aborted.
      */
     public boolean dmpInitialize() { // I am too annoyed to make all these functions, so I am just going to put them all here.
-        if(mpu6050.write(MPU6050_RA_PWR_MGMT_1, 0x80)) return true; // Reset Device
+        mpu6050.write(MPU6050_RA_PWR_MGMT_1, 0x80); // Reset Device
         Timer.delay(0.1);
-        if(mpu6050.write(MPU6050_RA_SIGNAL_PATH_RESET, 0b00001100)) return true; // Reset all sensors
+        mpu6050.write(MPU6050_RA_SIGNAL_PATH_RESET, 0b00001100); // Reset all sensors
         Timer.delay(0.1);
         
-        if(setClockSource(MPU6050_CLOCK_PLL_XGYRO)) return true; // Set clock source to gyro
-        if(mpu6050.write(MPU6050_RA_INT_ENABLE, 0x00)) return true; // Disable all interrupts 
-        if(mpu6050.write(MPU6050_RA_FIFO_EN, 0x00)) return true; // Disable FIFO, We will be using the DMP's FIFO
+        setClockSource(MPU6050_CLOCK_PLL_XGYRO); // Set clock source to gyro
+        mpu6050.write(MPU6050_RA_INT_ENABLE, 0x00); // Disable all interrupts 
+        mpu6050.write(MPU6050_RA_FIFO_EN, 0x00); // Disable FIFO, We will be using the DMP's FIFO
         setFullScaleAccelRange(MPU6050_ACCEL_FS_2); // Set the accelerometer to +/- 2g
         mpu6050.write(MPU6050_RA_SMPLRT_DIV, 0x04); // Set the sample rate to 200Hz
         mpu6050.write(MPU6050_RA_CONFIG, 0x01); // Digital Low Pass Filter (DLPF) Configuration 188HZ
