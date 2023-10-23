@@ -96,34 +96,38 @@ public abstract class MPU6050Base{
         setMemoryBank(bank);
         setMemoryStartAddress(address);
         int chunkSize;
-        char[] verifyBuffer = new char[MPU6050_DMP_MEMORY_CHUNK_SIZE];
         char[] progBuffer = new char[MPU6050_DMP_MEMORY_CHUNK_SIZE];
+        byte[] verifyBuffer = new byte[MPU6050_DMP_MEMORY_CHUNK_SIZE];
+        byte[] progBufferTmp = new byte[MPU6050_DMP_MEMORY_CHUNK_SIZE];
         int i;
         int j;
 
         for (i = 0; i<dataSize;) {
             chunkSize = MPU6050_DMP_MEMORY_CHUNK_SIZE;
 
-            if (i + chunkSize > dataSize) chunkSize = dataSize - i;
-
-            if (chunkSize > 256 - address) chunkSize = 256 - address;
+            if (i + chunkSize > dataSize) chunkSize = dataSize - i;    // make sure we don't go past the data size
+            
+            if (chunkSize > 256 - address) chunkSize = 256 - address;  // make sure this chunk doesn't go past the bank boundary (256 bytes)
 
             if (useProgMem) {
                 // write the chunk of data as specified
+                if (chunkSize < MPU6050_DMP_MEMORY_CHUNK_SIZE) {progBuffer = new char[chunkSize]; progBufferTmp = new byte[chunkSize];} // weird quirk of the write function, we need to send a large enough block, here we assume 16 is enough (default
                 for (j = 0; j < chunkSize; j++) progBuffer[j] = data[i + j];
             } else {
                 // write the chunk of data as specified
                 progBuffer = Arrays.copyOfRange(data, i, data.length);
             }
             
-            mpu6050.writeChars(MPU6050_RA_MEM_R_W, progBuffer);
+            for (j = 0; j < chunkSize; j++) progBufferTmp[j] = (byte) progBuffer[j];
+
+            mpu6050.writeBytes(MPU6050_RA_MEM_R_W, progBufferTmp);
 
             if (verify && verifyBuffer != null) { // verify data if needed
                 setMemoryBank(bank);
                 setMemoryStartAddress(address);
-                //!: if this fails, we may need to change how this is done, to use tmp with byte[] instead of char[]
-                verifyBuffer = mpu6050.readChars(MPU6050_RA_MEM_R_W, chunkSize);
-                if (!Arrays.equals(progBuffer, verifyBuffer)) { // uh oh! we fucked up.
+                verifyBuffer = mpu6050.readBytes(MPU6050_RA_MEM_R_W, chunkSize);
+                
+                if (!Arrays.equals(progBufferTmp, verifyBuffer)) { // uh oh! we fucked up.
                     System.out.println("Block write verification error, bank " + bank + ", address " + address + ", At " + i + " of " + dataSize);
                     return true;
                 }

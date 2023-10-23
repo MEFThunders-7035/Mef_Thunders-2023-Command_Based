@@ -28,6 +28,7 @@ public class AxisMotionApps extends MPU6050New implements Gyro{
 
     public AxisMotionApps(I2C.Port port, int attemptAmount) {
         super(port);
+        System.out.println("DMP Init");
         dmpReady = false;
         dmpInit = false;
         for (int i = 0; i < attemptAmount; i++) {
@@ -39,13 +40,15 @@ public class AxisMotionApps extends MPU6050New implements Gyro{
             dmpInit = true;
             calibrateAccel(6);
             calibrateGyro(6);
+            System.out.println("DMP Init Done, calibrating...");
             if (setDMPEnabled(true)) {
                 DriverStation.reportError("DMP Enable Failed!", false);
                 continue;
-            };
+            }
             dmpReady = true;
             break;
         }
+        System.out.println("DMP Ready: " + dmpReady);
     }
 
     /**
