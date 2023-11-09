@@ -262,4 +262,32 @@ public class MPU6050New extends MPU6050Base{
         short[] offsets = getActiveOffsets();
         System.out.println(offsets);
     }
+
+    /* GYRO */
+    
+    public void setXGyroOffset(int offset) {
+        mpu6050.writeWord(MPU6050_RA_XG_OFFS_USRH, offset);
+    }
+    
+    public void setYGyroOffset(int offset) {
+        mpu6050.writeWord(MPU6050_RA_YG_OFFS_USRH, offset);
+    }
+
+    public void setZGyroOffset(int offset) {
+        mpu6050.writeWord(MPU6050_RA_ZG_OFFS_USRH, offset);
+    }
+
+    /* ACCEL */
+    
+    public void setXAccelOffset(int offset) {
+        mpu6050.writeWord(MPU6050_RA_XA_OFFS_H, offset);
+    }
+
+    public void setYAccelOffset(int offset) {
+        mpu6050.writeWord(MPU6050_RA_YA_OFFS_H, offset);
+    }
+
+    public void setZAccelOffset(int offset) {
+        mpu6050.writeWord(MPU6050_RA_ZA_OFFS_H, offset);
+    }
 }
