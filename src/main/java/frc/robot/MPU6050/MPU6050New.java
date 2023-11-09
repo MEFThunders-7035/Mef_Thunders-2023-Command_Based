@@ -120,10 +120,8 @@ public class MPU6050New extends MPU6050Base{
         int eSample;
         long eSum;
         int gravity = 8192;
-        if (readAddress == 0x3B) {
-            gravity = 16384 >> getFullScaleAccelRange();
-        }
-        
+        if (readAddress == 0x3B) gravity = 16384 >> getFullScaleAccelRange();
+        System.out.println('>');
         for (int i = 0; i < 3; i++) {
             data = mpu6050.readShort(saveAddress + (i * 2));
             reading = data;
@@ -155,11 +153,11 @@ public class MPU6050New extends MPU6050Base{
                     mpu6050.writeWord(saveAddress + (i * shift), data);
                 }
                 if((c == 99) && eSum > 1000){						// Error is still to great to continue 
-				c = 0;
-                System.out.print("*");
-			}
-			if((eSum * ((readAddress == 0x3B)?.05: 1)) < 5) eSample++;	// Successfully found offsets prepare to  advance
-			if((eSum < 100) && (c > 10) && (eSample >= 10)) break;		// Advance to next Loop
+                    c = 0;
+                    System.out.print("*");
+			    }
+                if((eSum * ((readAddress == 0x3B)?.05: 1)) < 5) eSample++;	// Successfully found offsets prepare to  advance
+                if((eSum < 100) && (c > 10) && (eSample >= 10)) break;		// Advance to next Loop
             }
             System.out.print('.');
 		    kP *= .75;
