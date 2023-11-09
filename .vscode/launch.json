@@ -5,13 +5,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "java",
-      "name": "Test",
-      "request": "launch",
-      "mainClass": "Test",
-      "projectName": "Mef_Thunders-2023-Command_Based"
-    },
-    {
       "type": "wpilib",
       "name": "WPILib Desktop Debug",
       "request": "launch",
