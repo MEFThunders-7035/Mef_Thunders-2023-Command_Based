@@ -386,7 +386,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @return the pitch angle (X axis) rotation in degrees.
    */
   public double getPitchFixed() {
-    return mpu6050.getPitch() % 360;
+    return getPitch() % 360;
   }
 
   /**
