@@ -37,8 +37,8 @@ public class PhotonCameraSystem {
      */
     public PhotonCameraSystem(CameraInterface camera_details) {
         this.camera_details = camera_details;
-        // camera = new PhotonCamera(camera_details.getCameraName());
-        // photonPoseEstimator = getPhotonPoseEstimator();
+        camera = new PhotonCamera(camera_details.getCameraName());
+        photonPoseEstimator = getPhotonPoseEstimator();
     }
 
     /**
