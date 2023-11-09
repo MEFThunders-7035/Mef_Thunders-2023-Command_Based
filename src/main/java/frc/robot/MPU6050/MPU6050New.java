@@ -25,10 +25,6 @@ public class MPU6050New extends MPU6050Base{
         setSleepEnabled(false);
     }
 
-    public boolean isConnected() {
-        return mpu6050.readBytes(MPU6050_RA_WHO_AM_I, 1)[0] == 0x68;
-    }
-
     public short getRawRateX() {
         return mpu6050.readShort(MPU6050_RA_GYRO_XOUT_H);
     }
