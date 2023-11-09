@@ -17,8 +17,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.Abstracts.CameraInterface;
 import frc.robot.Constants.PhotonVisionConstants;
+import frc.robot.abstract_classes.CameraInterface;
 
 
 /**
