@@ -11,11 +11,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AxisMotionApps extends MPU6050New implements Gyro{
-    public boolean dmpReady;
-    private boolean dmpInit;
-    private final int dmpPacketSize = 28;
+    private boolean dmpReady = false;
+    private boolean dmpInit = false;
+    private int dmpPacketSize = 28;
 
     @Override
     public void close() throws Exception {
@@ -23,34 +24,51 @@ public class AxisMotionApps extends MPU6050New implements Gyro{
     }
 
     public AxisMotionApps(I2C.Port port) {
-        this(port, 5);
+        this(port, 3);
     }
 
     public AxisMotionApps(I2C.Port port, int attemptAmount) {
-        super(port);
-        System.out.println("DMP Init");
-        dmpReady = false;
-        dmpInit = false;
-        for (int i = 0; i < attemptAmount; i++) {
-            System.out.println("DMP Attempt " + i);
-            if(dmpInitialize() && !dmpInit) {
-                DriverStation.reportError("DMP Init Failed!", false);
-                continue;
-            }
-            dmpInit = true;
-            calibrateAccel(6);
-            calibrateGyro(6);
-            System.out.println("DMP Init Done, calibrating...");
-            if (setDMPEnabled(true)) {
-                DriverStation.reportError("DMP Enable Failed!", false);
-                continue;
-            }
-            dmpReady = true;
-            break;
+        super(port); // mpu.initialize() is called here
+        
+        if (!isConnected()) {
+            System.err.println("MPU6050 not connected! Not initializing DMP!");
+            return;
         }
-        System.out.println("DMP Ready: " + dmpReady);
+        
+        System.out.println("DMP Init");
+        // dmpInitialize() in this for loop
+        dmpInit = !dmpInitialize(attemptAmount);
+        (dmpInit ? System.out: System.err).println("DMP is " + (dmpInit ? "Initilazied" : "Not Initilaized"));
+        if (!dmpInit) return; // Should switch to the super class instead of returning but I am too lazy to do that right now.
+        
+        setXGyroOffset(51);
+        setYGyroOffset(8);
+        setZGyroOffset(21);
+        setXAccelOffset(1150);
+        setYAccelOffset(-50);
+        setZAccelOffset(1060);
+        System.out.println("Current Offstets: " + Arrays.toString(getActiveOffsets()));
+        
+        System.out.println("Calibrating...");
+        calibrateGyro(1);
+        calibrateAccel(1);
+        
+        System.out.println("Calibration Done!");
+        System.out.println("Current Offstets: " + Arrays.toString(getActiveOffsets()));
+        System.out.println("Enabling DMP...");
+        
+        dmpReady = !setDMPEnabled(true, attemptAmount); // (!) because setDMPEnabled returns true if aborted.
     }
 
+    public void update() {
+        if (!dmpReady) {System.out.println("dmp not ready!"); return;}
+        SmartDashboard.putNumber("Fifo Count", getFIFOCount());
+        byte[] data = getCurrentFIFOPacket();
+        if (data == null) return;
+        int[] quat = dmpGetQuaternion(data);
+        System.out.println(Arrays.toString(quat));
+    }
+    
     /**
      * Initializes the DMP.
      * @return Transfer Aborted... false for success, true for aborted.
@@ -79,52 +97,22 @@ public class AxisMotionApps extends MPU6050New implements Gyro{
     }
 
     /**
-     * Load and verify DMP image.
-     * @param length Length of DMP image.
-     * @param firmware DMP code.
-     * @param start_addr Starting address of DMP code memory.
+     * Initializes the DMP.
+     * @param tryAmount The amount of times to try to initialize the DMP.
      * @return Transfer Aborted... false for success, true for aborted.
-    */
-    private boolean loadDMPFirmware(short length, char firmware[], short start_addr) {
-        if (dmpReady) return false;
-        short ii;
-        short this_write;
-        // Must divide evenly into bank_size to avoid bank crossings.
-        final int LOAD_CHUNK = 16;
-        byte[] cur = new byte[LOAD_CHUNK];
-        byte[] tmp = new byte[2];
-
-        if (firmware == null) return true;
-
-        for (ii = 0; ii < length; ii += this_write) {
-            this_write = (short) Math.min(LOAD_CHUNK, length - ii);
-            if (writeMem(ii, this_write, Arrays.copyOfRange(firmware, ii, ii + this_write))) return true;
-
-            cur = readMem(ii, this_write); if (cur == null) return true;
-
-            byte[] tmp2 = new byte[this_write];
-            
-            for (int i = 0; i < this_write; i++) {
-                tmp2[i] = (byte) firmware[ii + i];
+     */
+    public boolean dmpInitialize(int tryAmount) {
+        System.out.println("At attempt " + tryAmount + " to initialize DMP");
+        for (int i = 0; i < tryAmount; i++) {
+            if (dmpInitialize()) {
+                DriverStation.reportError("DMP Init Failed!", false);
+                continue;
             }
-
-            if (Arrays.equals(cur, tmp2)) {
-                System.out.println("Passed! " + ii);
-            } else {
-                DriverStation.reportError("Failed! " + ii,false);
-                System.out.println("Failed! " + ii);
-                return true;
-            }
+            return false;
         }
-        
-        tmp[0] = (byte) (start_addr >> 8);
-        tmp[1] = (byte) (start_addr & 0xFF);
-        if (mpu6050.write(MPU6050_RA_DMP_CFG_1, tmp[0])) return true;
-
-        dmpReady = true;
-        return false;
+        return true;
     }
-    
+
     public boolean setDMPEnabled(boolean enable) {
         if (enable) {
             return mpu6050.write(MPU6050_RA_USER_CTRL, 0x80); // Enable DMP
@@ -134,17 +122,33 @@ public class AxisMotionApps extends MPU6050New implements Gyro{
         }
     }
 
+    /**
+     * Enables the DMP.
+     * @param enable Enable or Disable the DMP.
+     * @param tryAmount The amount of times to try to enable the DMP.
+     * @return Transfer Aborted... false for success, true for aborted.
+     */
+    public boolean setDMPEnabled(boolean enable, int tryAmount) {
+        for (int i = 0; i < tryAmount; i++) {
+            if (setDMPEnabled(enable)) {
+                DriverStation.reportError("DMP Enable Failed!", false);
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+    
     public byte[] getCurrentFIFOPacket() {
-        byte[] data = super.getCurrentFIFOPacket(dmpPacketSize);
-        return data;
+        return super.getCurrentFIFOPacket(dmpPacketSize);
     }
     
     public int[] dmpGetQuaternion(byte[] FIFOPacket) {
         int[] data = new int[4];
-        data[0] = ((FIFOPacket[0] << 8) | FIFOPacket[1]);
-        data[1] = ((FIFOPacket[4] << 8) | FIFOPacket[5]);
-        data[2] = ((FIFOPacket[8] << 8) | FIFOPacket[9]);
-        data[3] = ((FIFOPacket[12] << 8) | FIFOPacket[13]);
+        data[0] = ((FIFOPacket[0] << 8) | FIFOPacket[1] & 0xFF);
+        data[1] = ((FIFOPacket[4] << 8) | FIFOPacket[5] & 0xFF);
+        data[2] = ((FIFOPacket[8] << 8) | FIFOPacket[9] & 0xFF);
+        data[3] = ((FIFOPacket[12] << 8) | FIFOPacket[13] & 0xFF);
         return data;
     }
 
@@ -156,14 +160,14 @@ public class AxisMotionApps extends MPU6050New implements Gyro{
 
     @Override
     public void reset() {
-        throw new RuntimeException("Resetting not implemented yet");
+        
         //TODO: Set OFFSET function. (maybe use DMP? or create offset variables?)
     }
 
     @Override
     public double getAngle() {
         //TODO: Get Angle(Trough DMP)
-        throw new RuntimeException("Get Angle is not implemented yet");
+        return 0;
     }
 
     @Override
