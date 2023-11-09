@@ -33,8 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Interphases.MPU6050;
-import frc.robot.Interphases.PhotonCameraSystem;
+import frc.robot.MPU6050.MPU6050;
 
 import static frc.robot.Constants.is_debug;
 
@@ -142,8 +141,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     SmartDashboard.putNumber("Rotation offset", mpu6050.getRate_offset());
     
     SmartDashboard.putNumber("Angle", mpu6050.getAngle());
-    SmartDashboard.putNumber("AngleX", mpu6050.getAngleX());
-    SmartDashboard.putNumber("AngleY", mpu6050.getAngleY());
+    SmartDashboard.putNumber("AngleX", mpu6050.getRoll());
+    SmartDashboard.putNumber("AngleY", mpu6050.getPitch());
 
     SmartDashboard.putNumber("AccelX", mpu6050.getAccelX());
     SmartDashboard.putNumber("AccelY", mpu6050.getAccelY());
@@ -369,7 +368,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @return the total accumilated Pitch angle (X axis) double rotation in degrees.
    */
   public double getPitch() {
-    return mpu6050.getAngleX();
+    return mpu6050.getPitch();
   }
 
   /**
@@ -387,7 +386,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @return the pitch angle (X axis) rotation in degrees.
    */
   public double getPitchFixed() {
-    return mpu6050.getAngleX() % 360;
+    return getPitch() % 360;
   }
 
   /**

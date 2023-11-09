@@ -35,6 +35,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * @deprecated Use {@link #PhotonVisionSubsystem(Field2d)} instead.
      * @param field2d The Field2d that will be used to display the robot's pose on the field.
      */
+    @Deprecated
     public PhotonVisionSubsystem(Field2d field2d) {
         if (field2d == null) {
             field2d = new Field2d();

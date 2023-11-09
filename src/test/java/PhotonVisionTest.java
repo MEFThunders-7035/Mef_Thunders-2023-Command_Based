@@ -9,12 +9,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.subsystems.PhotonCameraSystem;
 
 import org.photonvision.SimPhotonCamera;
 import org.photonvision.SimVisionSystem;
 import org.photonvision.SimVisionTarget;
-
-import frc.robot.Interphases.PhotonCameraSystem;
 
 class PhotonVisionTest {
     PhotonCameraSystem photonCameraSystem;
