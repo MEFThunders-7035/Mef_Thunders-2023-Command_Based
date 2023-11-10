@@ -138,7 +138,7 @@ public class RobotContainer {
       case AutonomousConstants.kRamsete:
         return ramseteCommand();
       case AutonomousConstants.kEncoder:
-        return EncoderDriveAutoCommand();
+        return encoderDriveAutoCommand();
       case AutonomousConstants.kPath:
         return pathFollowCommand();
       default:
@@ -161,12 +161,12 @@ public class RobotContainer {
     return null;
   }
 
-  private Command EncoderDriveAutoCommand() {
+  private Command encoderDriveAutoCommand() {
     return new EncoderDriveCmd(driveSubsystem, AutonomousConstants.kDriveAmount);
   }
 
   private Command ramseteCommand() {
-    var VoltageConstraint = new DifferentialDriveVoltageConstraint(
+    var voltageConstraint = new DifferentialDriveVoltageConstraint(
       new SimpleMotorFeedforward(
         DriveConstants.FeedForwardConstants.ksVolts,
         DriveConstants.FeedForwardConstants.kvVoltSecondsPerMeter,
@@ -181,7 +181,7 @@ public class RobotContainer {
     // Add kinematics to ensure max speed is actually obeyed
     .setKinematics(DriveConstants.kDriveKinematics)
     // Apply the voltage constraint
-    .addConstraint(VoltageConstraint);
+    .addConstraint(voltageConstraint);
     
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
       // Start at the origin facing the +X direction
