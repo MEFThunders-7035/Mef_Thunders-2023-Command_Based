@@ -23,7 +23,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
-    addPeriodic(robotContainer::fast_periodic, Constants.kFastLoopTime); // add a faster periodic loop that presumably runs the PID loops.
+    addPeriodic(robotContainer::fastPeriodic, Constants.kFastLoopTime); // add a faster periodic loop that presumably runs the PID loops.
   }
 
   

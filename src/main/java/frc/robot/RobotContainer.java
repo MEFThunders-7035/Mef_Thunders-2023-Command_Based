@@ -79,7 +79,7 @@ public class RobotContainer {
     driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, () -> stick.getRawAxis(IoConstants.Y_AXIS), () -> stick.getRawAxis(IoConstants.Z_AXIS)));
   }
 
-  public void fast_periodic() {
+  public void fastPeriodic() {
     double first = Timer.getFPGATimestamp();
     driveSubsystem.runGyroLoop();
     double timeTook = Timer.getFPGATimestamp() - first;
