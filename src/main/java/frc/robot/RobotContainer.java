@@ -123,6 +123,8 @@ public class RobotContainer {
       case PhotonVisionConstants.Cameras.kWideCamera:
         driveSubsystem.setCameraSystem(new PhotonCameraSystem(new PhotonVisionConstants.New_WideCamera()));
         break;
+      default:
+        DriverStation.reportError("Unknown Camera Selected: " + cameraSelected, false);
     }
   }
 
