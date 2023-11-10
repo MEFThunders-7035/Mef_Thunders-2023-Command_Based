@@ -158,12 +158,12 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   /**
    * Sets the speed of the motors
-   * @param LeftMotorSpeed double between -1 and 1
-   * @param RightMotorSpeed double between -1 and 1
+   * @param leftMotorSpeed double between -1 and 1
+   * @param rightMotorSpeed double between -1 and 1
    */
-  public void setMotors(double LeftMotorSpeed, double RightMotorSpeed) {
-    leftMotorsGroup.set(LeftMotorSpeed);
-    rightMotorsGroup.set(RightMotorSpeed);
+  public void setMotors(double leftMotorSpeed, double rightMotorSpeed) {
+    leftMotorsGroup.set(leftMotorSpeed);
+    rightMotorsGroup.set(rightMotorSpeed);
   }
 
   /**
