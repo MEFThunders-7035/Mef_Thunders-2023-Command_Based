@@ -29,9 +29,9 @@ public class VisionTargettingCmd extends CommandBase{
     
     @Override
     public void execute() {
-        var tracked_tagets = CameraSystem.getTrackedTargets();
+        var trackedTagets = cameraSystem.getTrackedTargets();
         
-        if (tracked_tagets.isEmpty()) {
+        if (trackedTagets.isEmpty()) {
             driveSubsystem.stopMotors();
             return;
         }
