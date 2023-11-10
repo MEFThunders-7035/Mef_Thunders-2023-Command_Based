@@ -133,11 +133,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     field.setRobotPose(pose.getX(), pose.getY(), pose.getRotation());
     SmartDashboard.putData(field);
     if (is_debug) {
-      dashboard_debug();
+      dashboardDebug();
     }
   }
 
-  private void dashboard_debug() {
+  private void dashboardDebug() {
     SmartDashboard.putNumber("Rotation offset", mpu6050.getRate_offset());
     
     SmartDashboard.putNumber("Angle", mpu6050.getAngle());
