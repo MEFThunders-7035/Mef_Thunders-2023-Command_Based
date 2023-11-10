@@ -63,7 +63,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   private PhotonCameraSystem photonCameraSystem;
 
-  private boolean on_extra_loop;
+  private boolean onExtraLoop;
   
   /**
    * Creates a new DriveSubsystem.
@@ -73,7 +73,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     this.port = I2C.Port.kOnboard;
     this.mpu6050 = new MPU6050(port);
     this.field = field;
-    this.on_extra_loop = false;
+    this.onExtraLoop = false;
     calibrateGyro();
     resetEncoders();
 
@@ -119,7 +119,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   @Override
   public void periodic() {
-    if (!on_extra_loop) mpu6050.update();
+    if (!onExtraLoop) mpu6050.update();
     
     Pose2d pose = odometry.update(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
     var photonPose = photonCameraSystem.getEstimatedGlobalPose(pose);
@@ -411,7 +411,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * Runs all the calculations to get the angle data, so it's important to run this periodically.
    */
   public void runGyroLoop() {
-    on_extra_loop = true;
+    onExtraLoop = true;
     mpu6050.update();    
   }
 
