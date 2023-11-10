@@ -134,7 +134,7 @@ public class PhotonCameraSystem {
      * @return the current ids of each apriltag being tracked. If there are no aprilTags is being tracked, it will return an empty array.
     */
     public List<Integer> getTrackedTargetsIDs() {
-        List<Integer> ids = new ArrayList<Integer>();
+        List<Integer> ids = new ArrayList<>();
         // If there are no targets, return an empty array.
         if (!camera.getLatestResult().hasTargets()) return ids;
         // Get the ids of each target.
