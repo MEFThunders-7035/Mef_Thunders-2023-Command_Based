@@ -20,7 +20,7 @@ public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
 
     @Override
     public void close() throws Exception {
-        return;
+        // don't do anything because the tests fail for some reason whenever the motors are closed.
     }
 
     @Override
