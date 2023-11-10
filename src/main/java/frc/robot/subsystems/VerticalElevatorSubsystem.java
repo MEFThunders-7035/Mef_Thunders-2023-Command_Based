@@ -11,41 +11,41 @@ import frc.robot.Constants.VerticalElevatorConstants;
 
 public class VerticalElevatorSubsystem extends SubsystemBase implements AutoCloseable{
 
-    private final Spark Elevator;
+    private final Spark elevatorMotor;
     private final DigitalInput toplimitSwitch = new DigitalInput(0);
     private final DigitalInput bottomlimitSwitch = new DigitalInput(1);
-    private boolean topLimitSwitch_temp;
-    private boolean bottomLimitSwitch_temp;
+    private boolean topLimitSwitchTemp;
+    private boolean bottomLimitSwitchTemp;
 
 
     public VerticalElevatorSubsystem() {
-        this.Elevator = new Spark(VerticalElevatorConstants.kVerticalElevatorPort);
-        topLimitSwitch_temp = getTopLimitSwitch();
-        bottomLimitSwitch_temp = getBottomLimitSwitch();
+        this.elevatorMotor = new Spark(VerticalElevatorConstants.kVerticalElevatorPort);
+        topLimitSwitchTemp = getTopLimitSwitch();
+        bottomLimitSwitchTemp = getBottomLimitSwitch();
         SmartDashboard.putBoolean("Top Limit Switch", getTopLimitSwitch());
         SmartDashboard.putBoolean("Bottom Limit Switch", getBottomLimitSwitch());
-        Elevator.setInverted(true);
+        elevatorMotor.setInverted(true);
     }
     
     @Override
     public void close() throws Exception {
-        Elevator.close();
+        elevatorMotor.close();
         toplimitSwitch.close();
         bottomlimitSwitch.close();
     }
 
     @Override
     public void periodic() {
-        if (topLimitSwitch_temp != getTopLimitSwitch()) {
-            topLimitSwitch_temp = getTopLimitSwitch();
+        if (topLimitSwitchTemp != getTopLimitSwitch()) {
+            topLimitSwitchTemp = getTopLimitSwitch();
             SmartDashboard.putBoolean("Top Limit Switch", getTopLimitSwitch());
         }
-        if (bottomLimitSwitch_temp != getBottomLimitSwitch()) {
-            bottomLimitSwitch_temp = getBottomLimitSwitch();
+        if (bottomLimitSwitchTemp != getBottomLimitSwitch()) {
+            bottomLimitSwitchTemp = getBottomLimitSwitch();
             SmartDashboard.putBoolean("Bottom Limit Switch", getBottomLimitSwitch());
         }
 
-        if (!Elevator.isAlive()) {
+        if (!elevatorMotor.isAlive()) {
             DriverStation.reportError("Elevator motor is not alive", false);
         }
     }
@@ -54,7 +54,7 @@ public class VerticalElevatorSubsystem extends SubsystemBase implements AutoClos
      * Stops the elevator motor
      */
     public void stopMotor() {
-        Elevator.stopMotor();
+        elevatorMotor.stopMotor();
     }
 
     /**
@@ -62,7 +62,7 @@ public class VerticalElevatorSubsystem extends SubsystemBase implements AutoClos
      * @param speed double between -1 and 1
      */
     public void setMotor(double speed) {
-        Elevator.set(speed);
+        elevatorMotor.set(speed);
     }
 
     /**
@@ -70,7 +70,7 @@ public class VerticalElevatorSubsystem extends SubsystemBase implements AutoClos
      * @return the last set motor value double between -1 and 1
      */
     public double getLastMotorSet() {
-        return Elevator.get();
+        return elevatorMotor.get();
     }
 
     public boolean getTopLimitSwitch() {
@@ -78,7 +78,7 @@ public class VerticalElevatorSubsystem extends SubsystemBase implements AutoClos
     }
 
     public BooleanSupplier getTopLimitSwitchSupplier() {
-        return () -> getTopLimitSwitch();
+        return this::getTopLimitSwitch;
     }
     
     public boolean getBottomLimitSwitch() {
@@ -86,24 +86,24 @@ public class VerticalElevatorSubsystem extends SubsystemBase implements AutoClos
     }
     
     public BooleanSupplier getBottomLimitSwitchSupplier() {
-        return () -> getBottomLimitSwitch();
+        return this::getBottomLimitSwitch;
     }
     
-    public void MoveUp() {
+    public void moveUp() {
         if (getTopLimitSwitch()) {
-            Elevator.set(0);
+            elevatorMotor.set(0);
             DriverStation.reportWarning("Top limit switch triggered!", false);
         } else {
-            Elevator.set(0.8);
+            elevatorMotor.set(0.8);
         }
     }
     
-    public void MoveDown() {
+    public void moveDown() {
         if (getBottomLimitSwitch()) {
-            Elevator.set(0);
+            elevatorMotor.set(0);
             DriverStation.reportWarning("Buttom limit switch triggered!", false);
         } else {
-            Elevator.set(-0.8);
+            elevatorMotor.set(-0.8);
         }
     }
 }
