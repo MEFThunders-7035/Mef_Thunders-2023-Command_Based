@@ -1,28 +1,30 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Redline_IntakeSubsystem;
+import frc.robot.subsystems.RedlineIntakeSubsystem;
 
 public class IntakeRedlineJoystickCmd extends CommandBase{
     private final double speed;
-    private final Redline_IntakeSubsystem Intakesubsystem;
+    private final RedlineIntakeSubsystem intakeSubsystem;
 
-    public IntakeRedlineJoystickCmd(Redline_IntakeSubsystem Intakesubsystem, double speed) {
-        this.Intakesubsystem = Intakesubsystem;
+    public IntakeRedlineJoystickCmd(RedlineIntakeSubsystem intakeSubsystem, double speed) {
+        this.intakeSubsystem = intakeSubsystem;
         this.speed = speed;
-        addRequirements(Intakesubsystem);
+        addRequirements(intakeSubsystem);
     }
     @Override
     public void initialize() {
+        // we don't need to initialize anything 
+        // because we drive with joysticks
     }
 
     @Override
     public void execute() {
-        Intakesubsystem.setRedline(speed);
+        intakeSubsystem.setRedline(speed);
     }
     @Override
     public void end(boolean interrupted) {
-        Intakesubsystem.setRedline(0);
+        intakeSubsystem.setRedline(0);
     }
     @Override
     public boolean isFinished() {

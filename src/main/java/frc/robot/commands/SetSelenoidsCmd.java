@@ -4,21 +4,21 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PneumaticsSubsystem;
 public class SetSelenoidsCmd extends CommandBase{
     private final PneumaticsSubsystem pneumaticsSubsystem;
-    private final boolean selenoid_state;
+    private final boolean selenoidState;
 
     /**
      * Sets the Selenoids to the desired state
      * @param pneumaticsSubsystem the pneumatics subsystem
-     * @param selenoid_state true = Push, false = Pull
+     * @param selenoidState true = Push, false = Pull
      */
-    public SetSelenoidsCmd(PneumaticsSubsystem pneumaticsSubsystem, boolean selenoid_state) {
+    public SetSelenoidsCmd(PneumaticsSubsystem pneumaticsSubsystem, boolean selenoidState) {
         this.pneumaticsSubsystem = pneumaticsSubsystem;
-        this.selenoid_state = selenoid_state;
+        this.selenoidState = selenoidState;
         addRequirements(pneumaticsSubsystem);
     }
     @Override
     public void execute() {
-        pneumaticsSubsystem.setSolenoid(selenoid_state);
+        pneumaticsSubsystem.setSolenoid(selenoidState);
     }
 
 }

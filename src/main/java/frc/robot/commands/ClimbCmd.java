@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.AutonomousConstants.headingPIDConstants;
-import frc.robot.Constants.AutonomousConstants.pitchPidConstants;;
+import frc.robot.Constants.AutonomousConstants.pitchPidConstants;
 
 //TODO: Test this command on the robot to make sure it works
 public class ClimbCmd extends CommandBase{
@@ -19,8 +19,8 @@ public class ClimbCmd extends CommandBase{
     private double timeout;
     private boolean reversed;
     private boolean finished;
-    private boolean at_climbing_angle;
-    private boolean stabilise_forever;
+    private boolean atClimbingAngle;
+    private boolean stabiliseForever;
     
     /**
      * Makes the Robot Climb to the balance board.
@@ -30,16 +30,16 @@ public class ClimbCmd extends CommandBase{
      * WARNING: This command will continue going foward until şt reaches the balance board, So do not run it if not in front of the balance board.
      * @param driveSubsystem The drive subsystem to be used by this command.
      * @param timeout The timeout in seconds. this will stop the command if the command takes too long to finish. Meaining we probably missed the board.
-     * @param go_reverse If true, the robot will go backwards. If false, the robot will go foward.
+     * @param isReverse If true, the robot will go backwards. If false, the robot will go foward.
      */
-    public ClimbCmd(DriveSubsystem driveSubsystem, double timeout, boolean go_reverse, boolean stabilise_forever) {
+    public ClimbCmd(DriveSubsystem driveSubsystem, double timeout, boolean isReverse, boolean stabiliseForever) {
         this.driveSubsystem = driveSubsystem;
-        this.reversed = go_reverse;
+        this.reversed = isReverse;
         this.timeout = timeout;
-        this.stabilise_forever = stabilise_forever;
+        this.stabiliseForever = stabiliseForever;
         timer = new Timer();
         timer.reset();
-        if (go_reverse) {
+        if (isReverse) {
             this.driveSpeed = -AutonomousConstants.kDriveSpeed;
         }
         headingPidController = new PIDController(headingPIDConstants.kP, headingPIDConstants.kI, headingPIDConstants.kD);
@@ -66,7 +66,7 @@ public class ClimbCmd extends CommandBase{
         timer.reset();
         timer.start();
         // Setup booleans
-        at_climbing_angle = false;
+        atClimbingAngle = false;
         finished = false;
         // Setup the PID Controllers
         headingPidController.setSetpoint(driveSubsystem.getAngle());
@@ -80,7 +80,7 @@ public class ClimbCmd extends CommandBase{
     public void execute() {
         // Go Foward till the robot looks up
         // We might need to add a timeout to this
-        if (pitchPidController.atSetpoint() && !at_climbing_angle) {
+        if (pitchPidController.atSetpoint() && !atClimbingAngle) {
             if (timer.get() > this.timeout) {
                 // We took too long to climb
                 // We probably missed the board
@@ -94,12 +94,12 @@ public class ClimbCmd extends CommandBase{
             driveSubsystem.drive(driveSpeed, 0, false);
         }
         else {
-            double pitch_correction = reversed ? -pitchPidController.calculate(driveSubsystem.getPitch()) : pitchPidController.calculate(driveSubsystem.getPitch());
+            double pitchCorrection = reversed ? -pitchPidController.calculate(driveSubsystem.getPitch()) : pitchPidController.calculate(driveSubsystem.getPitch());
             // We started Climbing
             // Try to keep the robot straight
-            at_climbing_angle = true;
-            driveSubsystem.drive(pitch_correction, headingPidController.calculate(driveSubsystem.getAngle()), false);
-            finished = stabilise_forever ? false : pitchPidController.atSetpoint();
+            atClimbingAngle = true;
+            driveSubsystem.drive(pitchCorrection, headingPidController.calculate(driveSubsystem.getAngle()), false);
+            if (!stabiliseForever) finished = pitchPidController.atSetpoint(); 
         }
     }
 

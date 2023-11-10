@@ -6,17 +6,17 @@ import org.junit.jupiter.api.Test;
 
 import edu.wpi.first.hal.HAL;
 import frc.robot.subsystems.IntakeArmSubsystem;
-import frc.robot.subsystems.Redline_IntakeSubsystem;
+import frc.robot.subsystems.RedlineIntakeSubsystem;
 
 public class IntakeTests {
     IntakeArmSubsystem IntakeArmsubsystem;
-    Redline_IntakeSubsystem redlineSubsystem;
+    RedlineIntakeSubsystem redlineSubsystem;
 
     @BeforeEach
     void setup() {
         HAL.initialize(800, 0);
         IntakeArmsubsystem = new IntakeArmSubsystem();
-        redlineSubsystem = new Redline_IntakeSubsystem();
+        redlineSubsystem = new RedlineIntakeSubsystem();
     }
 
     @AfterEach

@@ -10,9 +10,7 @@ public class TimedDriveCmd extends CommandBase{
     private final DriveSubsystem driveSubsystem;
     private final double speed;
     private final double time;
-    private double first_heading;
     private PIDController headingPidController;
-    private double fixheadingspeed;
     private Timer timer;
     private boolean finlished = false;
     
@@ -41,13 +39,12 @@ public class TimedDriveCmd extends CommandBase{
         timer.reset();
         finlished = false;
         timer.start();
-        first_heading = driveSubsystem.getAngle();
-        headingPidController.setSetpoint(first_heading);
+        double firstHeading = driveSubsystem.getAngle();
+        headingPidController.setSetpoint(firstHeading);
     }
     @Override
     public void execute() {
-        if (Math.abs(speed) > 1) throw new RuntimeException("Speed must be between -1 and 1");
-        fixheadingspeed = headingPidController.calculate(driveSubsystem.getAngle());
+        double fixheadingspeed = headingPidController.calculate(driveSubsystem.getAngle());
         if (timer.get() < time) {
             driveSubsystem.drive(speed, fixheadingspeed, false);
         }

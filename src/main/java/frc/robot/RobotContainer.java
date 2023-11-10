@@ -50,7 +50,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.PhotonCameraSystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
-import frc.robot.subsystems.Redline_IntakeSubsystem;
+import frc.robot.subsystems.RedlineIntakeSubsystem;
 import frc.robot.subsystems.VerticalElevatorSubsystem;
 
 
@@ -61,7 +61,7 @@ public class RobotContainer {
   private final DriveSubsystem driveSubsystem = new DriveSubsystem(field2d);
   private final VerticalElevatorSubsystem verticalElevatorSubsystem = new VerticalElevatorSubsystem();
   private final IntakeArmSubsystem IntakeArmSubsystem = new IntakeArmSubsystem();
-  private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
+  private final RedlineIntakeSubsystem Redline_IntakeSubsystem = new RedlineIntakeSubsystem();
   private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
 
   private final SendableChooser<String> Auto_chooser = new SendableChooser<>();

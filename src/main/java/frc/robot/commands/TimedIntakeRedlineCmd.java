@@ -2,10 +2,10 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Redline_IntakeSubsystem;
+import frc.robot.subsystems.RedlineIntakeSubsystem;
 
 public class TimedIntakeRedlineCmd extends CommandBase{
-    private final Redline_IntakeSubsystem RedlineIntakesubsystem;
+    private final RedlineIntakeSubsystem redlineIntakeSubsystem;
     private final double speed;
     private final double time;
     private Timer timer;
@@ -13,16 +13,16 @@ public class TimedIntakeRedlineCmd extends CommandBase{
 
     /**
      * Runs the intake for a specified amount of time
-     * @param RedlineIntakesubsystem The intake subsystem
+     * @param redlineIntakeSubsystem The intake subsystem
      * @param speed The speed to run the intake at (-1 to 1)
      * @param time The time to run the intake for in seconds
      */
-    public TimedIntakeRedlineCmd(Redline_IntakeSubsystem RedlineIntakesubsystem, double speed, double time) {
-        this.RedlineIntakesubsystem = RedlineIntakesubsystem;
+    public TimedIntakeRedlineCmd(RedlineIntakeSubsystem redlineIntakeSubsystem, double speed, double time) {
+        this.redlineIntakeSubsystem = redlineIntakeSubsystem;
         this.speed = speed;
         this.time = time;
         this.timer = new Timer();
-        addRequirements(RedlineIntakesubsystem);
+        addRequirements(redlineIntakeSubsystem);
     }
 
     @Override
@@ -38,12 +38,12 @@ public class TimedIntakeRedlineCmd extends CommandBase{
             finished = true;
             return;
         }
-        RedlineIntakesubsystem.setRedline(speed);
+        redlineIntakeSubsystem.setRedline(speed);
     }
 
     @Override
     public void end(boolean interrupted) {
-        RedlineIntakesubsystem.setRedline(0);
+        redlineIntakeSubsystem.setRedline(0);
         timer.stop(); timer.reset();
         System.out.println("TimedIntakeRedlineCmd ended " + (interrupted ? "interruptedly" : "normally"));
     }

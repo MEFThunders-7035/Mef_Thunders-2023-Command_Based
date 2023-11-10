@@ -24,7 +24,7 @@ class PhotonVisionTest {
     @BeforeEach
     void setup() {
         photonCameraSystem = new PhotonCameraSystem();
-        var camera_details = photonCameraSystem.camera_details;
+        var camera_details = photonCameraSystem.cameraDetails;
         simVisionSystem = new SimVisionSystem(camera_details.getCameraName(),170,
          camera_details.getRobotToCam(),10, 1280, 720, 0.01);
         HAL.initialize(500, 0);

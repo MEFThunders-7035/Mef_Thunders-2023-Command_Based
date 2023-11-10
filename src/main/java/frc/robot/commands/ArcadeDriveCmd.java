@@ -6,21 +6,22 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class ArcadeDriveCmd extends CommandBase{
-    private final DriveSubsystem Drivesubsystem;
-    private final Supplier<Double> speedfunc, turnfunc;
-    public ArcadeDriveCmd(DriveSubsystem Drivesubsystem, Supplier<Double> speedfunc, Supplier<Double> turnfunc) {
-        this.Drivesubsystem = Drivesubsystem;
+    private final DriveSubsystem driveSubsystem;
+    private final Supplier<Double> speedfunc;
+    private final Supplier<Double> turnfunc;
+    public ArcadeDriveCmd(DriveSubsystem driveSubsystem, Supplier<Double> speedfunc, Supplier<Double> turnfunc) {
+        this.driveSubsystem = driveSubsystem;
         this.speedfunc = speedfunc;
         this.turnfunc = turnfunc;
-        addRequirements(Drivesubsystem);
+        addRequirements(driveSubsystem);
     }
     @Override
     public void execute() {
-        Drivesubsystem.drive(speedfunc.get(), turnfunc.get());
+        driveSubsystem.drive(speedfunc.get(), turnfunc.get());
     }
     @Override
     public void end(boolean interrupted) {
-        Drivesubsystem.drive(0, 0);
+        driveSubsystem.drive(0, 0);
     }
     @Override
     public boolean isFinished() {

@@ -9,8 +9,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Abstracts.CameraInterface;
-import frc.robot.Abstracts.PIDConstants;
+import frc.robot.abstract_classes.CameraInterface;
+import frc.robot.abstract_classes.PIDConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
