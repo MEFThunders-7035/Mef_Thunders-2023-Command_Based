@@ -399,15 +399,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
 
   /**
-   * @deprecated Use {@link DriveConstants#kDriveKinematics} instead.
-   * @return The kinematics of the drive train.
-   */
-  @Deprecated
-  public DifferentialDriveKinematics getKinematics() {
-    return this.kinematics;
-  }
-  
-  /**
    * Runs all the calculations to get the angle data, so it's important to run this periodically.
    */
   public void runGyroLoop() {
