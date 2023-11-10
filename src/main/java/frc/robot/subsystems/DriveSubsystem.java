@@ -224,7 +224,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @return A supplier of {@link DriveSubsystem#getPose}
    */
   public Supplier<Pose2d> getPose2dSupplier() {
-    return () -> this.getPose();
+    return this::getPose;
   }
 
   public DifferentialDriveOdometry getDiffOdometry() {
