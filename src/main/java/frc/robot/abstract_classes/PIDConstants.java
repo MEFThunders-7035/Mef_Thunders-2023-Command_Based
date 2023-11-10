@@ -1,4 +1,4 @@
-package frc.robot.Abstracts;
+package frc.robot.abstract_classes;
 
 public class PIDConstants {
     public double kP;
@@ -9,5 +9,13 @@ public class PIDConstants {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
+    }
+
+    public PIDConstants() {
+        this(0, 0, 0);
+    }
+
+    public PIDConstants(PIDConstants pidConstants) {
+        this(pidConstants.kP, pidConstants.kI, pidConstants.kD);
     }
 }

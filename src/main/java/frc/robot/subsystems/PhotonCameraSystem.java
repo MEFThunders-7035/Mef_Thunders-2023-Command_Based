@@ -17,8 +17,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.Abstracts.CameraInterface;
 import frc.robot.Constants.PhotonVisionConstants;
+import frc.robot.abstract_classes.CameraInterface;
 
 
 /**
@@ -26,18 +26,18 @@ import frc.robot.Constants.PhotonVisionConstants;
  * It is used to get the robot's pose on the field Using only AprilTags.
  */
 public class PhotonCameraSystem {
-    public PhotonCamera camera;
-    public CameraInterface camera_details;
+    private PhotonCamera camera;
+    public CameraInterface cameraDetails;
     private PhotonPoseEstimator photonPoseEstimator;
 
     /**
      * This is used to get the robot's pose on the field using only AprilTags.
-     * @param camera_details The camera details that will be used to get the robot's pose.
+     * @param cameraDetails The camera details that will be used to get the robot's pose.
      * And to get the camera's PID constants.
      */
-    public PhotonCameraSystem(CameraInterface camera_details) {
-        this.camera_details = camera_details;
-        camera = new PhotonCamera(camera_details.getCameraName());
+    public PhotonCameraSystem(CameraInterface cameraDetails) {
+        this.cameraDetails = cameraDetails;
+        camera = new PhotonCamera(cameraDetails.getCameraName());
         photonPoseEstimator = getPhotonPoseEstimator();
     }
 
@@ -56,7 +56,7 @@ public class PhotonCameraSystem {
             // Create pose estimator
             photonPoseEstimator =
                     new PhotonPoseEstimator(
-                            fieldLayout, PoseStrategy.MULTI_TAG_PNP, camera, camera_details.getRobotToCam());
+                            fieldLayout, PoseStrategy.MULTI_TAG_PNP, camera, cameraDetails.getRobotToCam());
             photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
             System.out.println("Loaded PhotonPoseEstimator");
         } catch (IOException e) {
@@ -70,15 +70,15 @@ public class PhotonCameraSystem {
 
     /**
      * This is used for a Target that you know the height of.
-     * @param TARGET_HEIGHT_METERS The height of the target in meters.
+     * @param targetHeightMeters The height of the target in meters.
      * @return the distance to the target in meters.
      */
-    public Optional<Double> getDistanceToTarget(double TARGET_HEIGHT_METERS) {
+    public Optional<Double> getDistanceToTarget(double targetHeightMeters) {
         var pitch = getPitch();
         if (pitch == 0) return Optional.empty();
-        var camera_height = camera_details.getCameraHeightMeters();
-        var camera_pitch = camera_details.getCameraPitchRadians();
-        return Optional.of(PhotonUtils.calculateDistanceToTargetMeters(camera_height, TARGET_HEIGHT_METERS, camera_pitch, pitch));
+        var cameraHeight = cameraDetails.getCameraHeightMeters();
+        var cameraPitch = cameraDetails.getCameraPitchRadians();
+        return Optional.of(PhotonUtils.calculateDistanceToTargetMeters(cameraHeight, targetHeightMeters, cameraPitch, pitch));
     }
 
     /**
@@ -87,9 +87,9 @@ public class PhotonCameraSystem {
      * If no target is found, it will return 0 (I have no clue what the units are)
      */
     public double getPitch() {
-        var latest_result = camera.getLatestResult();
-        if (latest_result.hasTargets()) {
-            return latest_result.getBestTarget().getPitch();
+        var latestResult = camera.getLatestResult();
+        if (latestResult.hasTargets()) {
+            return latestResult.getBestTarget().getPitch();
         }
         return 0;
     }
@@ -100,9 +100,9 @@ public class PhotonCameraSystem {
      * If no target is found, it will return 0. (I have no clue what the units are)
     */
     public double getYaw() {
-        var latest_result = camera.getLatestResult();
-        if (latest_result.hasTargets()) {
-            return latest_result.getBestTarget().getYaw();
+        var latestResult = camera.getLatestResult();
+        if (latestResult.hasTargets()) {
+            return latestResult.getBestTarget().getYaw();
         }
         return 0;
     }
@@ -112,9 +112,9 @@ public class PhotonCameraSystem {
      * @return the area percantage (0 to 100) of the camera fov.
      */
     public double getArea() {
-        var latest_result = camera.getLatestResult();
-        if (latest_result.hasTargets()) {
-            return latest_result.getBestTarget().getArea();
+        var latestResult = camera.getLatestResult();
+        if (latestResult.hasTargets()) {
+            return latestResult.getBestTarget().getArea();
         }
         return 0;
     }
@@ -123,9 +123,9 @@ public class PhotonCameraSystem {
      * @return The current id of the best april tag being tracked. If no tag is being tracked, it will return -1.
      */
     public int getCurrentAprilTagID() {
-        var latest_result = camera.getLatestResult();
-        if (latest_result.hasTargets()) {
-            return latest_result.getBestTarget().getFiducialId();
+        var latestResult = camera.getLatestResult();
+        if (latestResult.hasTargets()) {
+            return latestResult.getBestTarget().getFiducialId();
         }
         return -1;
     }
@@ -134,7 +134,7 @@ public class PhotonCameraSystem {
      * @return the current ids of each apriltag being tracked. If there are no aprilTags is being tracked, it will return an empty array.
     */
     public List<Integer> getTrackedTargetsIDs() {
-        List<Integer> ids = new ArrayList<Integer>();
+        List<Integer> ids = new ArrayList<>();
         // If there are no targets, return an empty array.
         if (!camera.getLatestResult().hasTargets()) return ids;
         // Get the ids of each target.

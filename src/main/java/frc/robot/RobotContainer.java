@@ -50,7 +50,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.PhotonCameraSystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
-import frc.robot.subsystems.Redline_IntakeSubsystem;
+import frc.robot.subsystems.RedlineIntakeSubsystem;
 import frc.robot.subsystems.VerticalElevatorSubsystem;
 
 
@@ -60,62 +60,61 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem driveSubsystem = new DriveSubsystem(field2d);
   private final VerticalElevatorSubsystem verticalElevatorSubsystem = new VerticalElevatorSubsystem();
-  private final IntakeArmSubsystem IntakeArmSubsystem = new IntakeArmSubsystem();
-  private final Redline_IntakeSubsystem Redline_IntakeSubsystem = new Redline_IntakeSubsystem();
+  private final IntakeArmSubsystem intakeArmSubsystem = new IntakeArmSubsystem();
+  private final RedlineIntakeSubsystem redlineIntakeSubsystem = new RedlineIntakeSubsystem();
   private final PneumaticsSubsystem pneumaticsSubsystem = new PneumaticsSubsystem();
 
-  private final SendableChooser<String> Auto_chooser = new SendableChooser<>();
-  private final SendableChooser<String> Camera_chooser = new SendableChooser<>();
+  private final SendableChooser<String> autoChooser = new SendableChooser<>();
+  private final SendableChooser<String> cameraChooser = new SendableChooser<>();
   private final Joystick stick = new Joystick(OperatorConstants.kJoystickPort);
-  private String autoSelected;
   
   public RobotContainer() {
     PortForwarder.add(5800, "photonvision.local", 5800);
     configureBindings();
-    AddChoosers();
+    addChoosers();
     setupPhotonVisionCamera();
     verticalElevatorSubsystem.setDefaultCommand(new VerticalElevatorJoystickCmd(verticalElevatorSubsystem, 0));
-    IntakeArmSubsystem.setDefaultCommand(new HoldIntakeCmd(IntakeArmSubsystem));
+    intakeArmSubsystem.setDefaultCommand(new HoldIntakeCmd(intakeArmSubsystem));
     driveSubsystem.setDefaultCommand(new ArcadeDriveCmd(driveSubsystem, () -> stick.getRawAxis(IoConstants.Y_AXIS), () -> stick.getRawAxis(IoConstants.Z_AXIS)));
   }
 
-  public void fast_periodic() {
+  public void fastPeriodic() {
     double first = Timer.getFPGATimestamp();
     driveSubsystem.runGyroLoop();
-    double time_took = Timer.getFPGATimestamp() - first;
-    if (time_took >= 0.1) {
-      DriverStation.reportWarning("Loop Time of 0.01 Overrun, Time Took: " + time_took, false);
+    double timeTook = Timer.getFPGATimestamp() - first;
+    if (timeTook >= 0.1) {
+      DriverStation.reportWarning("Loop Time of 0.01 Overrun, Time Took: " + timeTook, false);
     } 
   }
 
   private void configureBindings() {
     new POVButton(stick, 0).whileTrue(new VerticalElevatorJoystickCmd(verticalElevatorSubsystem, VerticalElevatorConstants.kSpeed).until(verticalElevatorSubsystem.getTopLimitSwitchSupplier()));
     new POVButton(stick, 180).whileTrue(new VerticalElevatorJoystickCmd(verticalElevatorSubsystem, -VerticalElevatorConstants.kSpeed).until(verticalElevatorSubsystem.getBottomLimitSwitchSupplier()));
-    new JoystickButton(stick, 3).whileTrue(new IntakeNeoJoystickCmd(IntakeArmSubsystem, IntakeConstants.kUpSpeed));
-    new JoystickButton(stick, 4).whileTrue(new IntakeNeoJoystickCmd(IntakeArmSubsystem, IntakeConstants.kDownSpeed));
-    new JoystickButton(stick, 5).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, IntakeConstants.kRedlineSpeed));
-    new JoystickButton(stick, 6).whileTrue(new IntakeRedlineJoystickCmd(Redline_IntakeSubsystem, -IntakeConstants.kRedlineSpeed));
+    new JoystickButton(stick, 3).whileTrue(new IntakeNeoJoystickCmd(intakeArmSubsystem, IntakeConstants.kUpSpeed));
+    new JoystickButton(stick, 4).whileTrue(new IntakeNeoJoystickCmd(intakeArmSubsystem, IntakeConstants.kDownSpeed));
+    new JoystickButton(stick, 5).whileTrue(new IntakeRedlineJoystickCmd(redlineIntakeSubsystem, IntakeConstants.kRedlineSpeed));
+    new JoystickButton(stick, 6).whileTrue(new IntakeRedlineJoystickCmd(redlineIntakeSubsystem, -IntakeConstants.kRedlineSpeed));
     new JoystickButton(stick, 7).whileTrue(new SetSelenoidsCmd(pneumaticsSubsystem, false));
     new JoystickButton(stick, 8).whileTrue(new SetSelenoidsCmd(pneumaticsSubsystem, true));
   }
 
-  private void AddChoosers() {
-    Auto_chooser.setDefaultOption("Timer Auto", AutonomousConstants.kTimedAuto);
-    Auto_chooser.addOption("Camera Auto", AutonomousConstants.kCameraAuto);
-    Auto_chooser.addOption("Stabilize Auto", AutonomousConstants.kStabilize);
-    Auto_chooser.addOption("Ramsete Auto", AutonomousConstants.kRamsete);
-    Auto_chooser.addOption("Encoder Drive Auto", AutonomousConstants.kEncoder);
-    Auto_chooser.addOption("Path Follow Auto", AutonomousConstants.kPath);
-    SmartDashboard.putData("Auto choices", Auto_chooser);
+  private void addChoosers() {
+    autoChooser.setDefaultOption("Timer Auto", AutonomousConstants.kTimedAuto);
+    autoChooser.addOption("Camera Auto", AutonomousConstants.kCameraAuto);
+    autoChooser.addOption("Stabilize Auto", AutonomousConstants.kStabilize);
+    autoChooser.addOption("Ramsete Auto", AutonomousConstants.kRamsete);
+    autoChooser.addOption("Encoder Drive Auto", AutonomousConstants.kEncoder);
+    autoChooser.addOption("Path Follow Auto", AutonomousConstants.kPath);
+    SmartDashboard.putData("Auto choices", autoChooser);
 
-    Camera_chooser.setDefaultOption("Pi Cam", PhotonVisionConstants.Cameras.kPiCamera);
-    Camera_chooser.addOption("Wide Cam", PhotonVisionConstants.Cameras.kWideCamera);
-    SmartDashboard.putData("Camera choices", Camera_chooser);
+    cameraChooser.setDefaultOption("Pi Cam", PhotonVisionConstants.Cameras.kPiCamera);
+    cameraChooser.addOption("Wide Cam", PhotonVisionConstants.Cameras.kWideCamera);
+    SmartDashboard.putData("Camera choices", cameraChooser);
 
   }
 
   private void setupPhotonVisionCamera() {
-    String cameraSelected = Camera_chooser.getSelected();
+    String cameraSelected = cameraChooser.getSelected();
     switch (cameraSelected) {
       case PhotonVisionConstants.Cameras.kPiCamera:
         driveSubsystem.setCameraSystem(new PhotonCameraSystem(new PhotonVisionConstants.New_PiCamera()));
@@ -123,13 +122,13 @@ public class RobotContainer {
       case PhotonVisionConstants.Cameras.kWideCamera:
         driveSubsystem.setCameraSystem(new PhotonCameraSystem(new PhotonVisionConstants.New_WideCamera()));
         break;
+      default:
+        DriverStation.reportError("Unknown Camera Selected: " + cameraSelected, false);
     }
   }
 
   public Command getAutonomousCommand() {
-    autoSelected = Auto_chooser.getSelected();
-
-    switch (autoSelected) {
+    switch (autoChooser.getSelected()) {
       case AutonomousConstants.kTimedAuto:
         return timedAuto();
       case AutonomousConstants.kCameraAuto:
@@ -139,7 +138,7 @@ public class RobotContainer {
       case AutonomousConstants.kRamsete:
         return ramseteCommand();
       case AutonomousConstants.kEncoder:
-        return EncoderDriveAutoCommand();
+        return encoderDriveAutoCommand();
       case AutonomousConstants.kPath:
         return pathFollowCommand();
       default:
@@ -149,7 +148,7 @@ public class RobotContainer {
   
   private Command timedAuto() {
     return new SequentialCommandGroup(
-      new TimedIntakeRedlineCmd(Redline_IntakeSubsystem, AutonomousConstants.kRedlineSpeed, AutonomousConstants.kRedlineTime),
+      new TimedIntakeRedlineCmd(redlineIntakeSubsystem, AutonomousConstants.kRedlineSpeed, AutonomousConstants.kRedlineTime),
       new TimedDriveCmd(driveSubsystem, AutonomousConstants.kDriveSpeed, AutonomousConstants.kDriveTime)
     );
   }
@@ -162,12 +161,12 @@ public class RobotContainer {
     return null;
   }
 
-  private Command EncoderDriveAutoCommand() {
+  private Command encoderDriveAutoCommand() {
     return new EncoderDriveCmd(driveSubsystem, AutonomousConstants.kDriveAmount);
   }
 
   private Command ramseteCommand() {
-    var VoltageConstraint = new DifferentialDriveVoltageConstraint(
+    var voltageConstraint = new DifferentialDriveVoltageConstraint(
       new SimpleMotorFeedforward(
         DriveConstants.FeedForwardConstants.ksVolts,
         DriveConstants.FeedForwardConstants.kvVoltSecondsPerMeter,
@@ -182,7 +181,7 @@ public class RobotContainer {
     // Add kinematics to ensure max speed is actually obeyed
     .setKinematics(DriveConstants.kDriveKinematics)
     // Apply the voltage constraint
-    .addConstraint(VoltageConstraint);
+    .addConstraint(voltageConstraint);
     
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
       // Start at the origin facing the +X direction

@@ -9,9 +9,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class EncoderDriveCmd extends CommandBase {
   private final DriveSubsystem driveSubsystem;
 	private final PIDController headingPidController;
-	private final PIDController EncoderPIDController;
+	private final PIDController encoderPIDController;
   private final double distance;
-	private double first_heading;
 	private boolean finished;
 
   /**
@@ -26,12 +25,12 @@ public class EncoderDriveCmd extends CommandBase {
             headingPIDConstants.kP,
             headingPIDConstants.kI, 
             headingPIDConstants.kD);
-		EncoderPIDController = new PIDController(
+		encoderPIDController = new PIDController(
 						EncoderPIDConstants.kP,
 						EncoderPIDConstants.kI, 
 						EncoderPIDConstants.kD);
-    EncoderPIDController.setTolerance(EncoderPIDConstants.kToleranceMeters);
-    EncoderPIDController.setIntegratorRange(0, 0.4);
+    encoderPIDController.setTolerance(EncoderPIDConstants.kToleranceMeters);
+    encoderPIDController.setIntegratorRange(0, 0.4);
     addRequirements(this.driveSubsystem);
   }
 
@@ -40,9 +39,9 @@ public class EncoderDriveCmd extends CommandBase {
   public void initialize() {    
     System.out.println("Encoder Drive Started!");
     driveSubsystem.resetEncoders();
-    first_heading = driveSubsystem.getAngle();
-    headingPidController.setSetpoint(first_heading);
-		EncoderPIDController.setSetpoint(distance);
+    double firstHeading = driveSubsystem.getAngle();
+    headingPidController.setSetpoint(firstHeading);
+		encoderPIDController.setSetpoint(distance);
 		finished = false;
   }
 
@@ -53,10 +52,10 @@ public class EncoderDriveCmd extends CommandBase {
 			return;
 		}
 		double fixheadingspeed = headingPidController.calculate(driveSubsystem.getAngle());
-		double fixdistancespeed = EncoderPIDController.calculate(driveSubsystem.getAvarageEncoderDistance());
+		double fixdistancespeed = encoderPIDController.calculate(driveSubsystem.getAvarageEncoderDistance());
 
 		driveSubsystem.drive(-fixdistancespeed, fixheadingspeed, false);
-    finished = EncoderPIDController.atSetpoint();
+    finished = encoderPIDController.atSetpoint();
   }
 
   // Called once the command ends or is interrupted.

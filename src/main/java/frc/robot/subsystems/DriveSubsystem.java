@@ -63,7 +63,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   private PhotonCameraSystem photonCameraSystem;
 
-  private boolean on_extra_loop;
+  private boolean onExtraLoop;
   
   /**
    * Creates a new DriveSubsystem.
@@ -73,7 +73,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     this.port = I2C.Port.kOnboard;
     this.mpu6050 = new MPU6050(port);
     this.field = field;
-    this.on_extra_loop = false;
+    this.onExtraLoop = false;
     calibrateGyro();
     resetEncoders();
 
@@ -119,7 +119,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   @Override
   public void periodic() {
-    if (!on_extra_loop) mpu6050.update();
+    if (!onExtraLoop) mpu6050.update();
     
     Pose2d pose = odometry.update(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
     var photonPose = photonCameraSystem.getEstimatedGlobalPose(pose);
@@ -133,11 +133,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     field.setRobotPose(pose.getX(), pose.getY(), pose.getRotation());
     SmartDashboard.putData(field);
     if (is_debug) {
-      dashboard_debug();
+      dashboardDebug();
     }
   }
 
-  private void dashboard_debug() {
+  private void dashboardDebug() {
     SmartDashboard.putNumber("Rotation offset", mpu6050.getRate_offset());
     
     SmartDashboard.putNumber("Angle", mpu6050.getAngle());
@@ -158,12 +158,12 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
 
   /**
    * Sets the speed of the motors
-   * @param LeftMotorSpeed double between -1 and 1
-   * @param RightMotorSpeed double between -1 and 1
+   * @param leftMotorSpeed double between -1 and 1
+   * @param rightMotorSpeed double between -1 and 1
    */
-  public void setMotors(double LeftMotorSpeed, double RightMotorSpeed) {
-    leftMotorsGroup.set(LeftMotorSpeed);
-    rightMotorsGroup.set(RightMotorSpeed);
+  public void setMotors(double leftMotorSpeed, double rightMotorSpeed) {
+    leftMotorsGroup.set(leftMotorSpeed);
+    rightMotorsGroup.set(rightMotorSpeed);
   }
 
   /**
@@ -224,7 +224,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @return A supplier of {@link DriveSubsystem#getPose}
    */
   public Supplier<Pose2d> getPose2dSupplier() {
-    return () -> this.getPose();
+    return this::getPose;
   }
 
   public DifferentialDriveOdometry getDiffOdometry() {
@@ -399,19 +399,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
 
   /**
-   * @deprecated Use {@link DriveConstants#kDriveKinematics} instead.
-   * @return The kinematics of the drive train.
-   */
-  @Deprecated
-  public DifferentialDriveKinematics getKinematics() {
-    return this.kinematics;
-  }
-  
-  /**
    * Runs all the calculations to get the angle data, so it's important to run this periodically.
    */
   public void runGyroLoop() {
-    on_extra_loop = true;
+    onExtraLoop = true;
     mpu6050.update();    
   }
 
