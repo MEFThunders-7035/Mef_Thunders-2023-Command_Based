@@ -67,7 +67,6 @@ public class RobotContainer {
   private final SendableChooser<String> autoChooser = new SendableChooser<>();
   private final SendableChooser<String> cameraChooser = new SendableChooser<>();
   private final Joystick stick = new Joystick(OperatorConstants.kJoystickPort);
-  private String autoSelected;
   
   public RobotContainer() {
     PortForwarder.add(5800, "photonvision.local", 5800);
@@ -129,9 +128,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    autoSelected = autoChooser.getSelected();
-
-    switch (autoSelected) {
+    switch (autoChooser.getSelected()) {
       case AutonomousConstants.kTimedAuto:
         return timedAuto();
       case AutonomousConstants.kCameraAuto:
