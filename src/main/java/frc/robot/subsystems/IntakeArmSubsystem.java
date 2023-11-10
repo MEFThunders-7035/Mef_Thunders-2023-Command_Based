@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -10,7 +11,7 @@ import frc.robot.Constants.IntakeConstants;
 
 public class IntakeArmSubsystem extends SubsystemBase implements AutoCloseable{
 
-    public static final CANSparkMax IntakeArmMotor = new CANSparkMax(IntakeConstants.kCanIntakeArmMotor1Port, CANSparkMax.MotorType.kBrushed);
+    public static final CANSparkMax IntakeArmMotor = new CANSparkMax(IntakeConstants.kCanIntakeArmMotor1Port, CANSparkMaxLowLevel.MotorType.kBrushed);
     public static final Spark IntakeArmMotor2 = new Spark(IntakeConstants.kCanIntakeArmMotor2Port);
     public static final AnalogPotentiometer IntakeArmPot = new AnalogPotentiometer(IntakeConstants.kIntakeArmPotPort);
     
