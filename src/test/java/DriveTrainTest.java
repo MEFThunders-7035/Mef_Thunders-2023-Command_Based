@@ -50,7 +50,7 @@ public class DriveTrainTest {
         sim_leftEncoder.setDistance(5);
         sim_rightEncoder.setDistance(5);
         assertEquals(5, driveSubsystem.getLeftEncoderDistance(), delta);
-        assertEquals(driveSubsystem.getRightEncoderDistance(), 5, delta);
+        assertEquals(5, driveSubsystem.getRightEncoderDistance(), delta);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class DriveTrainTest {
         sim_leftEncoder.setRate(5);
         sim_rightEncoder.setRate(5);
         assertEquals(5, driveSubsystem.getLeftEncoderRate(), delta);
-        assertEquals(driveSubsystem.getRightEncoderRate(), 5, delta);
+        assertEquals(5, driveSubsystem.getRightEncoderRate(), delta);
     }
     
     @Test
