@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -25,7 +26,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -33,7 +33,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.MPU6050.MPU6050;
 
 import static frc.robot.Constants.is_debug;
 
@@ -56,24 +55,20 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   private final Encoder leftEncoder = new Encoder(DriveConstants.kEncoderLeftPort1, DriveConstants.kEncoderLeftPort2);
   private final Encoder rightEncoder = new Encoder(DriveConstants.kEncoderRightPort1, DriveConstants.kEncoderRightPort2);
   
-  private final MPU6050 mpu6050;
-  private final I2C.Port port;
+  private final AHRS navX;
   
   private final Field2d field;
 
   private PhotonCameraSystem photonCameraSystem;
 
-  private boolean onExtraLoop;
   
   /**
    * Creates a new DriveSubsystem.
    * @param field The field to use for updating the robot pose.
    */
   public DriveSubsystem(Field2d field) {
-    this.port = I2C.Port.kOnboard;
-    this.mpu6050 = new MPU6050(port);
+    this.navX = new AHRS();
     this.field = field;
-    this.onExtraLoop = false;
     calibrateGyro();
     resetEncoders();
 
@@ -114,12 +109,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
     driveTrain.close();
     leftEncoder.close();
     rightEncoder.close();
-    mpu6050.close();
+    navX.close();
   }
 
   @Override
   public void periodic() {
-    if (!onExtraLoop) mpu6050.update();
     
     Pose2d pose = odometry.update(getGyroRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
     var photonPose = photonCameraSystem.getEstimatedGlobalPose(pose);
@@ -138,19 +132,12 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
   }
 
   private void dashboardDebug() {
-    SmartDashboard.putNumber("Rotation offset", mpu6050.getRate_offset());
-    
-    SmartDashboard.putNumber("Angle", mpu6050.getAngle());
-    SmartDashboard.putNumber("AngleX", mpu6050.getRoll());
-    SmartDashboard.putNumber("AngleY", mpu6050.getPitch());
 
-    SmartDashboard.putNumber("AccelX", mpu6050.getAccelX());
-    SmartDashboard.putNumber("AccelY", mpu6050.getAccelY());
-    SmartDashboard.putNumber("AccelZ", mpu6050.getAccelZ());
-
-    SmartDashboard.putNumber("GyroX", mpu6050.getRateX());
-    SmartDashboard.putNumber("GyroY", mpu6050.getRateY());
-    SmartDashboard.putNumber("GyroZ", mpu6050.getRate());
+    SmartDashboard.putNumber("Angle", navX.getAngle());
+    SmartDashboard.putNumber("AngleX", navX.getRoll());
+    SmartDashboard.putNumber("AngleY", navX.getPitch());
+    SmartDashboard.putNumber("GyroZ", navX.getRate());
+    SmartDashboard.putNumber("Heading", navX.getFusedHeading());
     
     SmartDashboard.putNumber("Left Encoder Distance", getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder Distance", getRightEncoderDistance());
@@ -327,7 +314,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * Calibrates the gyro. This should be done before the match starts.
    */
   public void calibrateGyro() {
-    mpu6050.calibrate();
+    navX.calibrate();
   }
 
   /**
@@ -336,7 +323,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * and it needs to be recalibrated after it has been running.
    */
   public void resetGyro() {
-    mpu6050.reset();
+    navX.reset();
   }
 
   /**
@@ -344,7 +331,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @return Rotatation in terms of {@link Rotation2d}.
    */
   public Rotation2d getGyroRotation2d() {
-    return mpu6050.getRotation2d();
+    return navX.getRotation2d();
   }
 
   /**
@@ -356,7 +343,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @return the total accumilated yaw angle (Z axis) double rotation in degrees.
    */
   public double getAngle() {
-    return mpu6050.getAngle();
+    return navX.getAngle();
   }
 
   /**
@@ -368,7 +355,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @return the total accumilated Pitch angle (X axis) double rotation in degrees.
    */
   public double getPitch() {
-    return mpu6050.getPitch();
+    return navX.getPitch();
   }
 
   /**
@@ -377,7 +364,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @return the yaw angle (Z axis) double rotation in degrees.
    */
   public double getAngleFixed() {
-    return mpu6050.getAngle() % 360;
+    return navX.getAngle() % 360;
   }
   
   /**
@@ -402,8 +389,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * Runs all the calculations to get the angle data, so it's important to run this periodically.
    */
   public void runGyroLoop() {
-    onExtraLoop = true;
-    mpu6050.update();    
   }
 
   public Command pathFollowCommand() {
