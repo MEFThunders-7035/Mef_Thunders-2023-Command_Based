@@ -80,7 +80,6 @@ public class RobotContainer {
 
   public void fastPeriodic() {
     double first = Timer.getFPGATimestamp();
-    driveSubsystem.runGyroLoop();
     double timeTook = Timer.getFPGATimestamp() - first;
     if (timeTook >= 0.1) {
       DriverStation.reportWarning("Loop Time of 0.01 Overrun, Time Took: " + timeTook, false);

@@ -382,13 +382,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable{
    * @return the current rate in degrees per second
    */
   public double getRotationRate() {
-    return mpu6050.getRate();
-  }
-
-  /**
-   * Runs all the calculations to get the angle data, so it's important to run this periodically.
-   */
-  public void runGyroLoop() {
+    return navX.getRate();
   }
 
   public Command pathFollowCommand() {
